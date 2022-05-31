@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Webstorm 自动编译Less</title>
+      <link href="/posts/1252960652/"/>
+      <url>/posts/1252960652/</url>
+      
+        <content type="html"><![CDATA[<h1 id="webstorm自动编译Less"><a href="#webstorm自动编译Less" class="headerlink" title="webstorm自动编译Less"></a>webstorm自动编译Less</h1><h2 id="一、环境需要"><a href="#一、环境需要" class="headerlink" title="一、环境需要"></a>一、环境需要</h2><p>下载和安装 <a href="https://nodejs.org/en/">Node.js</a>。</p><p><img src="/img/tools/less_1.png" alt="less_1"></p><h2 id="二、安装less模块"><a href="#二、安装less模块" class="headerlink" title="二、安装less模块"></a>二、安装less模块</h2><p>打开<code>cmd</code>控制台或<code>项目</code>控制台</p><p>输入命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install less -g</span><br></pre></td></tr></table></figure><p>安装<code>less-plugin-clean-css</code>插件</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install less-plugin-clean-css -g</span><br></pre></td></tr></table></figure><p>查看自己是否安装上</p><p><img src="/img/tools/less_2.png" alt="less_2"></p><p>三、webstorm配置</p><p>进入webstorm： 点击File&gt;Settings&gt;Tools&gt;File Watchers 添加less自动编译参数 </p><p><img src="/img/tools/less_3.png" alt="less_3"></p><p><img src="/img/tools/less_4.png" alt="less_4"></p><p> <strong>注意：所有配置默认就行</strong></p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 文档 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> tools </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>maven安装配置</title>
       <link href="/posts/1789485702/"/>
       <url>/posts/1789485702/</url>
