@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>tomcat配置</title>
+      <link href="/posts/1106443223/"/>
+      <url>/posts/1106443223/</url>
+      
+        <content type="html"><![CDATA[<h1 id="tomcat配置"><a href="#tomcat配置" class="headerlink" title="tomcat配置"></a>tomcat配置</h1><h2 id="一、添加tomcat"><a href="#一、添加tomcat" class="headerlink" title="一、添加tomcat"></a>一、添加tomcat</h2><p>打开<code>idea</code>项目，找到<code>run</code></p><p><img src="/img/tools/tomcat_1.png" alt="tomcat_1"></p><h2 id="二、点击Edit-Configurations-进入如下界面。"><a href="#二、点击Edit-Configurations-进入如下界面。" class="headerlink" title="二、点击Edit Configurations 进入如下界面。"></a>二、点击<code>Edit Configurations</code> 进入如下界面。</h2><p><img src="/img/tools/tomcat_2.png" alt="tomcat_2"></p><h2 id="三、点击加号"><a href="#三、点击加号" class="headerlink" title="三、点击加号"></a>三、点击加号</h2><p>找到<code>Tomcat Server</code>中的<code>Local</code>进行添加</p><p><img src="/img/tools/tomcat_3.png" alt="tomcat_3"></p><h2 id="四、在这里配置tomcat信息"><a href="#四、在这里配置tomcat信息" class="headerlink" title="四、在这里配置tomcat信息"></a>四、在这里配置tomcat信息</h2><p><img src="/img/tools/tomcat_4.png" alt="tomcat_4"></p><h2 id="五、更多配置"><a href="#五、更多配置" class="headerlink" title="五、更多配置"></a>五、更多配置</h2><p> 填写好基本tomcat信息后，点击ok。我们就配置好了Tomcat，此时我们会看到。项目中显示了我们刚才配置的的Tomcat。<br>但是直接运行的话，会报错，所以我们还需要配置 </p><p><img src="/img/tools/tomcat_5.png" alt="tomcat_5"></p><h2 id="六、打开File中的Project-Structure"><a href="#六、打开File中的Project-Structure" class="headerlink" title="六、打开File中的Project Structure"></a>六、打开<code>File</code>中的<code>Project Structure</code></h2><p><img src="/img/tools/tomcat_6.png" alt="tomcat_6"></p><h2 id="七、找到Module，右击，add一个Web"><a href="#七、找到Module，右击，add一个Web" class="headerlink" title="七、找到Module，右击，add一个Web"></a>七、找到<code>Module</code>，右击，<code>add</code>一个<code>Web</code></h2><p><img src="/img/tools/toomcat_7.png" alt="tomcat_7"></p><h2 id="八、做如下配置，点击Apply"><a href="#八、做如下配置，点击Apply" class="headerlink" title="八、做如下配置，点击Apply"></a>八、做如下配置，点击Apply</h2><p><img src="/img/tools/tomcat_8.png" alt="tomcat_8"></p><h2 id="九、配置Artifacts"><a href="#九、配置Artifacts" class="headerlink" title="九、配置Artifacts"></a>九、配置Artifacts</h2><p> 在<code>Artifacts</code>中，点击绿色加号。选择<code>Web Application:Exploded</code>，然后再选择我们刚配置的Moudules </p><p><img src="/img/tools/tomcat_9.png" alt="tomcat_9"></p><p> 然后没什么可修改的，直接点ok就好。到这里我们的Artifacts就配置好了 </p><p><img src="/img/tools/tomcat_10.png" alt="tomcat_10"></p><p> 点击Artifact后， 自动加载了<code>servletDay01:war exploded</code>。这里我们需要设置一个<code>Application context</code>，斜杠开头，后面跟着你的模块名称(idea中我习惯叫模块。如果是eclipse的用户，这个就是项目名称)。点击OK。 </p><p><img src="/img/tools/tomcat_11.png" alt="tomcat_11"></p><h2 id="十、-至此，全部配置完毕，我们可以运行Tomcat了"><a href="#十、-至此，全部配置完毕，我们可以运行Tomcat了" class="headerlink" title="十、 至此，全部配置完毕，我们可以运行Tomcat了"></a>十、 至此，全部配置完毕，我们可以运行Tomcat了</h2><p><img src="/img/tools/tomcat_12.png" alt="tomcat_12"></p><h2 id="十一、解决idea控制台乱码问题"><a href="#十一、解决idea控制台乱码问题" class="headerlink" title="十一、解决idea控制台乱码问题"></a>十一、解决idea控制台乱码问题</h2><ul><li><a href="https://blog.csdn.net/weixin_43709366/article/details/123852908">小黑Catsayer博客</a></li></ul><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 文档 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> tools </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>mysql 安装配置</title>
       <link href="/posts/2816447427/"/>
       <url>/posts/2816447427/</url>
