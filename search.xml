@@ -4,7 +4,32 @@
   
     
     <entry>
-      <title>【源码系列】手写promise</title>
+      <title>【源码系列-JS】new实现、继承</title>
+      <link href="/posts/2851167815/"/>
+      <url>/posts/2851167815/</url>
+      
+        <content type="html"><![CDATA[<h1 id="一、new实现"><a href="#一、new实现" class="headerlink" title="一、new实现"></a>一、new实现</h1><h2 id="1、介绍"><a href="#1、介绍" class="headerlink" title="1、介绍"></a>1、介绍</h2><blockquote><p> new 运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象类型之一  </p></blockquote><h2 id="2、步骤"><a href="#2、步骤" class="headerlink" title="2、步骤"></a>2、步骤</h2><ul><li>用 <code>new Object()</code> 的方式创建一个空对象<code>obj</code>。</li><li>获取第一个参数，就是我们要传入的构造函数。此外因为 shift 会修改原数组，所以 <code>arguments</code> 会被去除第一个参数。</li><li>将 <code>obj</code> 的原型指向构造函数，这样 <code>obj</code> 就可以访问到构造函数原型中的属性。</li><li>使用 <code>apply</code>，改变构造函数 <code>this</code> 的指向到新建的对象，这样 obj 就可以访问到构造函数中的属性。</li><li>判断<code>apply</code>返回的值是不是一个对象，如果是一个对象，我们就返回这个对象，如果不是就返回<code>obj</code>。</li></ul><h2 id="3、代码"><a href="#3、代码" class="headerlink" title="3、代码"></a>3、代码</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">newObject</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> obj = <span class="keyword">new</span> <span class="title class_">Object</span>(),</span><br><span class="line">    <span class="title class_">Constructor</span> = [].<span class="property">shift</span>.<span class="title function_">call</span>(<span class="variable language_">arguments</span>);<span class="comment">//获取构造函数</span></span><br><span class="line">    obj.<span class="property">__proto__</span> = <span class="title class_">Constructor</span>.<span class="property"><span class="keyword">prototype</span></span>;</span><br><span class="line">    <span class="keyword">let</span> res = <span class="title class_">Constructor</span>.<span class="title function_">apply</span>(obj, <span class="variable language_">arguments</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> res === <span class="string">&#x27;object&#x27;</span> ? res : obj;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//使用</span></span><br><span class="line"><span class="keyword">let</span> obj = <span class="title function_">newObject</span>(<span class="title class_">Fn</span> [,params]);<span class="comment">//Fn为构造函数</span></span><br></pre></td></tr></table></figure><h1 id="二、继承"><a href="#二、继承" class="headerlink" title="二、继承"></a>二、继承</h1><h2 id="1、原型链继承"><a href="#1、原型链继承" class="headerlink" title="1、原型链继承"></a>1、原型链继承</h2><p><strong>介绍：</strong></p><p>将子类的原型对象设为父类的一个实例，子类就可以访问隶属于父类的属性和方法。</p><p><strong>代码：</strong></p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Parent</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">name</span> = <span class="string">&quot;tom&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Parent</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">getName</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">name</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Child</span>(<span class="params"></span>)&#123;&#125;</span><br><span class="line"><span class="title class_">Child</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">Parent</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> child = <span class="keyword">new</span> <span class="title class_">Child</span>();</span><br><span class="line">child.<span class="title function_">getName</span>();<span class="comment">//tom</span></span><br></pre></td></tr></table></figure><p><strong>缺点：</strong></p><p>创建Child实例时，无法向Parent传参</p><p>应用类型的属性都会被所有实例共享</p><h2 id="2、构造函数继承"><a href="#2、构造函数继承" class="headerlink" title="2、构造函数继承"></a>2、构造函数继承</h2><p><strong>介绍：</strong></p><p>在Child里使用<code>call</code>调用Parent，并绑定<code>this</code>。</p><p><strong>代码：</strong></p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Parent</span>(<span class="params">[params]</span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">name</span> = <span class="string">&quot;jike&quot;</span>;</span><br><span class="line">    <span class="comment">//this.params = params;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Child</span>(<span class="params">[params]</span>)&#123;</span><br><span class="line">    <span class="title class_">Parent</span>.<span class="title function_">call</span>(<span class="variable language_">this</span> [,params]);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//没有参数</span></span><br><span class="line"><span class="keyword">let</span> child = <span class="keyword">new</span> <span class="title class_">Child</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(child.<span class="property">name</span>);<span class="comment">//jike</span></span><br><span class="line"><span class="comment">//有参数</span></span><br><span class="line"><span class="comment">//let child = new Child(4);</span></span><br><span class="line"><span class="comment">//console.log(child.name,child.pramas);//jike,4</span></span><br></pre></td></tr></table></figure><p><strong>优点：</strong></p><ul><li>避免了引用类型的属性被所有实例共享 </li><li>可以在 Child 中向 Parent 传参</li></ul><p><strong>缺点：</strong></p><ul><li>方法都在构造函数中定义，每次创建实例都会创建一遍方法。</li></ul><h2 id="3、组合继承"><a href="#3、组合继承" class="headerlink" title="3、组合继承"></a>3、组合继承</h2><p><strong>介绍：</strong></p><p> 通过调用父类构造，继承父类的属性并保留传参的优点，然后通过将父类实例作为子类原型，实现函数复用 。</p><p><strong>代码：</strong></p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Parent</span>(<span class="params">age</span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">name</span> = <span class="string">&quot;tom&quot;</span>;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">age</span> = age;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Parent</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">getAge</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">age</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Child</span>(<span class="params">name,age</span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">name</span> = name;</span><br><span class="line">    <span class="title class_">Parent</span>.<span class="title function_">call</span>(<span class="variable language_">this</span>,age);</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Child</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">Parent</span>();</span><br><span class="line"><span class="title class_">Child</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">constructor</span> = <span class="title class_">Child</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> child = <span class="keyword">new</span> <span class="title class_">Child</span>(<span class="string">&quot;jike&quot;</span>,<span class="number">18</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(child.<span class="property">name</span>);<span class="comment">//jike</span></span><br><span class="line">child.<span class="title function_">getAge</span>();<span class="comment">//18</span></span><br></pre></td></tr></table></figure><p> <strong>优点：</strong></p><p>融合原型链继承和构造函数的优点，是 JavaScript 中最常用的继承模式。 </p><h2 id="4、原型式继承"><a href="#4、原型式继承" class="headerlink" title="4、原型式继承"></a>4、原型式继承</h2><p><strong>介绍：</strong></p><p> 就是 <code>ES5 Object.create</code> 的模拟实现，将传入的对象作为创建的对象的原型。 </p><p><strong>代码：</strong></p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">createObj</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">Fn</span>(<span class="params"></span>)&#123;&#125;</span><br><span class="line">    <span class="title class_">Fn</span>.<span class="property"><span class="keyword">prototype</span></span> = obj;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Fn</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p><strong>缺点：</strong></p><p> 包含引用类型的属性值始终都会共享相应的值，这点跟原型链继承一样。 </p><h2 id="5、寄生式继承"><a href="#5、寄生式继承" class="headerlink" title="5、寄生式继承"></a>5、寄生式继承</h2><p><strong>介绍：</strong></p><p> 创建一个仅用于封装继承过程的函数，该函数在内部以某种形式来做增强对象，最后返回对象。 </p><p><strong>代码：</strong></p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">createObj</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> clone = <span class="title class_">Object</span>.<span class="title function_">create</span>(obj);</span><br><span class="line">    clone.<span class="property">getName</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;tom&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> clone;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p> <strong>缺点：</strong></p><p>跟借用构造函数模式一样，每次创建对象都会创建一遍方法。 </p><h2 id="6、寄生组合继承"><a href="#6、寄生组合继承" class="headerlink" title="6、寄生组合继承"></a>6、寄生组合继承</h2><p><strong>代码：</strong></p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Parent</span>(<span class="params">name</span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">name</span> = name;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">sex</span> = <span class="string">&#x27;man&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Parent</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">getName</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">name</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Child</span>(<span class="params">name,age</span>)&#123;</span><br><span class="line">    <span class="title class_">Parent</span>.<span class="title function_">call</span>(<span class="variable language_">this</span>,name);</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">age</span> = age;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Child</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">Parent</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> child = <span class="keyword">new</span> <span class="title class_">Child</span>(<span class="string">&quot;tom&quot;</span>,<span class="number">18</span>);</span><br><span class="line">child.<span class="title function_">getName</span>();<span class="comment">//tom</span></span><br></pre></td></tr></table></figure><p><strong>注：</strong> 组合继承最大的缺点是会调用两次父构造函数。 </p><h2 id="7、进阶最终版"><a href="#7、进阶最终版" class="headerlink" title="7、进阶最终版"></a>7、进阶最终版</h2><p><strong>代码：</strong></p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">object</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">Fn</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line">    <span class="title class_">Fn</span>.<span class="property"><span class="keyword">prototype</span></span> = obj;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Fn</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">prototype</span>(<span class="params">child, parent</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> prototype = <span class="title function_">object</span>(parent.<span class="property"><span class="keyword">prototype</span></span>);</span><br><span class="line">    prototype.<span class="property">constructor</span> = child;</span><br><span class="line">    child.<span class="property"><span class="keyword">prototype</span></span> = prototype;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当我们使用的时候：</span></span><br><span class="line"><span class="title function_">prototype</span>(<span class="title class_">Child</span>, <span class="title class_">Parent</span>);</span><br></pre></td></tr></table></figure><p><strong>over…</strong></p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 源码分析 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> JS编程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>【源码系列-JS】手写promise</title>
       <link href="/posts/3892510642/"/>
       <url>/posts/3892510642/</url>
       
@@ -29,7 +54,7 @@
     
     
     <entry>
-      <title>【源码系列】call、apply、bind</title>
+      <title>【源码系列-JS】call、apply、bind</title>
       <link href="/posts/2632569219/"/>
       <url>/posts/2632569219/</url>
       
@@ -54,7 +79,7 @@
     
     
     <entry>
-      <title>【源码系列】节流函数</title>
+      <title>【源码系列-JS】节流函数</title>
       <link href="/posts/1230976310/"/>
       <url>/posts/1230976310/</url>
       
@@ -79,7 +104,7 @@
     
     
     <entry>
-      <title>【源码系列】防抖函数</title>
+      <title>【源码系列-JS】防抖函数</title>
       <link href="/posts/2986829306/"/>
       <url>/posts/2986829306/</url>
       
@@ -104,7 +129,7 @@
     
     
     <entry>
-      <title>【源码系列】trim、curry、flat</title>
+      <title>【源码系列-JS】trim、curry、flat</title>
       <link href="/posts/3043737521/"/>
       <url>/posts/3043737521/</url>
       
@@ -129,7 +154,7 @@
     
     
     <entry>
-      <title>数组算法</title>
+      <title>【烧脑算法】数组算法</title>
       <link href="/posts/1434106632/"/>
       <url>/posts/1434106632/</url>
       
@@ -154,7 +179,7 @@
     
     
     <entry>
-      <title>数据结构(二)</title>
+      <title>【烧脑算法】数据结构(二)</title>
       <link href="/posts/628409672/"/>
       <url>/posts/628409672/</url>
       
@@ -179,7 +204,7 @@
     
     
     <entry>
-      <title>数据结构(一)</title>
+      <title>【烧脑算法】数据结构(一)</title>
       <link href="/posts/2319801898/"/>
       <url>/posts/2319801898/</url>
       
@@ -204,7 +229,7 @@
     
     
     <entry>
-      <title>JS编程(一)</title>
+      <title>【JavaScript】JS编程(一)</title>
       <link href="/posts/1946064795/"/>
       <url>/posts/1946064795/</url>
       
@@ -229,7 +254,7 @@
     
     
     <entry>
-      <title>JS数组API</title>
+      <title>【JavaScript】JS数组API</title>
       <link href="/posts/3388256348/"/>
       <url>/posts/3388256348/</url>
       
@@ -254,7 +279,7 @@
     
     
     <entry>
-      <title>经典排序</title>
+      <title>【烧脑算法】经典排序</title>
       <link href="/posts/2899047894/"/>
       <url>/posts/2899047894/</url>
       
@@ -279,7 +304,7 @@
     
     
     <entry>
-      <title>Webstorm 自动编译Less</title>
+      <title>【文档】Webstorm自动编译Less</title>
       <link href="/posts/1252960652/"/>
       <url>/posts/1252960652/</url>
       
@@ -304,7 +329,7 @@
     
     
     <entry>
-      <title>maven安装配置</title>
+      <title>【文档】maven安装配置</title>
       <link href="/posts/1789485702/"/>
       <url>/posts/1789485702/</url>
       
@@ -329,7 +354,7 @@
     
     
     <entry>
-      <title>tomcat安装配置</title>
+      <title>【文档】tomcat安装配置</title>
       <link href="/posts/1106443223/"/>
       <url>/posts/1106443223/</url>
       
@@ -354,7 +379,7 @@
     
     
     <entry>
-      <title>mysql 安装配置</title>
+      <title>【文档】mysql安装配置</title>
       <link href="/posts/2816447427/"/>
       <url>/posts/2816447427/</url>
       
@@ -379,7 +404,7 @@
     
     
     <entry>
-      <title>Git常用指令</title>
+      <title>【文档-Git】Git常用指令</title>
       <link href="/posts/1267579224/"/>
       <url>/posts/1267579224/</url>
       
@@ -404,7 +429,7 @@
     
     
     <entry>
-      <title>butterfly 主题配置及美化</title>
+      <title>【文档-Hexo】butterfly 主题配置</title>
       <link href="/posts/1439774903/"/>
       <url>/posts/1439774903/</url>
       
@@ -429,7 +454,7 @@
     
     
     <entry>
-      <title>椭圆方程一面</title>
+      <title>【面经】椭圆方程一面</title>
       <link href="/posts/651495063/"/>
       <url>/posts/651495063/</url>
       
@@ -454,7 +479,7 @@
     
     
     <entry>
-      <title>hexo 使用教程</title>
+      <title>【文档-Hexo】hexo 使用教程</title>
       <link href="/posts/6638260/"/>
       <url>/posts/6638260/</url>
       
@@ -479,7 +504,7 @@
     
     
     <entry>
-      <title>hexo使用MarkDown</title>
+      <title>【文档】MarkDown使用</title>
       <link href="/posts/303488101/"/>
       <url>/posts/303488101/</url>
       
