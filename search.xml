@@ -4,6 +4,56 @@
   
     
     <entry>
+      <title>【深入学习-react】react学习导航</title>
+      <link href="/posts/2070287860/"/>
+      <url>/posts/2070287860/</url>
+      
+        <content type="html"><![CDATA[<h1 id="react基本知识学习"><a href="#react基本知识学习" class="headerlink" title="react基本知识学习"></a>react基本知识学习</h1><p>通过网上视频或官网进行基本学习</p><ul><li><a href="https://react.docschina.org/">react官网</a></li></ul><h2 id="一、核心重点内容"><a href="#一、核心重点内容" class="headerlink" title="一、核心重点内容"></a>一、核心重点内容</h2><ul><li>理解使用<code>JSX</code></li><li>理解类组件的<code>this</code>指向</li><li>理解<code>react</code>事件处理原理</li><li>理解<code>key</code>关键字的使用</li><li>理解组件间的数据传递</li><li>理解<code>react</code>生命周期钩子</li><li>理解<code>refs</code>和高阶组件</li><li>…</li></ul><h2 id="二、react使用升级"><a href="#二、react使用升级" class="headerlink" title="二、react使用升级"></a>二、react使用升级</h2><p>使用Hook，让函数组件也拥有属于自己的状态和生命周期。</p><ul><li><p>Hook基本概念</p></li><li><p>状态钩子：<code>useState</code></p></li><li><p>副作用钩子：<code>useEffect</code>，如何使用副作用钩子模拟类组件的生命周期：</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//组件挂在时调用</span></span><br><span class="line"><span class="title function_">useEffect</span>(<span class="function">()=&gt;</span>&#123;&#125;,[])</span><br><span class="line"><span class="comment">//组件挂载和更新时调用</span></span><br><span class="line"><span class="title function_">useEffect</span>(<span class="function">()=&gt;</span>&#123;&#125;)</span><br><span class="line"><span class="comment">//组件挂载和变量更改时调用</span></span><br><span class="line"><span class="title function_">useEffect</span>(<span class="function">()=&gt;</span>&#123;&#125;,[<span class="keyword">var</span>,...])</span><br><span class="line"><span class="comment">//组件卸载时的操作</span></span><br><span class="line"><span class="title function_">useEffect</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> <span class="function">()=&gt;</span>&#123;...&#125;;</span><br><span class="line">&#125;,[...])</span><br></pre></td></tr></table></figure></li><li><p>其他Hook钩子…</p></li></ul><h1 id="react状态管理"><a href="#react状态管理" class="headerlink" title="react状态管理"></a>react状态管理</h1><p>使用<code>redux</code>进行状态的统一管理，通过官方网站进行学习</p><ul><li><a href="https://www.reduxjs.cn/"><code>redux</code>官网</a></li></ul><h2 id="一、核心内容"><a href="#一、核心内容" class="headerlink" title="一、核心内容"></a>一、核心内容</h2><ul><li><strong>三要素</strong>：单一数据来源、状态只读、使用纯函数</li><li>store、reducer、action</li><li>创建store：<code>createStore(todoApp)</code></li><li>读取数据：<code>store.getState()</code></li><li>修改状态：<code>store.dispatch(action)</code>;</li><li>数据流概念</li></ul><h2 id="二、redux进阶"><a href="#二、redux进阶" class="headerlink" title="二、redux进阶"></a>二、redux进阶</h2><p>使用中间间来加强<code>redux</code>的功能，如react-thunk。</p><ul><li><p>异步action，在action里不在返回一个对象，而是返回一个函数</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">fetchPostsIfNeeded</span>(<span class="params">subreddit</span>) &#123;</span><br><span class="line">  <span class="comment">// 注意这个函数也接收了 getState() 方法</span></span><br><span class="line">  <span class="comment">// 它让你选择接下来 dispatch 什么。</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 当缓存的值是可用时，</span></span><br><span class="line">  <span class="comment">// 减少网络请求很有用。</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">dispatch, getState</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">shouldFetchPosts</span>(<span class="title function_">getState</span>(), subreddit)) &#123;</span><br><span class="line">      <span class="comment">// 在 thunk 里 dispatch 另一个 thunk！</span></span><br><span class="line">      <span class="keyword">return</span> <span class="title function_">dispatch</span>(<span class="title function_">fetchPosts</span>(subreddit))</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// 告诉调用代码不需要再等待。</span></span><br><span class="line">      <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">resolve</span>()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li><li><p>其他中间件…</p></li></ul><h1 id="react路由实现多页面"><a href="#react路由实现多页面" class="headerlink" title="react路由实现多页面"></a>react路由实现多页面</h1><p>使用<code>react router</code>实现单页面应用的模拟页面跳转</p><ul><li><a href="https://reactrouter.com/docs/en/v6">react router官网</a></li></ul><h2 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h2><ul><li>react router版本区别</li><li>react router和<code>react router-dom</code>的区别</li><li>路由注册和路径跳转</li><li>参数传递和接受</li><li>默认路由</li><li>子路由</li><li>结合Hook的钩子</li></ul><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 深入学习 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> react </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>【工作历程】思特奇</title>
+      <link href="/posts/3536860622/"/>
+      <url>/posts/3536860622/</url>
+      
+        <content type="html"><![CDATA[<script src=/js/crypto-js.js></script><script>function doDecrypt (pwd, onError) {console.log('in doDecrypt');const txt = document.getElementById('enc_content').innerHTML;let plantext;try {const bytes = CryptoJS.AES.decrypt(txt, pwd);var plaintext = bytes.toString(CryptoJS.enc.Utf8);} catch(err) {if(onError) {onError(err);}return;}document.getElementById('enc_content').innerHTML = plaintext;document.getElementById('enc_content').style.display = 'block';document.getElementById('enc_passwd').style.display = 'none';if(typeof MathJax !== 'undefined') {MathJax.Hub.Queue(['resetEquationNumbers', MathJax.InputJax.TeX],['PreProcess', MathJax.Hub],['Reprocess', MathJax.Hub]);}}</script><div id="enc_content" style="display:none">U2FsdGVkX19j9czDlEKsrh/ApFuXXXbcioLlNcjsHmVltNnY5+zKfk3/WwuwyR5Yc+BdUwSgaE9C/Q/tibQIiJvnbNJb/DNawf48MHHDW2cJMDe6Bec6gXVhNpacViEKjvIWmMfB1H4yJKRHpv87CJtsKuSDkS2cCK5jzM+7qBzpYJWmAh7ZjUdK4jZcJPDWSTzuZG1jjmB15fxyp6fSB+Hr3hxOA1TTiqid9Gj5GxloMJXvbDd8GP3s3ZvlyZIiBftA3/ABaU9/J7cQLbFDWkXeQa59IuszVTQYxbvEW4ZD6u5Rekc8A6cM3e8W+WPwyS4/j2bOSUSZT/38U5G5S8aduiDNjCf6MJRz57UKDGRglWob9CkKLe1na0hd8Sui9iXwUDP3PtHtxYb2MCJ2pdMD1Nv4p56PDSVTd+B101X8v7D9NTZxxN8GJ+CxoVeLUMGbgyWWo7Ke2R8Rb656D8JLwbm2LaDgOJ8DCgmwijOafuFHN6LymNXriFDIeN88m/HGgitCM11PNYc2EiyLB0ndW9opnLEllmvHD2UuDBQ6efjxnyVhpMp+gyIMq1aRjlTmp+t8gsS/cbydeoJcS8eKzBB3vvKFGhRXlaOtsYdA4O0nuKiVEhndTl/pd+4K0ilRNHwsaF7pN1fKdqD+kQ41EVqOnrF4biR3UIje1FuRBNTnUieKx+y/yzzmsJ0M</div><div id="enc_passwd"> <input id="enc_pwd_input" type="password" style="border-radius: 5px;border-style: groove;height: 30px;width: 50%;cursor: auto;font-size: 102%;color: currentColor;outline: none;text-overflow: initial;padding-left: 5px;" onkeydown="if (event.keyCode == 13) { decrypt(); return false;}"> <input type="submit" value="解&nbsp;密" onclick="decrypt()" style="width: 58px;height: 34px;border-radius: 5px;background-color: white;border-style: solid;color: currentColor;"><div id="enc_error" style="display: inline-block;color: #d84527;margin-left: 10px"></div><script>var onError = function(error) {document.getElementById("enc_error").innerHTML = "password error!"};function decrypt() {var passwd = document.getElementById("enc_pwd_input").value;console.log(passwd);doDecrypt(passwd, onError);}</script></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 工作历程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 打工人 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>【文档-node】使用node发布包</title>
       <link href="/posts/382825362/"/>
       <url>/posts/382825362/</url>
@@ -70,7 +120,7 @@
       
         <tags>
             
-            <tag> js编程 </tag>
+            <tag> JS编程 </tag>
             
         </tags>
       
@@ -433,7 +483,7 @@
       <link href="/posts/1252960652/"/>
       <url>/posts/1252960652/</url>
       
-        <content type="html"><![CDATA[<h1 id="一、环境需要"><a href="#一、环境需要" class="headerlink" title="一、环境需要"></a>一、环境需要</h1><p>下载和安装 <a href="https://nodejs.org/en/">Node.js</a>。</p><p><img src="/img/tools/less_1.png" alt="less_1"></p><h1 id="二、安装less模块"><a href="#二、安装less模块" class="headerlink" title="二、安装less模块"></a>二、安装less模块</h1><p>打开<code>cmd</code>控制台或<code>项目</code>控制台</p><p>输入命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install less -g</span><br></pre></td></tr></table></figure><p>安装<code>less-plugin-clean-css</code>插件</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install less-plugin-clean-css -g</span><br></pre></td></tr></table></figure><p>查看自己是否安装上</p><p><img src="/img/tools/less_2.png" alt="less_2"></p><h1 id="三、webstorm配置"><a href="#三、webstorm配置" class="headerlink" title="三、webstorm配置"></a>三、webstorm配置</h1><p>进入webstorm： 点击File&gt;Settings&gt;Tools&gt;File Watchers 添加less自动编译参数 </p><p><img src="/img/tools/less_3.png" alt="less_3"></p><p><img src="/img/tools/less_4.png" alt="less_4"></p><p> <strong>注意：所有配置默认就行</strong></p><h1 id="四、手动编译less文件"><a href="#四、手动编译less文件" class="headerlink" title="四、手动编译less文件"></a>四、手动编译less文件</h1><p>将以上环境和依赖下载安装完毕</p><p>控制台进入要编译的less文件目录，输入命令:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lessc filename.less filename.css</span><br></pre></td></tr></table></figure><hr>]]></content>
+        <content type="html"><![CDATA[<h1 id="一、环境需要"><a href="#一、环境需要" class="headerlink" title="一、环境需要"></a>一、环境需要</h1><p>下载和安装 <a href="https://nodejs.org/en/">Node.js</a>。</p><p><img src="/img/%E6%96%87%E6%A1%A3/less_1.png" alt="less_1"></p><h1 id="二、安装less模块"><a href="#二、安装less模块" class="headerlink" title="二、安装less模块"></a>二、安装less模块</h1><p>打开<code>cmd</code>控制台或<code>项目</code>控制台</p><p>输入命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install less -g</span><br></pre></td></tr></table></figure><p>安装<code>less-plugin-clean-css</code>插件</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install less-plugin-clean-css -g</span><br></pre></td></tr></table></figure><p>查看自己是否安装上</p><p><img src="/img/%E6%96%87%E6%A1%A3/less_2.png" alt="less_2"></p><h1 id="三、webstorm配置"><a href="#三、webstorm配置" class="headerlink" title="三、webstorm配置"></a>三、webstorm配置</h1><p>进入webstorm： 点击File&gt;Settings&gt;Tools&gt;File Watchers 添加less自动编译参数 </p><p><img src="/img/%E6%96%87%E6%A1%A3/less_3.png" alt="less_3"></p><p><img src="/img/%E6%96%87%E6%A1%A3/less_4.png" alt="less_4"></p><p> <strong>注意：所有配置默认就行</strong></p><h1 id="四、手动编译less文件"><a href="#四、手动编译less文件" class="headerlink" title="四、手动编译less文件"></a>四、手动编译less文件</h1><p>将以上环境和依赖下载安装完毕</p><p>控制台进入要编译的less文件目录，输入命令:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lessc filename.less filename.css</span><br></pre></td></tr></table></figure><hr>]]></content>
       
       
       <categories>
