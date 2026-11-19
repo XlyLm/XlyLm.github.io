@@ -1,169 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Git安装和使用</title>
-    <url>/posts/2373421626/</url>
-    <content><![CDATA[Git安装和使用一、安装Git
-Windows：Git下载地址
-
-Mac：Git下载地址
-
-Linux：Ubuntu：sudo apt-get install git-core，Red Hat：sudo yum install git-core
-
-
-​	下载安装文件，双击执行安装。
-二、配置SSH
-打开 git bash 终端
-设置 user.name 和 user.email
-
-git config --global user.name &quot;你的GitHub用户名&quot;git config --global user.email &quot;你的GitHub注册邮箱&quot;
-
-
-生成 ssh 密钥
-
-ssh-keygen -t rsa -C &quot;你的GitHub注册邮箱&quot;
-
-​	此时，你的用户文件夹 (C:&#x2F;user&#x2F;***&#x2F;.ssh) 下会有一个新的文件夹.ssh，里面有刚刚创建的 ssh 密钥文件 id_rsa 和 id_rsa.pub。
-
-将 ssh 公钥添加到 GitHub 上
-
-​	进入 GitHub-&gt; 用户头像→Settings→SSH and GPG keys→New SSH key→将 id_rsa.pub 中的内容复制到 Key 文本框中，然后点击 Add SSH key (添加 SSH) 按钮。
-三、git指令详解1、初始化创建一个git仓库，创建之后就会在当前目录生成一个.git的文件
-git init	#在项目目录进入git bush面板
-
-2、系统配置 该命令将分别设置提交代码的用户名和电子邮件地址 。
-git config –global user.name “[name]”
-
-git config –global user.email “[email address]”
-
-3、添加文件到缓冲区单个文件
-git add [filename]
-
- 添加所有文件到缓冲区
-git add *orgit add --all
-
-加all可以添加被手动删除的文件，而加“*”不行。
-4、 删除文件git rm [filename]
-
- 该命令将删除工作目录中的文件，并将删除动作添加到stage。 
-5、提交缓冲区的所有修改到仓库git commit -m &quot;提交的说明&quot;commit可以一次提交缓冲区的所有文件
-
-6、查看git库的状态git status
-
-未提交的文件，分为两种，add过已经在缓冲区的(绿色)，未add过的(红色)
-7、比较文件git diff [filename]
-
- 如果文件修改了，还没有提交，就可以比较文件修改前后的差异
-git diff --staged
-
-该命令可以显示尚未添加到stage的文件的变更。 
-git diff [first branch] [second branch]
-
- 该命令可以显示两个分支之间的差异。 
-8、查看日志git log
-
-9、版本回退git reset
-
-可以将当前仓库回退到历史的某个版本
-
-第一种用法，回到上一个版本：
-git reset --hard HEAD^
-
-第二中用法，回到指定版本：
-git reset --hard [版本号]
-
-10、 查看仓库的操作历史git reflog
-
-11、分支管理(1)查看分支情况 前面带*号的就是当前分支 
-git branch //查看本地分支(绿色)git branch -r //查看远程所有分支(红色)git branch -a //查看本地和远程所有分支
-
-(2)创建分支git branch [分支名]
-
-(3)切换当前分支到指定分支git checkout [分支名]
-
-(4)创建分支并切换到创建的分支git checkout  -b [分支名]
-
-(5)合并某分支的内容到当前分支git merge [分支名]
-
-(6)拉取远程分支到本地
-意：该方法创建的本地分支 xxx 会和远程仓库 yyy 的 zzz 分支建立映射关系
-
-
-方法一：
-
-//自动切换到本地分支 xxx。git checkout -b xxx(本地分支名) yyy(远程仓库名)/zzz(远程仓库分支名)
-
-
-方法二：
-
-//不会自动切换git fetch yyy(远程仓库名) zzz(远程仓库分支名):xxx(本地分支名)
-
-如果两个分支同时进行了同一个文件的修改和提交，在merge时就会产生冲突，首先要手动打开文件解决冲突，再提交，就相当于进行了merge 
-(7)删除分支git branch -d [分支名]git branch -d -r [本地分支名]	//删除远程分支，删除后要推送到服务器才行
-
-(8)查看分支合并图git log --graph
-
-(9)本地分支和远程分支的映射关系
-教程
-
-12、 版本标签(1)为指定版本增加标签git tag [标签名] [版本号]
-
-(2)查看所有标签git tag
-
-(3)查看标签的详细信息git show [标签名]
-
-(4)将tag 提交到远端仓库 推送所有tag: 
-git push [别名](origin) --tags
-
- 推送某个tag： 
-git push [别名](origin) v1.0 
-
-13、git远端库相关(1)记录远程仓库地址并为其取别名git remote add [别名](origin) [远程仓库地址]
-
-(2)移出远程仓库git remote remove [别名](origin)
-
-(3)将本地仓库推送到远程仓库git push [-u] [别名](origin) [分支名](master)	#-u表示第一次推送，后面推送可以不写推送所有分支git push --all [别名](origin)
-
-(4)从远程库更新内容到本地git pull [别名](origin) [分支名](master)
-
- 如果push的时候，本地和文件和远端文件有冲突，就要先pull、然后手动解决冲突，才能继续push 
-(5)git记住用户密码 push的时候默认每次都需输入GitHub的用户名和密码，在git仓库根目录下.git文件夹的config文件末尾增加如下内容，即可记住用户名密码，无需每次推送都输入了 
-[credential]     helper = store
-
-14、克隆远程仓库 该命令可用于通过指定的URL获取一个代码库。 
-git clone [url]
-
-15、查看某个版本历史记录git log --follow [file]
-
-16、临时保存所有修改文件git stash save
-
-17、恢复最近stash的文件git stash pop
-
-18、显示stash所有变更git stash list
-
-19、丢弃最近一次变更git stash drop
-
-20、git 中一些选项解释-d  --delete：删除-D  --delete --force的快捷键-f  --force：强制-m  --move：移动或重命名-M  --move --force的快捷键-r  --remote：远程-a  --all：所有
-
-四、密钥配置可以配置多个密钥，将要配置的密钥所在文件取名
-在.ssh文件创建config文件：
-# 第一个配置Host self    HostName gitee.com     User xxx@qq.com     PreferredAuthentications publickey    IdentityFile ~/.ssh/id_rsa_self    # 第二个配置Host company    HostName gitee.com     User xxx@xxx.com     PreferredAuthentications publickey    IdentityFile ~/.ssh/id_rsa_xx    Host：区分不同的配置，可以任意取，但会影响远程仓库地址，比如由原来的git@gitee.com:testUser/xxx.git 变成 git@self:testUser/xxx.git（建议常用的跟原来的保持一致）HostName：真实的服务器地址（域名）User：之前配置的用户名（xxx@xxx.com）PreferredAuthentications：权限认证（publickey,password publickey,keyboard-interactive）一般直接设为publickeyIdentityFile：rsa文件地址
-
-五、添加密钥ssh-add ~/.ssh/id_rsa_github
-
-如果执行ssh-add时提示”Could not open a connection to your authentication agent”，则需先执行以下命令：
-ssh-agent bash
-
-添加成功会出现提示：Identity added 等字样。
-ssh命令验证：
-ssh -T git@github.com或ssh -T git@&lt;IP-address&gt;	//企业git域
-
-]]></content>
-      <tags>
-        <tag>版本管理</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Butterfly主题配置</title>
     <url>/posts/600736463/</url>
     <content><![CDATA[Butterfly主题配置一、安装
@@ -601,6 +438,169 @@ inject:  head:		#引入你的normalize.css    - &lt;link rel=&quot;stylesheet&qu
 ]]></content>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git安装和使用</title>
+    <url>/posts/2373421626/</url>
+    <content><![CDATA[Git安装和使用一、安装Git
+Windows：Git下载地址
+
+Mac：Git下载地址
+
+Linux：Ubuntu：sudo apt-get install git-core，Red Hat：sudo yum install git-core
+
+
+​	下载安装文件，双击执行安装。
+二、配置SSH
+打开 git bash 终端
+设置 user.name 和 user.email
+
+git config --global user.name &quot;你的GitHub用户名&quot;git config --global user.email &quot;你的GitHub注册邮箱&quot;
+
+
+生成 ssh 密钥
+
+ssh-keygen -t rsa -C &quot;你的GitHub注册邮箱&quot;
+
+​	此时，你的用户文件夹 (C:&#x2F;user&#x2F;***&#x2F;.ssh) 下会有一个新的文件夹.ssh，里面有刚刚创建的 ssh 密钥文件 id_rsa 和 id_rsa.pub。
+
+将 ssh 公钥添加到 GitHub 上
+
+​	进入 GitHub-&gt; 用户头像→Settings→SSH and GPG keys→New SSH key→将 id_rsa.pub 中的内容复制到 Key 文本框中，然后点击 Add SSH key (添加 SSH) 按钮。
+三、git指令详解1、初始化创建一个git仓库，创建之后就会在当前目录生成一个.git的文件
+git init	#在项目目录进入git bush面板
+
+2、系统配置 该命令将分别设置提交代码的用户名和电子邮件地址 。
+git config –global user.name “[name]”
+
+git config –global user.email “[email address]”
+
+3、添加文件到缓冲区单个文件
+git add [filename]
+
+ 添加所有文件到缓冲区
+git add *orgit add --all
+
+加all可以添加被手动删除的文件，而加“*”不行。
+4、 删除文件git rm [filename]
+
+ 该命令将删除工作目录中的文件，并将删除动作添加到stage。 
+5、提交缓冲区的所有修改到仓库git commit -m &quot;提交的说明&quot;commit可以一次提交缓冲区的所有文件
+
+6、查看git库的状态git status
+
+未提交的文件，分为两种，add过已经在缓冲区的(绿色)，未add过的(红色)
+7、比较文件git diff [filename]
+
+ 如果文件修改了，还没有提交，就可以比较文件修改前后的差异
+git diff --staged
+
+该命令可以显示尚未添加到stage的文件的变更。 
+git diff [first branch] [second branch]
+
+ 该命令可以显示两个分支之间的差异。 
+8、查看日志git log
+
+9、版本回退git reset
+
+可以将当前仓库回退到历史的某个版本
+
+第一种用法，回到上一个版本：
+git reset --hard HEAD^
+
+第二中用法，回到指定版本：
+git reset --hard [版本号]
+
+10、 查看仓库的操作历史git reflog
+
+11、分支管理(1)查看分支情况 前面带*号的就是当前分支 
+git branch //查看本地分支(绿色)git branch -r //查看远程所有分支(红色)git branch -a //查看本地和远程所有分支
+
+(2)创建分支git branch [分支名]
+
+(3)切换当前分支到指定分支git checkout [分支名]
+
+(4)创建分支并切换到创建的分支git checkout  -b [分支名]
+
+(5)合并某分支的内容到当前分支git merge [分支名]
+
+(6)拉取远程分支到本地
+意：该方法创建的本地分支 xxx 会和远程仓库 yyy 的 zzz 分支建立映射关系
+
+
+方法一：
+
+//自动切换到本地分支 xxx。git checkout -b xxx(本地分支名) yyy(远程仓库名)/zzz(远程仓库分支名)
+
+
+方法二：
+
+//不会自动切换git fetch yyy(远程仓库名) zzz(远程仓库分支名):xxx(本地分支名)
+
+如果两个分支同时进行了同一个文件的修改和提交，在merge时就会产生冲突，首先要手动打开文件解决冲突，再提交，就相当于进行了merge 
+(7)删除分支git branch -d [分支名]git branch -d -r [本地分支名]	//删除远程分支，删除后要推送到服务器才行
+
+(8)查看分支合并图git log --graph
+
+(9)本地分支和远程分支的映射关系
+教程
+
+12、 版本标签(1)为指定版本增加标签git tag [标签名] [版本号]
+
+(2)查看所有标签git tag
+
+(3)查看标签的详细信息git show [标签名]
+
+(4)将tag 提交到远端仓库 推送所有tag: 
+git push [别名](origin) --tags
+
+ 推送某个tag： 
+git push [别名](origin) v1.0 
+
+13、git远端库相关(1)记录远程仓库地址并为其取别名git remote add [别名](origin) [远程仓库地址]
+
+(2)移出远程仓库git remote remove [别名](origin)
+
+(3)将本地仓库推送到远程仓库git push [-u] [别名](origin) [分支名](master)	#-u表示第一次推送，后面推送可以不写推送所有分支git push --all [别名](origin)
+
+(4)从远程库更新内容到本地git pull [别名](origin) [分支名](master)
+
+ 如果push的时候，本地和文件和远端文件有冲突，就要先pull、然后手动解决冲突，才能继续push 
+(5)git记住用户密码 push的时候默认每次都需输入GitHub的用户名和密码，在git仓库根目录下.git文件夹的config文件末尾增加如下内容，即可记住用户名密码，无需每次推送都输入了 
+[credential]     helper = store
+
+14、克隆远程仓库 该命令可用于通过指定的URL获取一个代码库。 
+git clone [url]
+
+15、查看某个版本历史记录git log --follow [file]
+
+16、临时保存所有修改文件git stash save
+
+17、恢复最近stash的文件git stash pop
+
+18、显示stash所有变更git stash list
+
+19、丢弃最近一次变更git stash drop
+
+20、git 中一些选项解释-d  --delete：删除-D  --delete --force的快捷键-f  --force：强制-m  --move：移动或重命名-M  --move --force的快捷键-r  --remote：远程-a  --all：所有
+
+四、密钥配置可以配置多个密钥，将要配置的密钥所在文件取名
+在.ssh文件创建config文件：
+# 第一个配置Host self    HostName gitee.com     User xxx@qq.com     PreferredAuthentications publickey    IdentityFile ~/.ssh/id_rsa_self    # 第二个配置Host company    HostName gitee.com     User xxx@xxx.com     PreferredAuthentications publickey    IdentityFile ~/.ssh/id_rsa_xx    Host：区分不同的配置，可以任意取，但会影响远程仓库地址，比如由原来的git@gitee.com:testUser/xxx.git 变成 git@self:testUser/xxx.git（建议常用的跟原来的保持一致）HostName：真实的服务器地址（域名）User：之前配置的用户名（xxx@xxx.com）PreferredAuthentications：权限认证（publickey,password publickey,keyboard-interactive）一般直接设为publickeyIdentityFile：rsa文件地址
+
+五、添加密钥ssh-add ~/.ssh/id_rsa_github
+
+如果执行ssh-add时提示”Could not open a connection to your authentication agent”，则需先执行以下命令：
+ssh-agent bash
+
+添加成功会出现提示：Identity added 等字样。
+ssh命令验证：
+ssh -T git@github.com或ssh -T git@&lt;IP-address&gt;	//企业git域
+
+]]></content>
+      <tags>
+        <tag>版本管理</tag>
       </tags>
   </entry>
   <entry>
@@ -1565,68 +1565,6 @@ type DeepPartial&lt;T&gt; = T extends object  ? &#123; [K in keyof T]?: DeepPart
       </tags>
   </entry>
   <entry>
-    <title>【前端面试】九、部署和代理</title>
-    <url>/posts/323548661/</url>
-    <content><![CDATA[一、部署1、常见题1. 前端部署的完整流程是什么？分为五步：拉取代码 → 安装依赖（依据 lockfile 保证可复现）→ 构建（注入环境变量、生成带 hash 的产物）→ 把产物分发到目标（Nginx、对象存储或 CDN，或构建镜像）→ 刷新缓存并验证。关键原则是「构建一次，多环境复用同一制品」，即同一份产物依次经过测试、预发、生产，避免“每个环境各构建一次”导致行为漂移。验证包括健康检查、版本号核对与冒烟测试。
-2. 前端静态资源一般怎么托管？常见三种：Nginx 自建（可控、成本低，适合内网与中小项目）、对象存储加 CDN（主流方案，天然抗量、就近分发、支持大文件与图片处理）、容器化（打成 Nginx 镜像由 K8s 调度）。选型看流量规模、是否需要灰度、以及运维成本；大流量静态站点基本都会用 CDN，Nginx 只作为回源或兜底。
-3. SPA 为什么需要路由回退（history fallback）？history 模式下，/user/123 这类路径并不是真实文件，服务端直接请求会 404。因此需要把所有未命中静态文件的请求回退到 index.html，由前端路由接管。Nginx 写法是 try_files $uri $uri/ /index.html;。注意接口路径必须排除在外，否则会把 API 请求也返回成 HTML。
-4. Nginx 常用配置要会哪些？root 与 alias 的区别（alias 是替换匹配部分、root 是拼接）、location 匹配优先级（= 精确 &gt; ^~ 前缀且停止正则 &gt; ~&#x2F;~* 正则 &gt; 普通前缀最长匹配）、try_files、proxy_pass（反向代理）、gzip&#x2F;gzip_static、缓存头（expires&#x2F;add_header Cache-Control）、rewrite 与 return 301、limit_req 限流。配置错误最常见的原因就是 location 优先级理解错与 proxy_pass 尾斜杠。
-5. 发布时怎么处理缓存？index.html 必须 no-cache 或 max-age=0, must-revalidate（每次校验，保证发版即时生效）；带内容 hash 的静态资源用 max-age=31536000, immutable（一年有效，内容变了文件名就变，不存在脏缓存）。绝不能给 index.html 配长缓存，否则用户会长期停留在旧版本。CDN 层同理：HTML 不缓存、资源长缓存，必要时对 HTML 做主动刷新。
-6. 多环境怎么管理配置？分三层：代码里的 .env（本地开发）、CI 的变量（构建时注入 VITE_ 前缀变量或 DefinePlugin）、运行时的配置（容器启动注入，适合需要同一镜像跑多环境）。原则是密钥不进代码仓库、不被打进产物，敏感配置放服务端或运行时注入；环境差异尽量收敛到少数变量（接口地址、埋点开关、功能开关）。
-7. 用 Docker 部署前端怎么做？多阶段构建：第一阶段用 node 镜像装依赖并构建，第二阶段用 nginx:alpine 只拷贝 dist 与自定义 nginx.conf，最终镜像只有几十 MB。要点：.dockerignore 排除 node_modules 与产物、构建参数用 ARG/ENV 传入、镜像 tag 用 git sha 或语义版本（便于回滚），不要用 latest。
-8. 一条完整的 CI&#x2F;CD 流水线包含什么？触发（push&#x2F;merge request&#x2F;tag）→ 环境准备（固定 Node 版本、缓存依赖）→ 质量门禁（lint、类型检查、单测、构建）→ 产出制品（dist 或镜像，并记录版本号与 commit）→ 部署（到测试或预发环境）→ 自动化验证（健康检查、冒烟用例）→ 人工审批（生产）→ 发布并通知（IM、变更记录）。核心是“任何一步失败都阻断后续”，且每一步可追溯。
-9. 灰度发布、蓝绿部署、金丝雀有什么区别？蓝绿部署：维护两套完整环境，新版本部署到空闲的一套，验证通过后切换流量入口，回滚只需切回（秒级）。金丝雀（灰度）：先把一小部分流量导到新版本（按比例、按用户、按地域），观察错误率与指标正常后逐步放量。灰度更关注“风险可控的渐近放量”，蓝绿更关注“切换与回滚速度”，两者常组合使用。
-10. 回滚怎么做才快？三种机制：版本目录加软链（每次发布新建带版本号的目录，用 ln -sfn 原子切换软链，回滚就是切回旧软链，秒级且无需重新构建）；镜像 tag 回退（K8s 改回旧 tag，配合 rollout undo）；制品仓库保留 N 个版本（配合配置中心切版本号）。前提是数据库变更与代码变更要能分离或向后兼容，否则回滚代码会撞上已执行的新表结构。
-11. HTTPS 与证书怎么配？申请证书（企业证书或 Let’s Encrypt 免费证书）→ Nginx 配 ssl_certificate 与 ssl_certificate_key → 配 TLS 版本与套件（只留 1.2&#x2F;1.3）→ 把 HTTP 301 到 HTTPS → 开启 HSTS（Strict-Transport-Security）。自动化靠 certbot 定时续期（证书 90 天有效期，过期即全站不可访问，必须监控到期时间）。
-12. 生产环境的跨域怎么解决？最稳的是“同源部署”：接口与页面同一个域名，由 Nginx 按路径反代到后端（/api → 后端服务），前端看起来没有跨域；其次是后端配 CORS（精确 Origin、带 Cookie 时不能为 *）；再次是网关（API Gateway）统一处理。开发环境的 proxy 只解决本地，不能当作生产方案。
-13. 前端监控要采集什么？错误（JS 异常、Promise 未捕获、资源加载失败）、性能（FP&#x2F;FCP&#x2F;LCP&#x2F;CLS&#x2F;TBT，用 PerformanceObserver）、行为与埋点（页面停留、点击、转化）、以及版本号与用户环境（用于归因）。工具可用 Sentry（异常加 sourcemap 还原）、自建上报端点加 Prometheus&#x2F;Grafana。要点是采样与限流（避免上报打爆自己）、上报用 sendBeacon、错误做聚合去重。
-14. 部署完成后如何验证？四件事：健康检查端点返回 200；访问页面并核对版本号（构建时注入 git sha 或时间戳，在控制台或 /version 可见）；抽查关键链路（登录、核心接口）；查看监控与错误率（发布后 5~10 分钟内的错误曲线是最有效的验证）。自动化可用冒烟脚本跑几条关键用例。
-15. K8s 部署前端要理解哪些概念？Deployment 管理副本与滚动更新（maxUnavailable、maxSurge 控制放量速度）；Service 提供集群内访问；Ingress 做域名与路径路由、TLS 终止；ConfigMap/Secret 注入配置；readinessProbe（就绪探针，不通过则不接流量）与 livenessProbe（存活探针，失败则重启）是灰度与稳定的关键。
-16. 静态资源该不该和应用同域？各有取舍：同域能共享 Cookie、无跨域问题、部署最简单；分域（独立 CDN 域名）能避免 Cookie 随资源请求发送、更利于缓存与并发（HTTP&#x2F;1.1 时代还能突破并发限制）。现代实践多为“页面与接口同域（便于鉴权与 Cookie）、静态资源走独立 CDN 域名”，并给 Cookie 设置合适的 Domain 与 SameSite。
-17. 大文件与图片资源怎么处理？图片走对象存储加 CDN，按需做多尺寸裁剪与 webp/avif 转换（通过 URL 参数或处理服务）；上传走前端压缩与分片；静态字体做子集化；视频走专门的媒体服务并支持 Range。原则是“构建产物只放代码与必要资源，媒体资源全部外置”。
-18. 上线出事故怎么排查？按“变更相关性”排查：先确认是否刚发布（对比版本号与发布时间）、再区分“全量不可用”还是“部分用户不可用”（前者多为配置、证书、DNS、网关；后者多为缓存、灰度、地区网络）、看错误监控与后端日志的报错分布、必要时先回滚止血再排查根因。事后补一份时间线复盘，并把可自动化的检查项加进流水线。
-2、难题1. 为什么要“先上传静态资源，最后传 index.html”？因为 index.html 是唯一引用新资源版本的入口。若先替换 index.html，此刻新资源可能还没上传完，用户拿到的 HTML 会引用不存在的文件，直接白屏。正确顺序是：先把带新 hash 的资源全部上传并确认可访问（此时旧 index.html 仍指向旧资源，新旧共存互不干扰），最后原子替换 index.html。这就是“静态资源可多版本共存、入口只有一个”的发布模型。
-2. 原子发布与回滚具体怎么实现？每次发布生成 releases/&lt;版本号或时间戳&gt;/，把产物解压进去；用 current 软链指向它（ln -sfn releases/v2 current，切换是原子操作）；Nginx 的 root 指向 current，因此切换瞬间全量生效。回滚就是把软链指回旧目录，无需重新构建。配套保留最近 N 个版本（磁盘配额）、并保证资源路径与 HTML 的引用关系在版本内自洽（资源带 hash，旧版本资源不能立即删，需留一个窗口期）。
-3. Nginx 的 location 优先级与 proxy_pass 尾斜杠陷阱？优先级：= 精确匹配最高；其次是 ^~ 前缀（命中即不再尝试正则）；再是正则 ~&#x2F;~*（按书写顺序，第一个命中即用）；最后是普通前缀（取最长匹配）。proxy_pass 的陷阱是路径拼接：location /api/ &#123; proxy_pass http://backend/; &#125; 会把 /api/ 替换成 /（结果 /users），而 proxy_pass http://backend;（无尾斜杠）会保留完整 URI（结果 /api/users）。配错的表现是“接口全 404 但后端日志里路径不对”。
-4. Docker 多阶段构建如何把镜像压到最小？第一阶段装全部依赖并构建；第二阶段只拷贝 dist 与 nginx.conf，基础镜像用 nginx:alpine；用 .dockerignore 排除 node_modules、.git、测试文件；构建时用 npm ci --omit=dev（若构建产物不需要 dev 依赖，可进一步在生产阶段不安装依赖）；分层顺序也要注意——先 COPY package*.json 再装依赖、最后 COPY 源码，让依赖层可缓存复用。最终镜像通常在 20~50MB 量级。
-5. CI 里构建缓存怎么做，怎么保证可复现？缓存 key 要用 lockfile 的哈希（hashFiles(&#39;**/lockfile&#39;)），这样依赖变化才失效；缓存对象是包管理器的 store（pnpm 的 store、npm 的 cache）而不是直接缓存 node_modules（跨平台&#x2F;跨版本易出问题）。可复现性靠：固定 Node 版本（.nvmrc 或 packageManager 字段）、npm ci&#x2F;--frozen-lockfile、构建期禁用随机与时间戳（否则产物 hash 每次都变，缓存与灰度比对都失效）。
-6. Nginx 层怎么做按比例的灰度？用 split_clients 按客户端标识（如 $remote_addr 或 Cookie）的哈希分流： split_clients &quot;$&#123;remote_addr&#125;AAA&quot; $variant &#123; 10% new_version; * old_version; &#125;，再按 $variant 决定 upstream。 更常见的做法是：应用层用灰度规则（用户 id 取模、白名单、Header）下发配置或 feature flag，网关只负责路由。Nginx 方案的缺点是发布期间新旧两套资源必须同时在线（需要版本化目录并存），且规则变更要 reload。
-7. 前端错误上报如何做到“可信又不打扰用户”？要点有五条：window.onerror 与 unhandledrejection 全覆盖，资源错误用 addEventListener(&#39;error&#39;, ..., true) 捕获；上报用 sendBeacon（不阻塞卸载，注意体积上限）；采样与限流（同类错误按 hash 聚合、每会话限次），避免上报风暴；带上下文（版本号、页面路径、设备、trace id）并与后端日志串联；错误栈要能还原——生产用 hidden-source-map 并把 sourcemap 上传到监控平台（不公开暴露），发布时用版本号关联。
-8. K8s 滚动更新时前端为什么会短暂“版本混用”？滚动更新期间新旧 Pod 同时存在，若多个副本承载同一页面，用户在不同请求上可能拿到不同版本（表现为“刷新一次变一个版本”或资源 404）。原因是资源与 index.html 没有版本隔离。解决方式：把资源上传到带版本前缀的路径（/static/v1.2.3/...）并长缓存、index.html 由服务端按版本渲染或干脆走 CDN 原子切换；同时把 readinessProbe 配好（确保新 Pod 就绪后才接流量），并让旧版本资源在切换后保留一段时间。
-二、跨域与代理1、常见题1. 同源的定义是什么？有哪些容易误判的细节？同源要求协议、域名、端口三者完全一致。容易出错的地方包括：[http://a.com](http://a.com) 与 [http://a.com:80](http://a.com:80) 视为同源（默认端口等价），但 :8080 不同源；[https://a.com](https://a.com) 与 [http://a.com](http://a.com) 不同源（协议不同）；a.com 与 www.a.com 不同源（域名不同）；IP 与域名不同源；localhost 与 127.0.0.1 也不同源。
-2. 同源策略具体限制哪些操作，哪些不受限？受限：读取跨源请求的响应（fetch/XHR 需要 CORS）、读取跨源 iframe 的 DOM、访问跨源的 localStorage/IndexedDB、读取跨源图片的像素（canvas 被污染）、部分设备与存储 API。不受限：发出请求本身（表单提交、img/script/link 加载）、跳转链接、跨源 iframe 的嵌入（能不能嵌由 X-Frame-Options&#x2F;CSP 决定，不是同源策略）。理解这条边界是理解 CSRF 的前提。
-3. 为什么需要同源策略？它是一个读取隔离的安全模型：如果没有它，evil.com 打开的页面可以读取你在 bank.com 的响应内容、读取其 DOM 与存储，等同拿到你的数据。它的核心假设是“跨源资源可以加载，但不能读取其内容”，因此 script/img 这类嵌入仍是允许的（这也带来 JSONP 与 canvas 污染这类衍生问题）。
-4. 跨域有哪些解决方案？各自适合什么场景？服务端 CORS（首选，标准、支持任意方法与自定义头）；同源代理（Nginx 反代、开发服务器 proxy，把跨域变成同源）；postMessage（页面间通信，不是数据接口）；JSONP（仅 GET 的历史方案）；WebSocket（不受同源限制，需服务端校验 Origin）；document.domain（同主域降级，已废弃）。判断顺序：能改服务端就 CORS，改不了就用代理。
-5. 什么样的请求是“简单请求”？三个条件都满足：方法为 GET/HEAD/POST；头字段仅限 CORS 安全列表（Accept、Accept-Language、Content-Language、Content-Type 限定值、Range 限定值等）；Content-Type 只能是 application/x-www-form-urlencoded、multipart/form-data、text/plain。任何一条不满足（如 PUT、application/json、带 Authorization）都会触发预检。
-6. 预检请求（preflight）是怎么走的？浏览器先发 OPTIONS，带 Access-Control-Request-Method 与 Access-Control-Request-Headers（不是真正的请求头，只是“我想用什么”）。服务端需返回允许的 Origin、方法、头，可带 Access-Control-Max-Age 缓存该结果（浏览器有上限，Chrome 约 2 小时）。预检不通过，真实请求不会发出。注意预检失败通常是服务端没有处理 OPTIONS 或漏了某个头。
-7. CORS 的关键响应头都有什么含义？Access-Control-Allow-Origin（允许的源，* 或精确值）、Access-Control-Allow-Methods（预检用）、Access-Control-Allow-Headers（预检用）、Access-Control-Allow-Credentials（是否允许携带凭证，必须为 true 且 Origin 不能是 *）、Access-Control-Expose-Headers（让前端能读到非安全列表的响应头，如 X-Request-Id）、Access-Control-Max-Age（预检缓存时长）。
-8. 带 Cookie 的跨域请求要满足哪些条件？前端 fetch 要 credentials: &#39;include&#39;（axios 用 withCredentials: true）；服务端 Access-Control-Allow-Credentials: true；Access-Control-Allow-Origin 必须是精确源、不能用 *；Cookie 本身要满足 SameSite=None; Secure（否则跨站请求不会带上）。这四条缺一不可，缺哪条都表现为“请求发了但没带 Cookie”或直接被拦。
-9. 为什么 Access-Control-Allow-Origin: \* 不能与凭证共存？因为凭证意味着“以用户身份访问”，若允许任意源读取，任何站点都能读取用户在该服务的数据。因此规范强制要求：带凭证时服务端必须显式回显具体 Origin（并做白名单校验）。这也是“必须动态回显 Origin 而不是写死 *”的原因。
-10. 服务端怎么支持多个域名？不能返回多个 Allow-Origin（浏览器只接受一个）。做法是读请求的 Origin，在白名单里校验后原样回显，并加上 Vary: Origin（否则 CDN 或反向代理会把 A 站点的响应缓存给 B 站点，造成越权）。绝不建议“无脑回显任意 Origin + 允许凭证”，那等于关闭了同源保护。
-11. 为什么前端控制台只报一句 “CORS error”，看不到细节？出于安全，浏览器不会把跨源响应的状态码、响应体、具体失败原因暴露给 JS（否则可以用来探测内网）。排查要靠 Network 面板看预检与真实请求的状态、看响应头是否齐全、看服务端日志。这是“前端无法用 try&#x2F;catch 拿到 CORS 错误原因”的根本原因。
-12. JSONP 的原理和缺陷？利用 &lt;script&gt; 不受同源限制：前端动态插入 ?callback=fn 的脚本，服务端返回 fn(&#123;...&#125;) 的 JS 代码，从而把数据“当脚本执行”拿回来。缺陷很明显：只支持 GET、无法读状态码与响应头、出错无法感知（只能靠超时）、callback 名可控带来 XSS 风险、需要服务端专门适配。现代应全部用 CORS。
-13. 为什么开发环境的 proxy 能解决跨域？因为代理让请求由服务端发出：浏览器请求的是同源的 /api/xxx（dev server 的地址），dev server 在 Node 侧转发到真实后端并把响应回传。浏览器看到的是同源请求，不触发 CORS。注意它只是开发期的权宜方案，生产要靠网关&#x2F;Nginx 做同样的事。
-14. Nginx 反向代理怎么解决跨域？把页面与接口配到同一域名下：location /api/ &#123; proxy_pass http://backend; &#125;，浏览器视角同源，无 CORS。若必须跨域（页面与接口不同域），则在 Nginx 加 CORS 头并处理 OPTIONS（if ($request_method = OPTIONS) &#123; return 204; &#125;），同时注意 proxy_pass 的尾斜杠路径拼接问题。
-15. postMessage 怎么用才安全？发送：targetWindow.postMessage(data, targetOrigin)，targetOrigin 必须是具体源而不是 *（否则任何中间页面都能收到）。接收：监听 message 时**必须校验 event.origin**（白名单），必要时校验 event.source 是否为预期窗口；不要把收到的内容直接 innerHTML 或 eval。这是 iframe、弹窗、跨标签通信唯一可靠的官方通道。
-16. document.domain 为什么被废弃？它允许同主域的不同子域（a.example.com 与 b.example.com）通过把 document.domain 都设为 example.com 来互相访问 DOM。这直接破坏了“源”的隔离（一旦降级，同主域的所有页面都能互访），也成为绕过同源策略的攻击面。Chrome 112 起已弃用，替代方案是 postMessage + Origin 校验。
-17. 为什么 WebSocket 不受同源策略限制？WebSocket 有自己的协议（ws://&#x2F;wss://），握手是一次 HTTP Upgrade，但建连后浏览器不施加同源读取限制（否则无法跨域连服务）。安全责任转移到服务端：必须在握手时校验 Origin 头、校验 Token，否则任意站点都能用用户浏览器建立连接（类似 CSWSH 攻击）。Cookie 在握手请求中会自动携带，这一点也需要注意。
-18. 一个页面能不能被别的站点用 iframe 嵌入，谁决定？由被嵌入方决定：X-Frame-Options: DENY | SAMEORIGIN（老方案，粒度粗）、Content-Security-Policy: frame-ancestors &#39;self&#39; [https://a.com](https://a.com)（现代方案，可精确到源）。嵌入方可用 &lt;iframe sandbox=&quot;allow-scripts ...&quot;&gt; 限制被嵌页面的能力（注意同时给 allow-scripts 与 allow-same-origin 会大幅削弱沙箱）。这也是防点击劫持的核心手段。
-19. 跨站 Cookie 现在还能用吗？能，但条件更严：SameSite=None; Secure（必须 HTTPS），并且浏览器在逐步淘汰三方 Cookie（Chrome 的隐私沙盒、Safari 的 ITP 早就默认拦截）。替代方案：CHIPS（分区 Cookie，Partitioned 属性，让 Cookie 按“顶层站点”分区）、Storage Access API（请求存储访问权限）、或改成服务端跳转 + 短时票据（OAuth 授权码流程）。
-20. 哪些资源类型的跨域行为比较特殊？字体（@font-face）必须满足 CORS（否则加载失败，这是很多人第一次遇到“字体跨域”的原因）；图片可以跨域加载，但要在 canvas 里读像素就必须 crossOrigin=&quot;anonymous&quot; 且服务端允许；&lt;script&gt;&#x2F;&lt;link&gt; 可跨域加载但无法读取内容；fetch 加 mode: &#39;no-cors&#39; 只能拿到 opaque 响应（读不到内容）；&lt;video&gt; 跨域播放没问题，但要截帧同样受 canvas 污染限制。
-2、难题1. 预检请求能不能避免，代价是什么？可以，把请求“降级”成简单请求：只用 GET/POST、Content-Type 用 text/plain 或表单编码、去掉自定义头（Authorization、X-Token 都会触发预检）。但代价明显：不能用 application/json、不能带自定义鉴权头（只能靠 Cookie 或 query），语义不清晰。实际更常见的优化是缓存预检（调大 Max-Age）与减少跨域（走同源代理），而不是把接口改成畸形请求。
-2. 预检缓存有哪些容易踩的坑？一是浏览器对 Max-Age 有上限（Chrome 约 2 小时），服务端写一年也无效；二是缓存键包含 URL + Origin + 方法 + 请求头集合，请求头多一个少一个都会重新预检；三是 Access-Control-Allow-Headers 在带凭证时不能用 *（必须逐一列出），而很多框架默认返回 *，导致“不带 Cookie 正常、带了就失败”；四是 CDN 若没配 Vary: Origin，可能把某个 Origin 的预检结果缓存给其他源。
-3. 跨域请求遇到 302 重定向会怎样？预检请求不允许被重定向（浏览器会直接判定网络错误），所以登录跳转、网关鉴权跳转这类逻辑不能出现在预检路径上；真实请求的跨域重定向也要求最终响应带正确的 CORS 头，且 Allow-Origin 要与原始源匹配（不能是重定向后的源）。实践建议是让 CORS 请求直接命中最终地址，把鉴权跳转放在前端控制或改成 401 + 显式刷新。
-4. 缓存的 304 响应还需要带 CORS 头吗？需要。即使命中缓存返回 304，浏览器仍会校验 CORS 头是否允许当前源读取（缺头会判定失败），所以服务端在 304 分支也要输出 Access-Control-Allow-Origin、Vary: Origin 等。工程上常见的做法是在 Nginx 或框架层统一注入 CORS 头，而不是只写在业务响应里。
-5. 为什么说 CORS 不能防 CSRF？CORS 限制的是“读取跨源响应”，而 CSRF 只需要“发出请求”。表单提交、img 请求、&lt;script&gt; 加载都是跨源可发的（且表单的 POST 甚至不需要预检），服务端照样会执行并带上 Cookie。所以防 CSRF 要靠 SameSite Cookie、CSRF Token、Origin/Referer 校验这些服务端侧手段，CORS 只是阻断“攻击者读取结果”。
-6. crossOrigin=&quot;anonymous&quot; 到底做了什么？它让图片请求以 CORS 模式发出（带 Origin 头、要求服务端返回 Access-Control-Allow-Origin）。成功则图片可被 canvas 读取（getImageData 不会抛 SecurityError），失败则图片加载失败（而不是“污染 canvas”）。使用 use-credentials 时才会带上 Cookie。这正是“图表库截图&#x2F;图片裁剪&#x2F;水印导出”必须先处理跨域的原因。
-7. COOP、COEP、CORP 分别解决什么问题？三者共同服务于跨源隔离（crossOriginIsolated）：Cross-Origin-Opener-Policy 切断跨源窗口的 window.opener 引用（防 Spectre 类侧信道与弹窗劫持）；Cross-Origin-Embedder-Policy: require-corp 要求所有子资源显式声明可嵌入（否则不加载）；Cross-Origin-Resource-Policy 由资源方声明“谁能嵌入我”。三者配齐后浏览器才会放开 SharedArrayBuffer 与高精度计时器。代价是第三方资源必须逐个适配，破坏性较强。
-8. Private Network Access（PNA）是什么限制？浏览器开始限制“公网页面访问内网&#x2F;本地服务”（如 http://192.168.x.x、[http://localhost](http://localhost)）：跨源访问私有网络时，预检会附加 Access-Control-Request-Private-Network: true，服务端必须返回 Access-Control-Allow-Private-Network: true 才放行。它防的是“公网页面借用户浏览器扫描&#x2F;攻击内网设备”，对本地开发与内网 SaaS 场景影响最大，表现为“以前能调的本地服务突然被拦”。
-]]></content>
-      <tags>
-        <tag>前端面试</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【前端面试】三、浏览器和网络</title>
     <url>/posts/323548655/</url>
     <content><![CDATA[一、浏览器1、常见题1. 浏览器的多进程架构是怎样的？主进程（Browser，负责标签页管理、地址栏、窗口与网络调度）、渲染进程（Renderer，负责 HTML&#x2F;CSS&#x2F;JS 解析与页面渲染，每个标签页一个、同站点可能共享，跨站点则强制隔离）、GPU 进程（负责合成与绘制加速）、网络进程（负责请求与缓存）、插件&#x2F;工具进程。多进程的价值是稳定性与安全隔离（一个页面崩溃不拖垮整个浏览器，站点隔离用于缓解 Spectre 这类侧信道攻击），代价是内存占用高。
@@ -1780,6 +1718,68 @@ type DeepPartial&lt;T&gt; = T extends object  ? &#123; [K in keyof T]?: DeepPart
 6. 为什么改了数据马上读 DOM 读不到最新值？更新是异步批处理的：set 只把 effect 入队并调度到微任务，尚未 flush 渲染。因此在同步代码里读 DOM 得到旧值，需要 await nextTick()（或 flush: &#39;post&#39; 的 watch）之后再读。这也解释了为什么“连续改 100 次数据只渲染一次”，以及为什么在 onUpdated 里读 DOM 才是最新的。注意 flush: &#39;sync&#39; 会破坏批处理，只在确有必要的场景使用。
 7. KeepAlive 缓存的组件有哪些坑？缓存的组件实例不销毁、DOM 不重新创建，所以 onMounted 不会再次触发、onUnmounted 也不会调用；需要使用 onActivated（进入）与 onDeactivated（离开）来启停定时器、重连 WebSocket、刷新数据。另有三个问题：缓存不设 max 会无限增长导致内存上涨；key 不稳定会导致缓存失效或命中错误实例；被缓存页面的滚动位置、ref 引用会持续存在，清理逻辑必须显式写在 deactivated 里。
 8. 微前端（qiankun）的隔离与落地问题有哪些？隔离分三层：JS 沙箱（Proxy 沙箱为主，legacy 快照沙箱兼容旧浏览器）、样式隔离（strictStyleIsolation 用 Shadow DOM，或 experimentalStyleIsolation 给选择器加前缀，注意两者都不覆盖全局弹层）、资源隔离（公共依赖走 externals 或共享，避免重复加载）。落地问题：主子应用路由冲突（需约定 activeRule 与 basename）、通信靠 initGlobalState 单向且有序列化限制、跨应用鉴权与埋点需统一入口、single-spa 生命周期里 mount 失败要能降级。替代思路是“模块联邦 + 构建级共享”，代价是构建耦合度提升。
+]]></content>
+      <tags>
+        <tag>前端面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【前端面试】九、部署和代理</title>
+    <url>/posts/323548661/</url>
+    <content><![CDATA[一、部署1、常见题1. 前端部署的完整流程是什么？分为五步：拉取代码 → 安装依赖（依据 lockfile 保证可复现）→ 构建（注入环境变量、生成带 hash 的产物）→ 把产物分发到目标（Nginx、对象存储或 CDN，或构建镜像）→ 刷新缓存并验证。关键原则是「构建一次，多环境复用同一制品」，即同一份产物依次经过测试、预发、生产，避免“每个环境各构建一次”导致行为漂移。验证包括健康检查、版本号核对与冒烟测试。
+2. 前端静态资源一般怎么托管？常见三种：Nginx 自建（可控、成本低，适合内网与中小项目）、对象存储加 CDN（主流方案，天然抗量、就近分发、支持大文件与图片处理）、容器化（打成 Nginx 镜像由 K8s 调度）。选型看流量规模、是否需要灰度、以及运维成本；大流量静态站点基本都会用 CDN，Nginx 只作为回源或兜底。
+3. SPA 为什么需要路由回退（history fallback）？history 模式下，/user/123 这类路径并不是真实文件，服务端直接请求会 404。因此需要把所有未命中静态文件的请求回退到 index.html，由前端路由接管。Nginx 写法是 try_files $uri $uri/ /index.html;。注意接口路径必须排除在外，否则会把 API 请求也返回成 HTML。
+4. Nginx 常用配置要会哪些？root 与 alias 的区别（alias 是替换匹配部分、root 是拼接）、location 匹配优先级（= 精确 &gt; ^~ 前缀且停止正则 &gt; ~&#x2F;~* 正则 &gt; 普通前缀最长匹配）、try_files、proxy_pass（反向代理）、gzip&#x2F;gzip_static、缓存头（expires&#x2F;add_header Cache-Control）、rewrite 与 return 301、limit_req 限流。配置错误最常见的原因就是 location 优先级理解错与 proxy_pass 尾斜杠。
+5. 发布时怎么处理缓存？index.html 必须 no-cache 或 max-age=0, must-revalidate（每次校验，保证发版即时生效）；带内容 hash 的静态资源用 max-age=31536000, immutable（一年有效，内容变了文件名就变，不存在脏缓存）。绝不能给 index.html 配长缓存，否则用户会长期停留在旧版本。CDN 层同理：HTML 不缓存、资源长缓存，必要时对 HTML 做主动刷新。
+6. 多环境怎么管理配置？分三层：代码里的 .env（本地开发）、CI 的变量（构建时注入 VITE_ 前缀变量或 DefinePlugin）、运行时的配置（容器启动注入，适合需要同一镜像跑多环境）。原则是密钥不进代码仓库、不被打进产物，敏感配置放服务端或运行时注入；环境差异尽量收敛到少数变量（接口地址、埋点开关、功能开关）。
+7. 用 Docker 部署前端怎么做？多阶段构建：第一阶段用 node 镜像装依赖并构建，第二阶段用 nginx:alpine 只拷贝 dist 与自定义 nginx.conf，最终镜像只有几十 MB。要点：.dockerignore 排除 node_modules 与产物、构建参数用 ARG/ENV 传入、镜像 tag 用 git sha 或语义版本（便于回滚），不要用 latest。
+8. 一条完整的 CI&#x2F;CD 流水线包含什么？触发（push&#x2F;merge request&#x2F;tag）→ 环境准备（固定 Node 版本、缓存依赖）→ 质量门禁（lint、类型检查、单测、构建）→ 产出制品（dist 或镜像，并记录版本号与 commit）→ 部署（到测试或预发环境）→ 自动化验证（健康检查、冒烟用例）→ 人工审批（生产）→ 发布并通知（IM、变更记录）。核心是“任何一步失败都阻断后续”，且每一步可追溯。
+9. 灰度发布、蓝绿部署、金丝雀有什么区别？蓝绿部署：维护两套完整环境，新版本部署到空闲的一套，验证通过后切换流量入口，回滚只需切回（秒级）。金丝雀（灰度）：先把一小部分流量导到新版本（按比例、按用户、按地域），观察错误率与指标正常后逐步放量。灰度更关注“风险可控的渐近放量”，蓝绿更关注“切换与回滚速度”，两者常组合使用。
+10. 回滚怎么做才快？三种机制：版本目录加软链（每次发布新建带版本号的目录，用 ln -sfn 原子切换软链，回滚就是切回旧软链，秒级且无需重新构建）；镜像 tag 回退（K8s 改回旧 tag，配合 rollout undo）；制品仓库保留 N 个版本（配合配置中心切版本号）。前提是数据库变更与代码变更要能分离或向后兼容，否则回滚代码会撞上已执行的新表结构。
+11. HTTPS 与证书怎么配？申请证书（企业证书或 Let’s Encrypt 免费证书）→ Nginx 配 ssl_certificate 与 ssl_certificate_key → 配 TLS 版本与套件（只留 1.2&#x2F;1.3）→ 把 HTTP 301 到 HTTPS → 开启 HSTS（Strict-Transport-Security）。自动化靠 certbot 定时续期（证书 90 天有效期，过期即全站不可访问，必须监控到期时间）。
+12. 生产环境的跨域怎么解决？最稳的是“同源部署”：接口与页面同一个域名，由 Nginx 按路径反代到后端（/api → 后端服务），前端看起来没有跨域；其次是后端配 CORS（精确 Origin、带 Cookie 时不能为 *）；再次是网关（API Gateway）统一处理。开发环境的 proxy 只解决本地，不能当作生产方案。
+13. 前端监控要采集什么？错误（JS 异常、Promise 未捕获、资源加载失败）、性能（FP&#x2F;FCP&#x2F;LCP&#x2F;CLS&#x2F;TBT，用 PerformanceObserver）、行为与埋点（页面停留、点击、转化）、以及版本号与用户环境（用于归因）。工具可用 Sentry（异常加 sourcemap 还原）、自建上报端点加 Prometheus&#x2F;Grafana。要点是采样与限流（避免上报打爆自己）、上报用 sendBeacon、错误做聚合去重。
+14. 部署完成后如何验证？四件事：健康检查端点返回 200；访问页面并核对版本号（构建时注入 git sha 或时间戳，在控制台或 /version 可见）；抽查关键链路（登录、核心接口）；查看监控与错误率（发布后 5~10 分钟内的错误曲线是最有效的验证）。自动化可用冒烟脚本跑几条关键用例。
+15. K8s 部署前端要理解哪些概念？Deployment 管理副本与滚动更新（maxUnavailable、maxSurge 控制放量速度）；Service 提供集群内访问；Ingress 做域名与路径路由、TLS 终止；ConfigMap/Secret 注入配置；readinessProbe（就绪探针，不通过则不接流量）与 livenessProbe（存活探针，失败则重启）是灰度与稳定的关键。
+16. 静态资源该不该和应用同域？各有取舍：同域能共享 Cookie、无跨域问题、部署最简单；分域（独立 CDN 域名）能避免 Cookie 随资源请求发送、更利于缓存与并发（HTTP&#x2F;1.1 时代还能突破并发限制）。现代实践多为“页面与接口同域（便于鉴权与 Cookie）、静态资源走独立 CDN 域名”，并给 Cookie 设置合适的 Domain 与 SameSite。
+17. 大文件与图片资源怎么处理？图片走对象存储加 CDN，按需做多尺寸裁剪与 webp/avif 转换（通过 URL 参数或处理服务）；上传走前端压缩与分片；静态字体做子集化；视频走专门的媒体服务并支持 Range。原则是“构建产物只放代码与必要资源，媒体资源全部外置”。
+18. 上线出事故怎么排查？按“变更相关性”排查：先确认是否刚发布（对比版本号与发布时间）、再区分“全量不可用”还是“部分用户不可用”（前者多为配置、证书、DNS、网关；后者多为缓存、灰度、地区网络）、看错误监控与后端日志的报错分布、必要时先回滚止血再排查根因。事后补一份时间线复盘，并把可自动化的检查项加进流水线。
+2、难题1. 为什么要“先上传静态资源，最后传 index.html”？因为 index.html 是唯一引用新资源版本的入口。若先替换 index.html，此刻新资源可能还没上传完，用户拿到的 HTML 会引用不存在的文件，直接白屏。正确顺序是：先把带新 hash 的资源全部上传并确认可访问（此时旧 index.html 仍指向旧资源，新旧共存互不干扰），最后原子替换 index.html。这就是“静态资源可多版本共存、入口只有一个”的发布模型。
+2. 原子发布与回滚具体怎么实现？每次发布生成 releases/&lt;版本号或时间戳&gt;/，把产物解压进去；用 current 软链指向它（ln -sfn releases/v2 current，切换是原子操作）；Nginx 的 root 指向 current，因此切换瞬间全量生效。回滚就是把软链指回旧目录，无需重新构建。配套保留最近 N 个版本（磁盘配额）、并保证资源路径与 HTML 的引用关系在版本内自洽（资源带 hash，旧版本资源不能立即删，需留一个窗口期）。
+3. Nginx 的 location 优先级与 proxy_pass 尾斜杠陷阱？优先级：= 精确匹配最高；其次是 ^~ 前缀（命中即不再尝试正则）；再是正则 ~&#x2F;~*（按书写顺序，第一个命中即用）；最后是普通前缀（取最长匹配）。proxy_pass 的陷阱是路径拼接：location /api/ &#123; proxy_pass http://backend/; &#125; 会把 /api/ 替换成 /（结果 /users），而 proxy_pass http://backend;（无尾斜杠）会保留完整 URI（结果 /api/users）。配错的表现是“接口全 404 但后端日志里路径不对”。
+4. Docker 多阶段构建如何把镜像压到最小？第一阶段装全部依赖并构建；第二阶段只拷贝 dist 与 nginx.conf，基础镜像用 nginx:alpine；用 .dockerignore 排除 node_modules、.git、测试文件；构建时用 npm ci --omit=dev（若构建产物不需要 dev 依赖，可进一步在生产阶段不安装依赖）；分层顺序也要注意——先 COPY package*.json 再装依赖、最后 COPY 源码，让依赖层可缓存复用。最终镜像通常在 20~50MB 量级。
+5. CI 里构建缓存怎么做，怎么保证可复现？缓存 key 要用 lockfile 的哈希（hashFiles(&#39;**/lockfile&#39;)），这样依赖变化才失效；缓存对象是包管理器的 store（pnpm 的 store、npm 的 cache）而不是直接缓存 node_modules（跨平台&#x2F;跨版本易出问题）。可复现性靠：固定 Node 版本（.nvmrc 或 packageManager 字段）、npm ci&#x2F;--frozen-lockfile、构建期禁用随机与时间戳（否则产物 hash 每次都变，缓存与灰度比对都失效）。
+6. Nginx 层怎么做按比例的灰度？用 split_clients 按客户端标识（如 $remote_addr 或 Cookie）的哈希分流： split_clients &quot;$&#123;remote_addr&#125;AAA&quot; $variant &#123; 10% new_version; * old_version; &#125;，再按 $variant 决定 upstream。 更常见的做法是：应用层用灰度规则（用户 id 取模、白名单、Header）下发配置或 feature flag，网关只负责路由。Nginx 方案的缺点是发布期间新旧两套资源必须同时在线（需要版本化目录并存），且规则变更要 reload。
+7. 前端错误上报如何做到“可信又不打扰用户”？要点有五条：window.onerror 与 unhandledrejection 全覆盖，资源错误用 addEventListener(&#39;error&#39;, ..., true) 捕获；上报用 sendBeacon（不阻塞卸载，注意体积上限）；采样与限流（同类错误按 hash 聚合、每会话限次），避免上报风暴；带上下文（版本号、页面路径、设备、trace id）并与后端日志串联；错误栈要能还原——生产用 hidden-source-map 并把 sourcemap 上传到监控平台（不公开暴露），发布时用版本号关联。
+8. K8s 滚动更新时前端为什么会短暂“版本混用”？滚动更新期间新旧 Pod 同时存在，若多个副本承载同一页面，用户在不同请求上可能拿到不同版本（表现为“刷新一次变一个版本”或资源 404）。原因是资源与 index.html 没有版本隔离。解决方式：把资源上传到带版本前缀的路径（/static/v1.2.3/...）并长缓存、index.html 由服务端按版本渲染或干脆走 CDN 原子切换；同时把 readinessProbe 配好（确保新 Pod 就绪后才接流量），并让旧版本资源在切换后保留一段时间。
+二、跨域与代理1、常见题1. 同源的定义是什么？有哪些容易误判的细节？同源要求协议、域名、端口三者完全一致。容易出错的地方包括：[http://a.com](http://a.com) 与 [http://a.com:80](http://a.com:80) 视为同源（默认端口等价），但 :8080 不同源；[https://a.com](https://a.com) 与 [http://a.com](http://a.com) 不同源（协议不同）；a.com 与 www.a.com 不同源（域名不同）；IP 与域名不同源；localhost 与 127.0.0.1 也不同源。
+2. 同源策略具体限制哪些操作，哪些不受限？受限：读取跨源请求的响应（fetch/XHR 需要 CORS）、读取跨源 iframe 的 DOM、访问跨源的 localStorage/IndexedDB、读取跨源图片的像素（canvas 被污染）、部分设备与存储 API。不受限：发出请求本身（表单提交、img/script/link 加载）、跳转链接、跨源 iframe 的嵌入（能不能嵌由 X-Frame-Options&#x2F;CSP 决定，不是同源策略）。理解这条边界是理解 CSRF 的前提。
+3. 为什么需要同源策略？它是一个读取隔离的安全模型：如果没有它，evil.com 打开的页面可以读取你在 bank.com 的响应内容、读取其 DOM 与存储，等同拿到你的数据。它的核心假设是“跨源资源可以加载，但不能读取其内容”，因此 script/img 这类嵌入仍是允许的（这也带来 JSONP 与 canvas 污染这类衍生问题）。
+4. 跨域有哪些解决方案？各自适合什么场景？服务端 CORS（首选，标准、支持任意方法与自定义头）；同源代理（Nginx 反代、开发服务器 proxy，把跨域变成同源）；postMessage（页面间通信，不是数据接口）；JSONP（仅 GET 的历史方案）；WebSocket（不受同源限制，需服务端校验 Origin）；document.domain（同主域降级，已废弃）。判断顺序：能改服务端就 CORS，改不了就用代理。
+5. 什么样的请求是“简单请求”？三个条件都满足：方法为 GET/HEAD/POST；头字段仅限 CORS 安全列表（Accept、Accept-Language、Content-Language、Content-Type 限定值、Range 限定值等）；Content-Type 只能是 application/x-www-form-urlencoded、multipart/form-data、text/plain。任何一条不满足（如 PUT、application/json、带 Authorization）都会触发预检。
+6. 预检请求（preflight）是怎么走的？浏览器先发 OPTIONS，带 Access-Control-Request-Method 与 Access-Control-Request-Headers（不是真正的请求头，只是“我想用什么”）。服务端需返回允许的 Origin、方法、头，可带 Access-Control-Max-Age 缓存该结果（浏览器有上限，Chrome 约 2 小时）。预检不通过，真实请求不会发出。注意预检失败通常是服务端没有处理 OPTIONS 或漏了某个头。
+7. CORS 的关键响应头都有什么含义？Access-Control-Allow-Origin（允许的源，* 或精确值）、Access-Control-Allow-Methods（预检用）、Access-Control-Allow-Headers（预检用）、Access-Control-Allow-Credentials（是否允许携带凭证，必须为 true 且 Origin 不能是 *）、Access-Control-Expose-Headers（让前端能读到非安全列表的响应头，如 X-Request-Id）、Access-Control-Max-Age（预检缓存时长）。
+8. 带 Cookie 的跨域请求要满足哪些条件？前端 fetch 要 credentials: &#39;include&#39;（axios 用 withCredentials: true）；服务端 Access-Control-Allow-Credentials: true；Access-Control-Allow-Origin 必须是精确源、不能用 *；Cookie 本身要满足 SameSite=None; Secure（否则跨站请求不会带上）。这四条缺一不可，缺哪条都表现为“请求发了但没带 Cookie”或直接被拦。
+9. 为什么 Access-Control-Allow-Origin: \* 不能与凭证共存？因为凭证意味着“以用户身份访问”，若允许任意源读取，任何站点都能读取用户在该服务的数据。因此规范强制要求：带凭证时服务端必须显式回显具体 Origin（并做白名单校验）。这也是“必须动态回显 Origin 而不是写死 *”的原因。
+10. 服务端怎么支持多个域名？不能返回多个 Allow-Origin（浏览器只接受一个）。做法是读请求的 Origin，在白名单里校验后原样回显，并加上 Vary: Origin（否则 CDN 或反向代理会把 A 站点的响应缓存给 B 站点，造成越权）。绝不建议“无脑回显任意 Origin + 允许凭证”，那等于关闭了同源保护。
+11. 为什么前端控制台只报一句 “CORS error”，看不到细节？出于安全，浏览器不会把跨源响应的状态码、响应体、具体失败原因暴露给 JS（否则可以用来探测内网）。排查要靠 Network 面板看预检与真实请求的状态、看响应头是否齐全、看服务端日志。这是“前端无法用 try&#x2F;catch 拿到 CORS 错误原因”的根本原因。
+12. JSONP 的原理和缺陷？利用 &lt;script&gt; 不受同源限制：前端动态插入 ?callback=fn 的脚本，服务端返回 fn(&#123;...&#125;) 的 JS 代码，从而把数据“当脚本执行”拿回来。缺陷很明显：只支持 GET、无法读状态码与响应头、出错无法感知（只能靠超时）、callback 名可控带来 XSS 风险、需要服务端专门适配。现代应全部用 CORS。
+13. 为什么开发环境的 proxy 能解决跨域？因为代理让请求由服务端发出：浏览器请求的是同源的 /api/xxx（dev server 的地址），dev server 在 Node 侧转发到真实后端并把响应回传。浏览器看到的是同源请求，不触发 CORS。注意它只是开发期的权宜方案，生产要靠网关&#x2F;Nginx 做同样的事。
+14. Nginx 反向代理怎么解决跨域？把页面与接口配到同一域名下：location /api/ &#123; proxy_pass http://backend; &#125;，浏览器视角同源，无 CORS。若必须跨域（页面与接口不同域），则在 Nginx 加 CORS 头并处理 OPTIONS（if ($request_method = OPTIONS) &#123; return 204; &#125;），同时注意 proxy_pass 的尾斜杠路径拼接问题。
+15. postMessage 怎么用才安全？发送：targetWindow.postMessage(data, targetOrigin)，targetOrigin 必须是具体源而不是 *（否则任何中间页面都能收到）。接收：监听 message 时**必须校验 event.origin**（白名单），必要时校验 event.source 是否为预期窗口；不要把收到的内容直接 innerHTML 或 eval。这是 iframe、弹窗、跨标签通信唯一可靠的官方通道。
+16. document.domain 为什么被废弃？它允许同主域的不同子域（a.example.com 与 b.example.com）通过把 document.domain 都设为 example.com 来互相访问 DOM。这直接破坏了“源”的隔离（一旦降级，同主域的所有页面都能互访），也成为绕过同源策略的攻击面。Chrome 112 起已弃用，替代方案是 postMessage + Origin 校验。
+17. 为什么 WebSocket 不受同源策略限制？WebSocket 有自己的协议（ws://&#x2F;wss://），握手是一次 HTTP Upgrade，但建连后浏览器不施加同源读取限制（否则无法跨域连服务）。安全责任转移到服务端：必须在握手时校验 Origin 头、校验 Token，否则任意站点都能用用户浏览器建立连接（类似 CSWSH 攻击）。Cookie 在握手请求中会自动携带，这一点也需要注意。
+18. 一个页面能不能被别的站点用 iframe 嵌入，谁决定？由被嵌入方决定：X-Frame-Options: DENY | SAMEORIGIN（老方案，粒度粗）、Content-Security-Policy: frame-ancestors &#39;self&#39; [https://a.com](https://a.com)（现代方案，可精确到源）。嵌入方可用 &lt;iframe sandbox=&quot;allow-scripts ...&quot;&gt; 限制被嵌页面的能力（注意同时给 allow-scripts 与 allow-same-origin 会大幅削弱沙箱）。这也是防点击劫持的核心手段。
+19. 跨站 Cookie 现在还能用吗？能，但条件更严：SameSite=None; Secure（必须 HTTPS），并且浏览器在逐步淘汰三方 Cookie（Chrome 的隐私沙盒、Safari 的 ITP 早就默认拦截）。替代方案：CHIPS（分区 Cookie，Partitioned 属性，让 Cookie 按“顶层站点”分区）、Storage Access API（请求存储访问权限）、或改成服务端跳转 + 短时票据（OAuth 授权码流程）。
+20. 哪些资源类型的跨域行为比较特殊？字体（@font-face）必须满足 CORS（否则加载失败，这是很多人第一次遇到“字体跨域”的原因）；图片可以跨域加载，但要在 canvas 里读像素就必须 crossOrigin=&quot;anonymous&quot; 且服务端允许；&lt;script&gt;&#x2F;&lt;link&gt; 可跨域加载但无法读取内容；fetch 加 mode: &#39;no-cors&#39; 只能拿到 opaque 响应（读不到内容）；&lt;video&gt; 跨域播放没问题，但要截帧同样受 canvas 污染限制。
+2、难题1. 预检请求能不能避免，代价是什么？可以，把请求“降级”成简单请求：只用 GET/POST、Content-Type 用 text/plain 或表单编码、去掉自定义头（Authorization、X-Token 都会触发预检）。但代价明显：不能用 application/json、不能带自定义鉴权头（只能靠 Cookie 或 query），语义不清晰。实际更常见的优化是缓存预检（调大 Max-Age）与减少跨域（走同源代理），而不是把接口改成畸形请求。
+2. 预检缓存有哪些容易踩的坑？一是浏览器对 Max-Age 有上限（Chrome 约 2 小时），服务端写一年也无效；二是缓存键包含 URL + Origin + 方法 + 请求头集合，请求头多一个少一个都会重新预检；三是 Access-Control-Allow-Headers 在带凭证时不能用 *（必须逐一列出），而很多框架默认返回 *，导致“不带 Cookie 正常、带了就失败”；四是 CDN 若没配 Vary: Origin，可能把某个 Origin 的预检结果缓存给其他源。
+3. 跨域请求遇到 302 重定向会怎样？预检请求不允许被重定向（浏览器会直接判定网络错误），所以登录跳转、网关鉴权跳转这类逻辑不能出现在预检路径上；真实请求的跨域重定向也要求最终响应带正确的 CORS 头，且 Allow-Origin 要与原始源匹配（不能是重定向后的源）。实践建议是让 CORS 请求直接命中最终地址，把鉴权跳转放在前端控制或改成 401 + 显式刷新。
+4. 缓存的 304 响应还需要带 CORS 头吗？需要。即使命中缓存返回 304，浏览器仍会校验 CORS 头是否允许当前源读取（缺头会判定失败），所以服务端在 304 分支也要输出 Access-Control-Allow-Origin、Vary: Origin 等。工程上常见的做法是在 Nginx 或框架层统一注入 CORS 头，而不是只写在业务响应里。
+5. 为什么说 CORS 不能防 CSRF？CORS 限制的是“读取跨源响应”，而 CSRF 只需要“发出请求”。表单提交、img 请求、&lt;script&gt; 加载都是跨源可发的（且表单的 POST 甚至不需要预检），服务端照样会执行并带上 Cookie。所以防 CSRF 要靠 SameSite Cookie、CSRF Token、Origin/Referer 校验这些服务端侧手段，CORS 只是阻断“攻击者读取结果”。
+6. crossOrigin=&quot;anonymous&quot; 到底做了什么？它让图片请求以 CORS 模式发出（带 Origin 头、要求服务端返回 Access-Control-Allow-Origin）。成功则图片可被 canvas 读取（getImageData 不会抛 SecurityError），失败则图片加载失败（而不是“污染 canvas”）。使用 use-credentials 时才会带上 Cookie。这正是“图表库截图&#x2F;图片裁剪&#x2F;水印导出”必须先处理跨域的原因。
+7. COOP、COEP、CORP 分别解决什么问题？三者共同服务于跨源隔离（crossOriginIsolated）：Cross-Origin-Opener-Policy 切断跨源窗口的 window.opener 引用（防 Spectre 类侧信道与弹窗劫持）；Cross-Origin-Embedder-Policy: require-corp 要求所有子资源显式声明可嵌入（否则不加载）；Cross-Origin-Resource-Policy 由资源方声明“谁能嵌入我”。三者配齐后浏览器才会放开 SharedArrayBuffer 与高精度计时器。代价是第三方资源必须逐个适配，破坏性较强。
+8. Private Network Access（PNA）是什么限制？浏览器开始限制“公网页面访问内网&#x2F;本地服务”（如 http://192.168.x.x、[http://localhost](http://localhost)）：跨源访问私有网络时，预检会附加 Access-Control-Request-Private-Network: true，服务端必须返回 Access-Control-Allow-Private-Network: true 才放行。它防的是“公网页面借用户浏览器扫描&#x2F;攻击内网设备”，对本地开发与内网 SaaS 场景影响最大，表现为“以前能调的本地服务突然被拦”。
 ]]></content>
       <tags>
         <tag>前端面试</tag>

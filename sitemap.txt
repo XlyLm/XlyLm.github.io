@@ -15,7 +15,7 @@ http://example.com/posts/38227/
 http://example.com/posts/4193741959/
 http://example.com/posts/600736463/
 http://example.com/
-http://example.com/tags/%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86/
 http://example.com/tags/Hexo/
+http://example.com/tags/%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86/
 http://example.com/tags/%E5%8C%85%E7%AE%A1%E7%90%86/
 http://example.com/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95/
