@@ -1,0 +1,364 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>【前端面试】八、调试 | 一生情画薇妮</title><meta name="author" content="谢良勇"><meta name="copyright" content="谢良勇"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、常见题1. 前端调试的主要手段有哪些？六类：console 输出（快速验证，适合定位“有没有进来”）、断点（精确停在现场看变量与调用栈）、日志与埋点（线上无法断点时靠面包屑还原路径）、二分法（git bisect 定位引入问题的提交）、最小复现（剥离无关代码构造可复现 demo）、以及工具辅助（Network&#x2F;Performance&#x2F;Memory 面板、抓包、真机远程调试）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【前端面试】八、调试">
+<meta property="og:url" content="http://example.com/posts/323548660/index.html">
+<meta property="og:site_name" content="一生情画薇妮">
+<meta property="og:description" content="一、常见题1. 前端调试的主要手段有哪些？六类：console 输出（快速验证，适合定位“有没有进来”）、断点（精确停在现场看变量与调用栈）、日志与埋点（线上无法断点时靠面包屑还原路径）、二分法（git bisect 定位引入问题的提交）、最小复现（剥离无关代码构造可复现 demo）、以及工具辅助（Network&#x2F;Performance&#x2F;Memory 面板、抓包、真机远程调试）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/%E9%9D%A2%E8%AF%95/devtool.png">
+<meta property="article:published_time" content="2026-11-19T12:07:37.000Z">
+<meta property="article:modified_time" content="2026-11-19T14:07:20.744Z">
+<meta property="article:author" content="谢良勇">
+<meta property="article:tag" content="前端面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/%E9%9D%A2%E8%AF%95/devtool.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "【前端面试】八、调试",
+  "url": "http://example.com/posts/323548660/",
+  "image": "http://example.com/img/%E9%9D%A2%E8%AF%95/devtool.png",
+  "datePublished": "2026-11-19T12:07:37.000Z",
+  "dateModified": "2026-11-19T14:07:20.744Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "谢良勇",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/all/favicon.jepg"><link rel="canonical" href="http://example.com/posts/323548660/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '【前端面试】八、调试',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="一生情画薇妮" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/all/avatar.png" onerror="this.onerror=null;this.src='/img/404/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/%E9%9D%A2%E8%AF%95/devtool.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/all/favicon.jpeg" alt="Logo"><span class="site-name">一生情画薇妮</span></a><a class="nav-page-title" href="/"><span class="site-name">【前端面试】八、调试</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">【前端面试】八、调试</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-19T12:07:37.000Z" title="发表于 2026-11-19 20:07:37">2026-11-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-19T14:07:20.744Z" title="更新于 2026-11-19 22:07:20">2026-11-19</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="一、常见题"><a href="#一、常见题" class="headerlink" title="一、常见题"></a>一、常见题</h2><h3 id="1-前端调试的主要手段有哪些？"><a href="#1-前端调试的主要手段有哪些？" class="headerlink" title="1. 前端调试的主要手段有哪些？"></a><strong>1. 前端调试的主要手段有哪些？</strong></h3><p>六类：<code>console</code> 输出（快速验证，适合定位“有没有进来”）、断点（精确停在现场看变量与调用栈）、日志与埋点（线上无法断点时靠面包屑还原路径）、二分法（<code>git bisect</code> 定位引入问题的提交）、最小复现（剥离无关代码构造可复现 demo）、以及工具辅助（Network&#x2F;Performance&#x2F;Memory 面板、抓包、真机远程调试）。关键原则是“先缩小范围再深入”，而不是一上手就逐行读代码。</p>
+<h3 id="2-DevTools-各个面板分别解决什么问题？"><a href="#2-DevTools-各个面板分别解决什么问题？" class="headerlink" title="2. DevTools 各个面板分别解决什么问题？"></a><strong>2. DevTools 各个面板分别解决什么问题？</strong></h3><p><code>Elements</code>（DOM 与样式，看谁覆盖了样式）；<code>Console</code>（日志与运行时表达式）；<code>Sources</code>（断点、调用栈、Overrides、Snippets）；<code>Network</code>（请求、时序分解、限速模拟、重放）；<code>Performance</code>（火焰图，查卡顿与帧耗时）；<code>Memory</code>（堆快照、分配时间线，查泄漏）；<code>Application</code>（<code>localStorage/Cookie/Cache/SW</code>）；<code>Security</code>（证书与混合内容）；<code>Lighthouse</code>（质量评分）。</p>
+<h3 id="3-断点有哪些类型？"><a href="#3-断点有哪些类型？" class="headerlink" title="3. 断点有哪些类型？"></a><strong>3. 断点有哪些类型？</strong></h3><p>行断点（默认）、条件断点（右键设置条件，只在满足时停）、日志断点（logpoint，不暂停只打印，适合循环里的高频代码）、DOM 断点（子树修改&#x2F;属性修改&#x2F;节点删除）、事件监听断点（按事件类型，如 <code>click</code>、<code>keydown</code>）、XHR&#x2F;fetch 断点（按 URL 断在请求发起处）、异常断点（<code>Pause on exceptions</code>，可勾选仅在未捕获时暂停）。此外支持 <code>debugger</code> 语句与“忽略第三方库”（Ignore List，避免停进依赖内部）。</p>
+<h3 id="4-断点打不上-停不到位置怎么办？"><a href="#4-断点打不上-停不到位置怎么办？" class="headerlink" title="4. 断点打不上&#x2F;停不到位置怎么办？"></a><strong>4. 断点打不上&#x2F;停不到位置怎么办？</strong></h3><p>三类原因：<strong>代码与产物不一致</strong>（sourcemap 缺失或错位，实际执行的是转译后代码）、<strong>代码根本没执行</strong>（被条件分支、缓存、或废弃入口跳过）、<strong>位置在异步或宏任务里</strong>（需要开启异步调用栈）。排查方式：改用 <code>debugger</code> 或 logpoint 验证是否执行到、在 <code>Sources</code> 里确认映射文件、检查 <code>Ignore List</code> 是否把该文件忽略了、确认没有命中本地缓存（硬刷新）。</p>
+<h3 id="5-Network-面板的-Timing-怎么看？"><a href="#5-Network-面板的-Timing-怎么看？" class="headerlink" title="5. Network 面板的 Timing 怎么看？"></a><strong>5. Network 面板的 Timing 怎么看？</strong></h3><p>分解为：Queueing（排队，受并发上限影响）、Stalled（等待可用连接）、DNS Lookup、Initial Connection（TCP 握手）、SSL（TLS 协商）、TTFB（等待服务端首字节，反映服务端与网络往返）、Content Download（下载）。判断归属很直接：TTFB 大是服务端慢，Content Download 大是资源大或带宽低，Queueing&#x2F;Stalled 大是并发被占满（HTTP&#x2F;1.1 同域 6 个连接）。</p>
+<h3 id="6-Network-面板还有哪些实用功能？"><a href="#6-Network-面板还有哪些实用功能？" class="headerlink" title="6. Network 面板还有哪些实用功能？"></a><strong>6. Network 面板还有哪些实用功能？</strong></h3><p>限速模拟（Slow 3G 等，用于弱网复现）、Block Request URL（屏蔽某资源验证依赖关系）、重放请求（右键 Replay XHR &#x2F; Copy as fetch）、查看 <code>Initiator</code>（谁发起了这个请求，沿调用链定位代码）、按类型&#x2F;状态过滤、<code>Preserve log</code>（跨页面保留记录，定位跳转前的请求）、以及对比多次请求的 <code>Size</code>（是否命中缓存）。排查接口问题固定看四处：状态码、请求头、响应体、CORS 头。</p>
+<h3 id="7-console-有哪些常被忽略的能力？"><a href="#7-console-有哪些常被忽略的能力？" class="headerlink" title="7. console 有哪些常被忽略的能力？"></a><strong>7. <code>console</code> 有哪些常被忽略的能力？</strong></h3><p><code>console.table</code>（结构化数组&#x2F;对象）、<code>console.dir</code>（展开对象细节）、<code>console.time/timeEnd</code>（粗粒度耗时）、<code>console.count</code>（统计执行次数）、<code>console.group/groupEnd</code>（折叠分组）、<code>console.trace</code>（打印调用栈）、<code>console.assert</code>（条件为假时输出）、以及格式化占位符（<code>%c</code> 加样式、<code>%o</code> 展开对象）。定位偶现问题时，把关键路径加上 <code>count</code> 与 <code>trace</code> 往往比断点更有效。</p>
+<h3 id="8-线上代码不能改，怎么调试？"><a href="#8-线上代码不能改，怎么调试？" class="headerlink" title="8. 线上代码不能改，怎么调试？"></a><strong>8. 线上代码不能改，怎么调试？</strong></h3><p>手段有四种：<code>Sources → Overrides</code>（把线上资源映射到本地副本，改完立即生效，刷新后仍生效，适合验证“改这一行是否能修好”）；<code>Snippets</code>（在页面上下文里跑一段脚本，如批量查看 DOM、调用内部方法）；条件断点 + 异常断点（只停在你关心的现场）；以及日志级别动态下发（服务端配置开关，让线上 SDK 输出更多信息）。注意这些都只能<strong>临时验证</strong>，真正的修复要走发布流程。</p>
+<h3 id="9-样式问题怎么系统排查？"><a href="#9-样式问题怎么系统排查？" class="headerlink" title="9. 样式问题怎么系统排查？"></a><strong>9. 样式问题怎么系统排查？</strong></h3><p>四步：在 <code>Elements → Styles</code> 里看规则是否被划掉（谁覆盖的、来自哪个文件）、看 <code>Computed</code> 的最终值与其来源、检查是否被 <code>!important</code> 或更高权重规则压制、确认是否受层叠上下文（<code>z-index</code> 与 <code>transform/opacity</code> 创建的上下文）影响。层叠问题要沿祖先链找“谁创建了上下文”，而不是继续加 <code>z-index</code>；布局问题优先看是否有未清除的浮动、<code>min-width</code> 撑破、<code>box-sizing</code> 差异。</p>
+<h3 id="10-接口异常怎么定位？"><a href="#10-接口异常怎么定位？" class="headerlink" title="10. 接口异常怎么定位？"></a><strong>10. 接口异常怎么定位？</strong></h3><p>按顺序看：请求是否发出（Network 有无记录）、状态码（<code>4xx</code> 是客户端问题、<code>5xx</code> 是服务端问题、<code>0</code> 或 <code>(failed)</code> 多为网络&#x2F;CORS&#x2F;证书）、请求头（<code>Content-Type</code>、鉴权、<code>Origin</code>）、响应体（业务错误码与消息）、以及 <code>Timing</code>（是否超时）。CORS 失败要单独看预检请求是否返回 204 且头齐全；超时要区分“服务端慢”与“客户端主动 abort”。</p>
+<h3 id="11-内存泄漏怎么查？"><a href="#11-内存泄漏怎么查？" class="headerlink" title="11. 内存泄漏怎么查？"></a><strong>11. 内存泄漏怎么查？</strong></h3><p>三步：用 <code>Performance</code> 的 Memory 勾选记录，观察内存曲线是否阶梯上升不回落；用 <code>Memory → Heap Snapshot</code> 做“操作前&#x2F;操作后&#x2F;再操作一次”三次快照，在 <code>Comparison</code> 视图看“两次之间新增且未释放”的对象类型；点开对象的 <code>Retainers</code> 看引用链，找到阻碍回收的那条路径（常见是全局数组、未移除的监听、未清理的定时器、<code>detached</code> 的 DOM 树）。要区分“容量上涨”与“泄漏”：GC 后能回落就不是泄漏。</p>
+<h3 id="12-卡顿怎么查？"><a href="#12-卡顿怎么查？" class="headerlink" title="12. 卡顿怎么查？"></a><strong>12. 卡顿怎么查？</strong></h3><p>用 <code>Performance</code> 录制一段操作，看主线程火焰图里的<strong>长任务</strong>（超过 50ms 的黄色块），拆解其 <code>self time</code>（自身执行）与子调用，定位到具体函数；同时看是否有频繁的 Layout&#x2F;Paint（强制同步布局）、GC 事件（内存压力）、以及帧是否持续超过 16.7ms。优化方向：把长任务切片、把纯计算搬到 Worker、减少渲染量（虚拟列表）、避免在滚动&#x2F;输入里做重活。</p>
+<h3 id="13-线上问题定位的整体思路是什么？"><a href="#13-线上问题定位的整体思路是什么？" class="headerlink" title="13. 线上问题定位的整体思路是什么？"></a><strong>13. 线上问题定位的整体思路是什么？</strong></h3><p>固定信息面：<strong>版本号与发布记录</strong>（最近是否变更）、<strong>用户环境</strong>（机型、浏览器、网络、地区）、<strong>监控数据</strong>（错误率、上报量突降&#x3D;白屏特征、接口失败率）、<strong>可复现性</strong>（本地能否复现、是否只在小比例用户出现）、<strong>灰度对照</strong>（新旧版本指标对比）。经验上“发布后立刻出现的集中问题”优先怀疑版本与缓存，“缓慢出现且分散的问题”优先怀疑数据与兼容性。</p>
+<h3 id="14-真机与移动端怎么调试？"><a href="#14-真机与移动端怎么调试？" class="headerlink" title="14. 真机与移动端怎么调试？"></a><strong>14. 真机与移动端怎么调试？</strong></h3><p>Android：开启 USB 调试 + <code>chrome://inspect</code> 映射设备页面；iOS：Safari 的“开发”菜单选择设备（需在手机上信任）；无 USB 时用 <code>vConsole</code>&#x2F;<code>eruda</code> 在页面内显示日志与网络；网络层用 Charles&#x2F;Stream 抓包并配置代理。注意 HTTPS 抓包需要设备信任抓包工具的根证书，而开启了证书固定的 App 无法抓包。</p>
+<h3 id="15-抓包工具的原理是什么？"><a href="#15-抓包工具的原理是什么？" class="headerlink" title="15. 抓包工具的原理是什么？"></a><strong>15. 抓包工具的原理是什么？</strong></h3><p>抓包工具本质是<strong>中间人代理</strong>：设备把请求发给代理，代理与目标服务器建立连接并转发，因此能记录全部请求响应。HTTPS 之所以能解密，是因为代理用自己的根证书动态签发目标站点的证书，设备信任该根证书后即接受了这次“中间人”。这也是<strong>为什么必须安装并信任证书</strong>，以及为什么客户端做了证书固定（certificate pinning）时抓包会失败。</p>
+<h3 id="16-React-Vue-项目专用调试怎么用？"><a href="#16-React-Vue-项目专用调试怎么用？" class="headerlink" title="16. React &#x2F; Vue 项目专用调试怎么用？"></a><strong>16. React &#x2F; Vue 项目专用调试怎么用？</strong></h3><p>框架 DevTools 能看组件树（层级、props、状态）、直接修改状态验证渲染逻辑、查看 Hooks 依赖与更新原因、以及性能分析（React Profiler 的火焰图能看出“哪个组件渲染耗时最多、为什么重渲染”）。Vue DevTools 还能看 Pinia&#x2F;Vuex 状态变化时间线。定位“为什么这个组件重渲染”时，先用 Profiler 拿到可疑组件，再去核对 props 引用与依赖数组，比盲猜高效得多。</p>
+<h3 id="17-sourcemap-在调试中起什么作用？"><a href="#17-sourcemap-在调试中起什么作用？" class="headerlink" title="17. sourcemap 在调试中起什么作用？"></a><strong>17. sourcemap 在调试中起什么作用？</strong></h3><p>它把压缩&#x2F;转译后的代码位置映射回源码位置，让调用栈与断点落在正确的行列。前提是 map 文件可被 DevTools 访问（<code>sourceMappingURL</code> 或 <code>Sourcemap</code> 响应头）。生产环境常用 <code>hidden-source-map</code>：生成 map 但不写引用，仅上传到监控平台用于栈还原；若 stack trace 里全是 <code>a1b2c3.js:1:23456</code>，就是没有可用 map 或版本不匹配。</p>
+<h3 id="18-二分法定位问题怎么做？"><a href="#18-二分法定位问题怎么做？" class="headerlink" title="18. 二分法定位问题怎么做？"></a><strong>18. 二分法定位问题怎么做？</strong></h3><p>两种二分：<strong>代码二分</strong>（注释掉一半逻辑&#x2F;关掉一半功能看问题是否消失）与<strong>提交二分</strong>（<code>git bisect</code> 标记好&#x2F;坏提交，自动缩到引入问题的那个 commit）。适用前提是“问题能稳定复现”，因此先造一个可复现的最小输入很关键。配合“最小复现”原则：不断剥离无关依赖、配置与数据，直到剩最小可运行片段，问题通常自己就暴露了。</p>
+<h2 id="二、难题"><a href="#二、难题" class="headerlink" title="二、难题"></a>二、难题</h2><h3 id="1-生产环境完全不暴露-sourcemap，还能定位报错吗？"><a href="#1-生产环境完全不暴露-sourcemap，还能定位报错吗？" class="headerlink" title="1. 生产环境完全不暴露 sourcemap，还能定位报错吗？"></a><strong>1. 生产环境完全不暴露 sourcemap，还能定位报错吗？</strong></h3><p>可以，但要用“上传而非公开”的方式：构建时生成 <code>hidden-source-map</code>，在发布流水线里把 map 上传到监控平台并以<strong>版本号（release）</strong>索引，前端只上报压缩后的栈与 release。平台侧在展示时做栈还原。前提是版本号必须准确绑定（同一 release 的 map 才能还原），且 map 访问要鉴权（map 泄露等于源码泄露）。若连这套都没有，退而求其次是在产物里保留函数名（关闭混淆但保留压缩）以提升可读性。</p>
+<h3 id="2-火焰图上的-self-time-和-total-time-有什么区别？"><a href="#2-火焰图上的-self-time-和-total-time-有什么区别？" class="headerlink" title="2. 火焰图上的 self time 和 total time 有什么区别？"></a><strong>2. 火焰图上的 <code>self time</code> 和 <code>total time</code> 有什么区别？</strong></h3><p><code>total time</code> 是“这个函数及其所有子调用的总耗时”，<code>self time</code> 是“该函数自身执行的时间（不含子调用）”。定位瓶颈要看 <code>self time</code>：它大说明这段代码本身慢（大循环、复杂计算、正则回溯）；<code>total time</code> 大而 <code>self time</code> 小说明时间花在下游（继续往下钻）。常见误判是盯着入口函数的 <code>total time</code> 就断言“这个组件慢”，实际瓶颈在某个深层工具函数。</p>
+<h3 id="3-内存快照对比时该关注什么？"><a href="#3-内存快照对比时该关注什么？" class="headerlink" title="3. 内存快照对比时该关注什么？"></a><strong>3. 内存快照对比时该关注什么？</strong></h3><p>关注三件事：<strong>新增对象数量</strong>（两次快照之间新增且仍存活的实例，按构造函数排序，突然变多的一类就是嫌疑）、<strong>占比与大小</strong>（字符串与数组常是大头，注意 <code>(string)</code> 与 <code>system/Context</code>）、<strong>retainers 链</strong>（从嫌疑对象追到 GC 根，路径上的第一个“不该存在”的引用就是泄漏源）。技巧是“操作前后各拍一次，再重复操作拍第三次”：第二次到第三次仍在增长的对象几乎就是泄漏，能排除“缓存预热”这类假阳性。</p>
+<h3 id="4-偶现问题（无法稳定复现）怎么推进？"><a href="#4-偶现问题（无法稳定复现）怎么推进？" class="headerlink" title="4. 偶现问题（无法稳定复现）怎么推进？"></a><strong>4. 偶现问题（无法稳定复现）怎么推进？</strong></h3><p>四条并行：<strong>加可观测性</strong>（关键分支打点、错误上下文、耗时与入参，用采样控制量）、<strong>扩大样本</strong>（让更多用户环境上报，按机型&#x2F;网络&#x2F;版本分组统计，找相关性）、<strong>构造环境</strong>（限速、延迟抖动、内存压力、并发注入，把“偶现”变成“高概率”）、<strong>灰度对照</strong>（新旧版本同环境对比，确认是否版本引入）。同时建立“复现率”指标：从 1&#x2F;1000 提到 1&#x2F;10，问题基本就能定位；长期不复现的问题要接受“先用监控兜住、后续再优化”的现实。</p>
+<h3 id="5-弱网下的竞态与超时怎么复现与验证？"><a href="#5-弱网下的竞态与超时怎么复现与验证？" class="headerlink" title="5. 弱网下的竞态与超时怎么复现与验证？"></a><strong>5. 弱网下的竞态与超时怎么复现与验证？</strong></h3><p>用 DevTools 的限速（自定义上下行与延迟，加入抖动）、加上“随机失败”注入（拦截部分请求返回 500&#x2F;超时）、以及并发压测（脚本一次性发多个请求）。观察点：请求是否被正确取消、旧响应是否覆盖新状态、重试是否叠加成风暴、加载态是否卡死。修复后用同样的注入手段回归，确认“取消 + 版本号丢弃 + 退避重试”三条都生效。</p>
+<h3 id="6-Worker-与-Service-Worker-的调试难点在哪？"><a href="#6-Worker-与-Service-Worker-的调试难点在哪？" class="headerlink" title="6. Worker 与 Service Worker 的调试难点在哪？"></a><strong>6. Worker 与 Service Worker 的调试难点在哪？</strong></h3><p><code>Worker</code>：有独立执行上下文，主线程断点不会停在里面，要在 <code>Sources → Threads</code> 里切换到对应 worker 线程下断点；错误不会冒泡到主线程（需自己在 <code>onerror</code> 与 <code>messageerror</code> 里上报）；<code>postMessage</code> 是结构化克隆，传大对象会有隐藏开销。<code>Service Worker</code>：生命周期（<code>install/activate/update</code>）与缓存策略容易造成“改了代码但页面还是旧的”，调试要勾选 <code>Update on reload</code>、必要时 <code>Unregister</code> 后重装，并注意它接管后所有请求都经过它，出错表现为“全站资源异常”。</p>
+<h3 id="7-线上“部分用户白屏”怎么快速分层？"><a href="#7-线上“部分用户白屏”怎么快速分层？" class="headerlink" title="7. 线上“部分用户白屏”怎么快速分层？"></a><strong>7. 线上“部分用户白屏”怎么快速分层？</strong></h3><p>先分“全量&#x2F;部分”：全量优先查发布与 CDN（HTML 被缓存、证书过期、发版顺序错导致资源 404）；部分优先按维度切分（机型&#x2F;浏览器版本&#x2F;地区&#x2F;网络运营商&#x2F;是否灰度用户）。再看监控特征：错误上报量骤增（代码异常）、上报量骤降（页面根本没启动，典型白屏）、接口成功率下降（首屏依赖失败）。手段：让受影响用户打开带 <code>?debug=1</code> 的页面收集环境信息、对比灰度组、必要时<strong>先回滚再查根因</strong>。主线是“先止血、后归因、再修复”。</p>
+<h3 id="8-如何建立团队的调试规范，避免“人人靠猜”？"><a href="#8-如何建立团队的调试规范，避免“人人靠猜”？" class="headerlink" title="8. 如何建立团队的调试规范，避免“人人靠猜”？"></a><strong>8. 如何建立团队的调试规范，避免“人人靠猜”？</strong></h3><p>四件事：<strong>统一入口</strong>（错误监控 + 版本号 + 面包屑日志，任何人拿到用户反馈都能自查）；<strong>统一符号</strong>（sourcemap 上传与 release 关联，栈必须可读）；<strong>统一手法</strong>（按“版本&#x2F;环境&#x2F;可复现性&#x2F;灰度”四象限先分类，再选工具，禁止无假设地逐行读代码）；<strong>统一沉淀</strong>（每个线上问题写复盘：现象、定位路径、根因、修复、防复发措施）。规范的价值在于把“个人经验”变成“团队可复用的排查路径”，也让新人的定位时间从小时级降到分钟级。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">谢良勇</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/posts/323548660/">http://example.com/posts/323548660/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">一生情画薇妮</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95/">前端面试</a></div><div class="post-share"><div class="social-share" data-image="/img/%E9%9D%A2%E8%AF%95/devtool.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/323548661/" title="【前端面试】九、部署和代理"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/deploy.png" onerror="onerror=null;src='/img/404/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">【前端面试】九、部署和代理</div></div><div class="info-2"><div class="info-item-1">一、部署1、常见题1. 前端部署的完整流程是什么？分为五步：拉取代码 → 安装依赖（依据 lockfile 保证可复现）→ 构建（注入环境变量、生成带 hash 的产物）→ 把产物分发到目标（Nginx、对象存储或 CDN，或构建镜像）→ 刷新缓存并验证。关键原则是「构建一次，多环境复用同一制品」，即同一份产物依次经过测试、预发、生产，避免“每个环境各构建一次”导致行为漂移。验证包括健康检查、版本号核对与冒烟测试。 2. 前端静态资源一般怎么托管？常见三种：Nginx 自建（可控、成本低，适合内网与中小项目）、对象存储加 CDN（主流方案，天然抗量、就近分发、支持大文件与图片处理）、容器化（打成 Nginx 镜像由 K8s 调度）。选型看流量规模、是否需要灰度、以及运维成本；大流量静态站点基本都会用 CDN，Nginx 只作为回源或兜底。 3. SPA 为什么需要路由回退（history fallback）？history 模式下，/user/123 这类路径并不是真实文件，服务端直接请求会 404。因此需要把所有未命中静态文件的请求回退到 index.html，由前端路由接管。...</div></div></div></a><a class="pagination-related" href="/posts/323548659/" title="【前端面试】七、病毒与防范"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/netSafe.png" onerror="onerror=null;src='/img/404/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">【前端面试】七、病毒与防范</div></div><div class="info-2"><div class="info-item-1">一、常见题1. XSS 有哪几类，防御的核心思路是什么？存储型（恶意内容入库，他人访问时执行）、反射型（随请求参数回显）、DOM 型（前端把不可信数据写入危险位置，如 innerHTML、location、document.write、eval）。防御核心是按输出上下文做转义：HTML 文本转实体、属性值加引号并转义、URL 做协议白名单（禁 javascript:）、JS 上下文用序列化而非拼接；富文本必须走 DOM 树白名单净化（如 DOMPurify）；再叠加 CSP 与 HttpOnly Cookie 作为兜底。 2. CSRF 的原理与防御？用户已登录 A 站，访问恶意站点时浏览器被诱导向 A 发请求，且自动带上 A 的 Cookie，服务端误判为用户本人操作。防御：Cookie 用 SameSite=Lax/Strict（最有效的基础防线）、关键请求带 CSRF Token 并服务端校验、校验 Origin/Referer、敏感操作二次确认。注意 CORS 防不住 CSRF（它限制的是读取响应，不是发出请求）。 3. SQL 注入的原理与防御？把用户输入拼进 SQL ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/323548659/" title="【前端面试】七、病毒与防范"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/netSafe.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】七、病毒与防范</div></div><div class="info-2"><div class="info-item-1">一、常见题1. XSS 有哪几类，防御的核心思路是什么？存储型（恶意内容入库，他人访问时执行）、反射型（随请求参数回显）、DOM 型（前端把不可信数据写入危险位置，如 innerHTML、location、document.write、eval）。防御核心是按输出上下文做转义：HTML 文本转实体、属性值加引号并转义、URL 做协议白名单（禁 javascript:）、JS 上下文用序列化而非拼接；富文本必须走 DOM 树白名单净化（如 DOMPurify）；再叠加 CSP 与 HttpOnly Cookie 作为兜底。 2. CSRF 的原理与防御？用户已登录 A 站，访问恶意站点时浏览器被诱导向 A 发请求，且自动带上 A 的 Cookie，服务端误判为用户本人操作。防御：Cookie 用 SameSite=Lax/Strict（最有效的基础防线）、关键请求带 CSRF Token 并服务端校验、校验 Origin/Referer、敏感操作二次确认。注意 CORS 防不住 CSRF（它限制的是读取响应，不是发出请求）。 3. SQL 注入的原理与防御？把用户输入拼进 SQL ...</div></div></div></a><a class="pagination-related" href="/posts/323548661/" title="【前端面试】九、部署和代理"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/deploy.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】九、部署和代理</div></div><div class="info-2"><div class="info-item-1">一、部署1、常见题1. 前端部署的完整流程是什么？分为五步：拉取代码 → 安装依赖（依据 lockfile 保证可复现）→ 构建（注入环境变量、生成带 hash 的产物）→ 把产物分发到目标（Nginx、对象存储或 CDN，或构建镜像）→ 刷新缓存并验证。关键原则是「构建一次，多环境复用同一制品」，即同一份产物依次经过测试、预发、生产，避免“每个环境各构建一次”导致行为漂移。验证包括健康检查、版本号核对与冒烟测试。 2. 前端静态资源一般怎么托管？常见三种：Nginx 自建（可控、成本低，适合内网与中小项目）、对象存储加 CDN（主流方案，天然抗量、就近分发、支持大文件与图片处理）、容器化（打成 Nginx 镜像由 K8s 调度）。选型看流量规模、是否需要灰度、以及运维成本；大流量静态站点基本都会用 CDN，Nginx 只作为回源或兜底。 3. SPA 为什么需要路由回退（history fallback）？history 模式下，/user/123 这类路径并不是真实文件，服务端直接请求会 404。因此需要把所有未命中静态文件的请求回退到 index.html，由前端路由接管。...</div></div></div></a><a class="pagination-related" href="/posts/323548658/" title="【前端面试】六、工程化"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/build.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】六、工程化</div></div><div class="info-2"><div class="info-item-1">一、常见题1. 什么是前端工程化，包含哪些方面？用工程手段把“写代码”变成“可协作、可验证、可交付、可运维”的流程。六个方面：规范化（代码规范、提交规范、目录约定）、模块化（拆分与依赖管理）、构建（编译、打包、优化）、质量保障（类型检查、单测、CI 门禁）、发布部署（制品、灰度、回滚）、可观测（错误与性能监控）。判断工程化做得好不好，看的是“新人上手成本、发布频率、线上缺陷率、故障恢复时间”。 2. 前端模块化经历了怎样的演进？从全局函数与命名空间（易冲突）→ IIFE 与模块模式（隔离但无依赖管理）→ AMD&#x2F;CMD（浏览器端异步加载，define/require）→ CommonJS（Node 端同步加载）→ ES Modules（静态结构、编译期可分析、支持 tree shaking、浏览器原生支持）。演进的主线是“依赖声明从隐式变显式、加载从运行时变编译期可分析”，这也直接决定了现代构建工具的能力上限。 3. 脚手架的原理是什么？本质是“模板 + 交互 + 渲染 + 安装”：用交互式 prompt 收集选项（框架、语言、是否需要 lint&#x2F;测试）→ 从...</div></div></div></a><a class="pagination-related" href="/posts/323548655/" title="【前端面试】三、浏览器和网络"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/net.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】三、浏览器和网络</div></div><div class="info-2"><div class="info-item-1">一、浏览器1、常见题1. 浏览器的多进程架构是怎样的？主进程（Browser，负责标签页管理、地址栏、窗口与网络调度）、渲染进程（Renderer，负责 HTML&#x2F;CSS&#x2F;JS 解析与页面渲染，每个标签页一个、同站点可能共享，跨站点则强制隔离）、GPU 进程（负责合成与绘制加速）、网络进程（负责请求与缓存）、插件&#x2F;工具进程。多进程的价值是稳定性与安全隔离（一个页面崩溃不拖垮整个浏览器，站点隔离用于缓解 Spectre 这类侧信道攻击），代价是内存占用高。 2. 从输入 URL 到页面显示经历了什么？用户输入 → 判断是搜索还是 URL（浏览器进程）→ DNS 解析 → TCP&#x2F;TLS 建立连接（HTTP&#x2F;2 复用、HTTP&#x2F;3 走 QUIC）→ 发送请求（带缓存校验、Cookie）→ 服务端返回 → 浏览器解析 HTML 构建 DOM、请求子资源 → 解析 CSS 构建 CSSOM → 合成渲染树 → 布局 → 绘制 → 合成上屏。渲染阶段的关键是“HTML 解析是流式的、CSS 与 JS 可能阻塞”。 3. 渲染流程分...</div></div></div></a><a class="pagination-related" href="/posts/323548662/" title="【前端面试】十、常见场景"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/scene.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】十、常见场景</div></div><div class="info-2"><div class="info-item-1">一、常见场景1. 设计一个能渲染万级数据的列表，怎么做？考察点：是否知道虚拟滚动与渲染瓶颈。思路：只渲染可视区 + 缓冲区（上下各若干行），用容器占位撑起总高度，滚动时按 scrollTop 计算起始索引并做绝对定位偏移；行高固定时最简单（可精确计算），行高不定时用预估高度 + 动态测量与位置缓存修正；配合 requestAnimationFrame 合并滚动更新、ResizeObserver 处理容器变化。易错边界：滚动条抖动、动态高度导致的跳动、快速滚动出现空白、删除行后的位置重算。 2. 表格有几万行还有固定列、合并单元格，怎么优化？分层：数据层分页或虚拟滚动（二者选一，不要叠加）、列层只渲染可视列（横向虚拟化）、渲染层用 Canvas 或轻量单元格组件（避免每格一个重量级组件）、交互层冻结列用 CSS sticky 而非复制一份表格、合并单元格在可视区计算后再合并（不可全量计算）。易错边界：sticky 与横向滚动、键盘操作与虚拟滚动的选区同步、合计行与虚拟滚动的冲突。 3. 搜索联想怎么做才不出现请求错乱？三件事：防抖（输入停止 300ms 再查）、取消（新请求发出前 ...</div></div></div></a><a class="pagination-related" href="/posts/323548654/" title="【前端面试】二、框架学习"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/react.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】二、框架学习</div></div><div class="info-2"><div class="info-item-1">一、React1、常见题1. React 的核心设计理念是什么？声明式（描述 UI 应该长什么样，而不是手工操作 DOM）、组件化（UI 拆成可复用的单元）、单向数据流（数据从父到子，变化由事件向上传递）、以及“UI 是状态的函数”UI = f(state)。虚拟 DOM 是这套理念的实现手段而不是目的：它带来跨平台渲染能力（React Native）、可预测的更新与批处理，但不代表比原生 DOM 操作更快。 2. JSX 的本质是什么？是 React.createElement(type, props, ...children)（或新 JSX runtime 下的 jsx/jsxs）的语法糖，产物是描述 UI 的普通对象（React Element），不是 HTML 字符串。所以 JSX 里写 class 要用 className，&#123;&#125; 里可以放表达式但不能放语句；正因为是对象，才能被 diff、被序列化到服务端（Server Components 的传输格式）。 3. 类组件与函数组件有什么区别？类组件有实例与生命周期、this 上的 state；函数组件...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div><div class="comment-switch"><span class="first-comment">Valine</span><span id="switch-btn"></span><span class="second-comment">Disqus</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/all/avatar.png" onerror="this.onerror=null;this.src='/img/404/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">谢良勇</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/XlyLm" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%B8%B8%E8%A7%81%E9%A2%98"><span class="toc-text">一、常见题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%89%8D%E7%AB%AF%E8%B0%83%E8%AF%95%E7%9A%84%E4%B8%BB%E8%A6%81%E6%89%8B%E6%AE%B5%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">1. 前端调试的主要手段有哪些？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-DevTools-%E5%90%84%E4%B8%AA%E9%9D%A2%E6%9D%BF%E5%88%86%E5%88%AB%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-text">2. DevTools 各个面板分别解决什么问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%96%AD%E7%82%B9%E6%9C%89%E5%93%AA%E4%BA%9B%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="toc-text">3. 断点有哪些类型？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%96%AD%E7%82%B9%E6%89%93%E4%B8%8D%E4%B8%8A-%E5%81%9C%E4%B8%8D%E5%88%B0%E4%BD%8D%E7%BD%AE%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-text">4. 断点打不上&#x2F;停不到位置怎么办？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-Network-%E9%9D%A2%E6%9D%BF%E7%9A%84-Timing-%E6%80%8E%E4%B9%88%E7%9C%8B%EF%BC%9F"><span class="toc-text">5. Network 面板的 Timing 怎么看？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Network-%E9%9D%A2%E6%9D%BF%E8%BF%98%E6%9C%89%E5%93%AA%E4%BA%9B%E5%AE%9E%E7%94%A8%E5%8A%9F%E8%83%BD%EF%BC%9F"><span class="toc-text">6. Network 面板还有哪些实用功能？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-console-%E6%9C%89%E5%93%AA%E4%BA%9B%E5%B8%B8%E8%A2%AB%E5%BF%BD%E7%95%A5%E7%9A%84%E8%83%BD%E5%8A%9B%EF%BC%9F"><span class="toc-text">7. console 有哪些常被忽略的能力？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E7%BA%BF%E4%B8%8A%E4%BB%A3%E7%A0%81%E4%B8%8D%E8%83%BD%E6%94%B9%EF%BC%8C%E6%80%8E%E4%B9%88%E8%B0%83%E8%AF%95%EF%BC%9F"><span class="toc-text">8. 线上代码不能改，怎么调试？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E6%A0%B7%E5%BC%8F%E9%97%AE%E9%A2%98%E6%80%8E%E4%B9%88%E7%B3%BB%E7%BB%9F%E6%8E%92%E6%9F%A5%EF%BC%9F"><span class="toc-text">9. 样式问题怎么系统排查？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E6%8E%A5%E5%8F%A3%E5%BC%82%E5%B8%B8%E6%80%8E%E4%B9%88%E5%AE%9A%E4%BD%8D%EF%BC%9F"><span class="toc-text">10. 接口异常怎么定位？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%80%8E%E4%B9%88%E6%9F%A5%EF%BC%9F"><span class="toc-text">11. 内存泄漏怎么查？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-%E5%8D%A1%E9%A1%BF%E6%80%8E%E4%B9%88%E6%9F%A5%EF%BC%9F"><span class="toc-text">12. 卡顿怎么查？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-%E7%BA%BF%E4%B8%8A%E9%97%AE%E9%A2%98%E5%AE%9A%E4%BD%8D%E7%9A%84%E6%95%B4%E4%BD%93%E6%80%9D%E8%B7%AF%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">13. 线上问题定位的整体思路是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-%E7%9C%9F%E6%9C%BA%E4%B8%8E%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%80%8E%E4%B9%88%E8%B0%83%E8%AF%95%EF%BC%9F"><span class="toc-text">14. 真机与移动端怎么调试？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-%E6%8A%93%E5%8C%85%E5%B7%A5%E5%85%B7%E7%9A%84%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">15. 抓包工具的原理是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-React-Vue-%E9%A1%B9%E7%9B%AE%E4%B8%93%E7%94%A8%E8%B0%83%E8%AF%95%E6%80%8E%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">16. React &#x2F; Vue 项目专用调试怎么用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-sourcemap-%E5%9C%A8%E8%B0%83%E8%AF%95%E4%B8%AD%E8%B5%B7%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%EF%BC%9F"><span class="toc-text">17. sourcemap 在调试中起什么作用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-%E4%BA%8C%E5%88%86%E6%B3%95%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98%E6%80%8E%E4%B9%88%E5%81%9A%EF%BC%9F"><span class="toc-text">18. 二分法定位问题怎么做？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%9A%BE%E9%A2%98"><span class="toc-text">二、难题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E5%AE%8C%E5%85%A8%E4%B8%8D%E6%9A%B4%E9%9C%B2-sourcemap%EF%BC%8C%E8%BF%98%E8%83%BD%E5%AE%9A%E4%BD%8D%E6%8A%A5%E9%94%99%E5%90%97%EF%BC%9F"><span class="toc-text">1. 生产环境完全不暴露 sourcemap，还能定位报错吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%81%AB%E7%84%B0%E5%9B%BE%E4%B8%8A%E7%9A%84-self-time-%E5%92%8C-total-time-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">2. 火焰图上的 self time 和 total time 有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%86%85%E5%AD%98%E5%BF%AB%E7%85%A7%E5%AF%B9%E6%AF%94%E6%97%B6%E8%AF%A5%E5%85%B3%E6%B3%A8%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">3. 内存快照对比时该关注什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%81%B6%E7%8E%B0%E9%97%AE%E9%A2%98%EF%BC%88%E6%97%A0%E6%B3%95%E7%A8%B3%E5%AE%9A%E5%A4%8D%E7%8E%B0%EF%BC%89%E6%80%8E%E4%B9%88%E6%8E%A8%E8%BF%9B%EF%BC%9F"><span class="toc-text">4. 偶现问题（无法稳定复现）怎么推进？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%BC%B1%E7%BD%91%E4%B8%8B%E7%9A%84%E7%AB%9E%E6%80%81%E4%B8%8E%E8%B6%85%E6%97%B6%E6%80%8E%E4%B9%88%E5%A4%8D%E7%8E%B0%E4%B8%8E%E9%AA%8C%E8%AF%81%EF%BC%9F"><span class="toc-text">5. 弱网下的竞态与超时怎么复现与验证？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Worker-%E4%B8%8E-Service-Worker-%E7%9A%84%E8%B0%83%E8%AF%95%E9%9A%BE%E7%82%B9%E5%9C%A8%E5%93%AA%EF%BC%9F"><span class="toc-text">6. Worker 与 Service Worker 的调试难点在哪？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E7%BA%BF%E4%B8%8A%E2%80%9C%E9%83%A8%E5%88%86%E7%94%A8%E6%88%B7%E7%99%BD%E5%B1%8F%E2%80%9D%E6%80%8E%E4%B9%88%E5%BF%AB%E9%80%9F%E5%88%86%E5%B1%82%EF%BC%9F"><span class="toc-text">7. 线上“部分用户白屏”怎么快速分层？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E5%A6%82%E4%BD%95%E5%BB%BA%E7%AB%8B%E5%9B%A2%E9%98%9F%E7%9A%84%E8%B0%83%E8%AF%95%E8%A7%84%E8%8C%83%EF%BC%8C%E9%81%BF%E5%85%8D%E2%80%9C%E4%BA%BA%E4%BA%BA%E9%9D%A0%E7%8C%9C%E2%80%9D%EF%BC%9F"><span class="toc-text">8. 如何建立团队的调试规范，避免“人人靠猜”？</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/323548662/" title="【前端面试】十、常见场景"><img src="/img/%E9%9D%A2%E8%AF%95/scene.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】十、常见场景"/></a><div class="content"><a class="title" href="/posts/323548662/" title="【前端面试】十、常见场景">【前端面试】十、常见场景</a><time datetime="2026-11-19T12:07:39.000Z" title="发表于 2026-11-19 20:07:39">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548661/" title="【前端面试】九、部署和代理"><img src="/img/%E9%9D%A2%E8%AF%95/deploy.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】九、部署和代理"/></a><div class="content"><a class="title" href="/posts/323548661/" title="【前端面试】九、部署和代理">【前端面试】九、部署和代理</a><time datetime="2026-11-19T12:07:38.000Z" title="发表于 2026-11-19 20:07:38">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548660/" title="【前端面试】八、调试"><img src="/img/%E9%9D%A2%E8%AF%95/devtool.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】八、调试"/></a><div class="content"><a class="title" href="/posts/323548660/" title="【前端面试】八、调试">【前端面试】八、调试</a><time datetime="2026-11-19T12:07:37.000Z" title="发表于 2026-11-19 20:07:37">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548659/" title="【前端面试】七、病毒与防范"><img src="/img/%E9%9D%A2%E8%AF%95/netSafe.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】七、病毒与防范"/></a><div class="content"><a class="title" href="/posts/323548659/" title="【前端面试】七、病毒与防范">【前端面试】七、病毒与防范</a><time datetime="2026-11-19T12:07:36.000Z" title="发表于 2026-11-19 20:07:36">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548658/" title="【前端面试】六、工程化"><img src="/img/%E9%9D%A2%E8%AF%95/build.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】六、工程化"/></a><div class="content"><a class="title" href="/posts/323548658/" title="【前端面试】六、工程化">【前端面试】六、工程化</a><time datetime="2026-11-19T12:07:35.000Z" title="发表于 2026-11-19 20:07:35">2026-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 谢良勇</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">简</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><script src="/js/tw_cn.js?v=5.7.2"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const initValine = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyValine = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const valineConfig = {
+      el: '#vcomment',
+      appId: '',
+      appKey: '',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      visitor: false,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || window.location.pathname
+    }
+
+    new Valine(valineConfig)
+  }
+
+  const loadValine = async (el, path) => {
+    if (typeof Valine === 'function') {
+      initValine(el, path)
+    } else {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/valine@1.5.3/dist/Valine.min.js')
+      initValine(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Valine' === 'Valine'
+      ? window.shuoshuoComment = { loadComment: loadValine }
+      : window.loadOtherComment = loadValine
+    return
+  }
+
+  if ('Valine' === 'Valine' || !true) {
+    if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/posts/323548660/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'http://example.com/posts/323548660/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = '【前端面试】八、调试'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Valine' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Valine' === 'Disqus' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>

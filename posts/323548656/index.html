@@ -1,0 +1,394 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>【前端面试】四、构建工具 | 一生情画薇妮</title><meta name="author" content="谢良勇"><meta name="copyright" content="谢良勇"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、Webpack1、常见题1. Webpack 的核心概念有哪些？entry（入口，起点模块）、output（产物路径与文件名）、loader（把非 JS 资源或新语法转换成模块）、plugin（在构建生命周期上挂载能力，如压缩、抽离 CSS、注入变量）、mode（development&#x2F;production，决定内置优化与 DefinePlugin 的默认值）、devtool（sou">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【前端面试】四、构建工具">
+<meta property="og:url" content="http://example.com/posts/323548656/index.html">
+<meta property="og:site_name" content="一生情画薇妮">
+<meta property="og:description" content="一、Webpack1、常见题1. Webpack 的核心概念有哪些？entry（入口，起点模块）、output（产物路径与文件名）、loader（把非 JS 资源或新语法转换成模块）、plugin（在构建生命周期上挂载能力，如压缩、抽离 CSS、注入变量）、mode（development&#x2F;production，决定内置优化与 DefinePlugin 的默认值）、devtool（sou">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/%E9%9D%A2%E8%AF%95/vite.png">
+<meta property="article:published_time" content="2026-11-19T12:07:33.000Z">
+<meta property="article:modified_time" content="2026-11-19T14:06:36.833Z">
+<meta property="article:author" content="谢良勇">
+<meta property="article:tag" content="前端面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/%E9%9D%A2%E8%AF%95/vite.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "【前端面试】四、构建工具",
+  "url": "http://example.com/posts/323548656/",
+  "image": "http://example.com/img/%E9%9D%A2%E8%AF%95/vite.png",
+  "datePublished": "2026-11-19T12:07:33.000Z",
+  "dateModified": "2026-11-19T14:06:36.833Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "谢良勇",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/all/favicon.jepg"><link rel="canonical" href="http://example.com/posts/323548656/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '【前端面试】四、构建工具',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="一生情画薇妮" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/all/avatar.png" onerror="this.onerror=null;this.src='/img/404/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/%E9%9D%A2%E8%AF%95/vite.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/all/favicon.jpeg" alt="Logo"><span class="site-name">一生情画薇妮</span></a><a class="nav-page-title" href="/"><span class="site-name">【前端面试】四、构建工具</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">【前端面试】四、构建工具</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-19T12:07:33.000Z" title="发表于 2026-11-19 20:07:33">2026-11-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-19T14:06:36.833Z" title="更新于 2026-11-19 22:06:36">2026-11-19</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="一、Webpack"><a href="#一、Webpack" class="headerlink" title="一、Webpack"></a>一、Webpack</h1><h2 id="1、常见题"><a href="#1、常见题" class="headerlink" title="1、常见题"></a>1、常见题</h2><h3 id="1-Webpack-的核心概念有哪些？"><a href="#1-Webpack-的核心概念有哪些？" class="headerlink" title="1. Webpack 的核心概念有哪些？"></a><strong>1. Webpack 的核心概念有哪些？</strong></h3><p><code>entry</code>（入口，起点模块）、<code>output</code>（产物路径与文件名）、<code>loader</code>（把非 JS 资源或新语法转换成模块）、<code>plugin</code>（在构建生命周期上挂载能力，如压缩、抽离 CSS、注入变量）、<code>mode</code>（development&#x2F;production，决定内置优化与 <code>DefinePlugin</code> 的默认值）、<code>devtool</code>（source map 策略）、<code>resolve</code>（模块解析规则）、<code>optimization</code>（分包与压缩）。</p>
+<h3 id="2-loader-和-plugin-有什么区别？"><a href="#2-loader-和-plugin-有什么区别？" class="headerlink" title="2. loader 和 plugin 有什么区别？"></a><strong>2. loader 和 plugin 有什么区别？</strong></h3><p>loader 是<strong>模块级</strong>转换函数：输入源码字符串或 AST，输出新内容，只在模块加载阶段工作（<code>babel-loader</code>、<code>css-loader</code>）。plugin 是<strong>构建过程级</strong>扩展：基于 Tapable 的事件钩子（<code>compiler.hooks</code> 编译级、<code>compilation.hooks</code> 单次构建级），能做产物改写、文件生成、注入变量等 loader 做不到的事（<code>MiniCssExtractPlugin</code>、<code>HtmlWebpackPlugin</code>、<code>DefinePlugin</code>）。</p>
+<h3 id="3-loader-的执行顺序是怎样的？"><a href="#3-loader-的执行顺序是怎样的？" class="headerlink" title="3. loader 的执行顺序是怎样的？"></a><strong>3. loader 的执行顺序是怎样的？</strong></h3><p><code>use</code> 数组从<strong>右到左、从下到上</strong>执行（<code>[&#39;style-loader&#39;,&#39;css-loader&#39;]</code> 先 css 再 style）；<code>enforce: &#39;pre&#39; | &#39;post&#39;</code> 可插队到普通 loader 之前或之后；<code>pitch</code> 阶段则相反从左到右，且 <code>pitch</code> 有返回值时会跳过剩余 loader。<code>inline</code> loader（<code>!</code> 前缀）与 <code>!</code>&#x2F;<code>-!</code>&#x2F;<code>!!</code> 可控制是否叠加配置中的 loader。</p>
+<h3 id="4-说一下-Webpack-的构建流程。"><a href="#4-说一下-Webpack-的构建流程。" class="headerlink" title="4. 说一下 Webpack 的构建流程。"></a><strong>4. 说一下 Webpack 的构建流程。</strong></h3><p>初始化（合并配置、创建 <code>compiler</code>、注册插件）→ <code>run</code> → <code>compile</code> → <code>make</code>（从 entry 递归解析依赖，每个模块经 loader 转换、经 <code>acorn</code> 解析出依赖）→ <code>seal</code>（把模块按规则组装成 chunk、执行优化：tree shaking、splitChunks、压缩）→ <code>emit</code>（写文件到 output）→ <code>done</code>。理解这条链就能定位“问题发生在哪个阶段”：模块解析错找 loader&#x2F;resolve，产物结构错找 optimization，文件没生成找 emit。</p>
+<h3 id="5-手写一个简单-loader-要注意什么？"><a href="#5-手写一个简单-loader-要注意什么？" class="headerlink" title="5. 手写一个简单 loader 要注意什么？"></a><strong>5. 手写一个简单 loader 要注意什么？</strong></h3><p>签名是 <code>function (source) &#123; return transformed &#125;</code>；需要异步或多次回调时用 <code>this.async()</code> 返回的 callback，或返回 Promise；用 <code>this.query</code>&#x2F;<code>this.getOptions()</code> 拿配置；<code>this.resourcePath</code> 判断目标文件；注意 loader <strong>必须是无状态、可并行的纯转换</strong>，不要在里面做副作用。若要处理 source map，用 <code>this.callback(null, code, map)</code> 透传。</p>
+<h3 id="6-手写一个-plugin-的要点？"><a href="#6-手写一个-plugin-的要点？" class="headerlink" title="6. 手写一个 plugin 的要点？"></a><strong>6. 手写一个 plugin 的要点？</strong></h3><p>一个类（或函数）带 <code>apply(compiler)</code>；在合适的钩子上 <code>tap/tapAsync</code>，同步钩子用 <code>tap</code>，异步用 <code>tapAsync/tapPromise</code>；<code>compiler.hooks.emit</code> 阶段可改 <code>compilation.assets</code> 新增文件；<code>compilation.hooks.processAssets</code> 是 webpack 5 推荐的改产物位置。<code>plugin</code> 的名字用于性能分析识别。</p>
+<h3 id="7-HMR（热更新）的原理是什么？"><a href="#7-HMR（热更新）的原理是什么？" class="headerlink" title="7. HMR（热更新）的原理是什么？"></a><strong>7. HMR（热更新）的原理是什么？</strong></h3><p>编辑文件 → <code>webpack-dev-server</code> 触发增量编译，生成 <code>*.hot-update.js</code> 与 <code>*.hot-update.json</code> → 通过 WebSocket 把新 hash 通知浏览器 → 浏览器的 HMR runtime 用 JSONP 拉取更新清单 → 对比 <code>module.hot</code> 的接受逻辑，逐模块替换（<code>module.hot.accept</code>），替换失败则向上冒泡到入口，最终整页 reload。框架靠 loader 自动注入 accept 逻辑（Vue 的 <code>vue-loader</code>、React 的 <code>react-refresh</code>），所以“改代码局部生效”不是 webpack 的默认行为，而是模块自己声明了可接受更新。</p>
+<h3 id="8-如何做构建速度优化？"><a href="#8-如何做构建速度优化？" class="headerlink" title="8. 如何做构建速度优化？"></a><strong>8. 如何做构建速度优化？</strong></h3><p>缩小范围：<code>resolve.extensions</code> 精简、<code>alias</code> 减少查找、<code>module.noParse</code> 跳过无依赖的大文件、<code>exclude</code> 排除 <code>node_modules</code>。并行与缓存：<code>cache: &#123;type:&#39;filesystem&#39;&#125;</code> 持久化缓存、<code>babel-loader</code> 的 <code>cacheDirectory</code>、<code>thread-loader</code>。减少工作量：<code>transpileOnly</code>（ts-loader 配 <code>fork-ts-checker</code> 单独做类型检查）、生产环境关闭 source map 或换 <code>cheap</code>。定位工具：<code>speed-measure-webpack-plugin</code> 看每个环节耗时，<code>--profile</code> 生成 stats。</p>
+<h3 id="9-如何做产物体积优化？"><a href="#9-如何做产物体积优化？" class="headerlink" title="9. 如何做产物体积优化？"></a><strong>9. 如何做产物体积优化？</strong></h3><p>分包（<code>splitChunks</code> 拆 vendor 与公共模块、<code>runtimeChunk: &#39;single&#39;</code>）、按需加载（动态 <code>import()</code> 生成异步 chunk）、tree shaking（ESM + <code>sideEffects: false</code>）、压缩（<code>TerserPlugin</code> 去 console&#x2F;debugger、<code>CssMinimizerPlugin</code>）、按需引入组件库（<code>babel-plugin-import</code> 或 ESM 直接引入）、CDN 外置（<code>externals</code> 把 React&#x2F;Vue 留在全局）、gzip&#x2F;brotli 预压缩。分析工具：<code>webpack-bundle-analyzer</code> 看体积分布。</p>
+<h3 id="10-splitChunks-怎么配？"><a href="#10-splitChunks-怎么配？" class="headerlink" title="10. splitChunks 怎么配？"></a><strong>10. <code>splitChunks</code> 怎么配？</strong></h3><p>关键项：<code>chunks: &#39;async&#39; | &#39;initial&#39; | &#39;all&#39;</code>（<code>all</code> 才能覆盖同步依赖）、<code>cacheGroups</code>（按 <code>test</code> 或模块路径归组、<code>priority</code> 决定优先级、<code>reuseExistingChunk</code>）、<code>minSize/minChunks/maxAsyncRequests/maxInitialRequests</code>。典型配法：<code>vendor</code> 组收 <code>node_modules</code>，<code>common</code> 组收被两个以上 chunk 引用的业务代码，并注意把框架与业务拆开以便缓存（框架更新频率低）。</p>
+<h3 id="11-tree-shaking-的原理和生效条件？"><a href="#11-tree-shaking-的原理和生效条件？" class="headerlink" title="11. tree shaking 的原理和生效条件？"></a><strong>11. tree shaking 的原理和生效条件？</strong></h3><p>原理：基于 ESM 的<strong>静态结构</strong>在编译期分析导出与引用关系，标记未使用的导出（<code>usedExports</code>），交给 <code>terser</code> 在压缩阶段删除；同时 <code>sideEffects</code> 声明整个模块“无副作用”时可整体跳过。生效条件：必须是 ESM（<code>babel</code> 的 <code>modules: false</code>，不能转成 CJS）、<code>mode: &#39;production&#39;</code>、<code>usedExports</code> 与 <code>minimize</code> 开启、未被 <code>require</code> 或副作用调用破坏。<code>/*#__PURE__*/</code> 注解可帮助判断函数调用无副作用。</p>
+<h3 id="12-hash、chunkhash、contenthash-有什么区别？"><a href="#12-hash、chunkhash、contenthash-有什么区别？" class="headerlink" title="12. hash、chunkhash、contenthash 有什么区别？"></a><strong>12. <code>hash</code>、<code>chunkhash</code>、<code>contenthash</code> 有什么区别？</strong></h3><p><code>hash</code> 与整个构建相关（任一文件变化全变）、<code>chunkhash</code> 与入口 chunk 内容相关、<code>contenthash</code> 与<strong>文件自身内容</strong>相关。产物文件名应该用 <code>contenthash</code> 才能做到“改 A 只让 A 的缓存失效”。注意 <code>runtimeChunk</code> 要单独抽出，否则 runtime 里维护的 chunk 映射变化会让业务 chunk 的 <code>contenthash</code> 也变。</p>
+<h3 id="13-source-map-的几种取值怎么选？"><a href="#13-source-map-的几种取值怎么选？" class="headerlink" title="13. source map 的几种取值怎么选？"></a><strong>13. source map 的几种取值怎么选？</strong></h3><p>按“质量 vs 速度”取舍：<code>eval</code> 最快但只映射到模块边界；<code>cheap</code> 不含列信息、速度快；<code>module</code> 使用 loader 转换前的源码（Babel&#x2F;TS 项目必需）；<code>inline</code> 内嵌 base64 增大体积；<code>hidden</code> 生成但不写引用（配合上报平台）。生产一般 <code>source-map</code>（不外泄）或 <code>hidden-source-map</code> 上报错误监控，开发用 <code>eval-cheap-module-source-map</code>。</p>
+<h3 id="14-缓存怎么配才对？"><a href="#14-缓存怎么配才对？" class="headerlink" title="14. 缓存怎么配才对？"></a><strong>14. 缓存怎么配才对？</strong></h3><p><code>cache: &#123; type: &#39;filesystem&#39;, buildDependencies: &#123; config: [__filename] &#125; &#125;</code> 让二次构建复用模块与代码生成结果；<code>babel-loader</code> 加 <code>cacheDirectory</code>；产物层面用 <code>contenthash</code> + 长缓存（HTML 不缓存、静态资源缓存一年）；<code>node_modules</code> 单独拆 vendor chunk。注意改 webpack 配置或 loader 版本后要能识别失效（<code>buildDependencies</code> 与 <code>cache.version</code>）。</p>
+<h3 id="15-resolve-有哪些常用配置？"><a href="#15-resolve-有哪些常用配置？" class="headerlink" title="15. resolve 有哪些常用配置？"></a><strong>15. <code>resolve</code> 有哪些常用配置？</strong></h3><p><code>alias</code>（路径别名，减少深层相对路径、也避免大小写问题）、<code>extensions</code>（顺序影响解析优先级，越靠前越快）、<code>modules</code>（查找目录，如 <code>node_modules</code>）、<code>mainFiles</code>、<code>symlinks</code>、<code>fallback</code>（浏览器端 polyfill 的降级路径）。对了还有 <code>resolve.extensionAlias</code>（处理 ESM 的 <code>.js</code> 后缀映射到 <code>.ts</code>）。</p>
+<h3 id="16-devServer-常用能力有哪些？"><a href="#16-devServer-常用能力有哪些？" class="headerlink" title="16. devServer 常用能力有哪些？"></a><strong>16. <code>devServer</code> 常用能力有哪些？</strong></h3><p><code>hot</code>、<code>port</code>、<code>open</code>、<code>static</code>（静态目录）、<code>proxy</code>（跨域代理，<code>changeOrigin</code>、<code>pathRewrite</code>）、<code>historyApiFallback</code>（SPA 路由回退到 index.html）、<code>client.overlay</code>（编译错误覆盖层）、<code>https</code>、<code>headers</code>。<code>proxy</code> 只解决开发环境跨域，生产要靠网关同源或 CORS。</p>
+<h3 id="17-多环境配置怎么组织？"><a href="#17-多环境配置怎么组织？" class="headerlink" title="17. 多环境配置怎么组织？"></a><strong>17. 多环境配置怎么组织？</strong></h3><p>基础配置 <code>webpack.common.js</code> + <code>webpack.dev.js</code> + <code>webpack.prod.js</code>，用 <code>webpack-merge</code> 合并；环境差异用 <code>mode</code>、<code>DefinePlugin</code> 注入 <code>process.env</code>、<code>dotenv</code> 读 <code>.env</code> 文件；<code>publicPath</code> 按部署路径配置。禁忌是把密钥写进 <code>DefinePlugin</code>（会被打进产物）。</p>
+<h3 id="18-asset-modules-是什么？"><a href="#18-asset-modules-是什么？" class="headerlink" title="18. asset modules 是什么？"></a><strong>18. asset modules 是什么？</strong></h3><p>Webpack 5 取代 <code>file-loader/url-loader/raw-loader</code> 的内置能力：<code>type: &#39;asset/resource&#39;</code> 输出独立文件、<code>&#39;asset/inline&#39;</code> 转 base64、<code>&#39;asset/source&#39;</code> 导出源码字符串、<code>&#39;asset&#39;</code> 按 <code>parser.dataUrlCondition.maxSize</code> 自动选择。配置更简单、少一层 loader，注意体积阈值（默认 8KB）对首屏与请求数的影响。</p>
+<h3 id="19-externals-用来做什么？"><a href="#19-externals-用来做什么？" class="headerlink" title="19. externals 用来做什么？"></a><strong>19. <code>externals</code> 用来做什么？</strong></h3><p>告诉 webpack 某些模块“不要打包”，改为运行时从全局变量或 CDN 取（<code>externals: &#123; vue: &#39;Vue&#39; &#125;</code>）。用于减小体积、复用 CDN 缓存；代价是引入外部依赖的可用性风险（CDN 挂掉就白屏），所以要有兜底（自建 CDN 或本地降级），并且要在 HTML 模板里手动插入对应脚本。</p>
+<h3 id="20-Webpack-5-有哪些重要更新？"><a href="#20-Webpack-5-有哪些重要更新？" class="headerlink" title="20. Webpack 5 有哪些重要更新？"></a><strong>20. Webpack 5 有哪些重要更新？</strong></h3><p>持久化文件缓存（二次构建显著提速）、asset modules、<code>Module Federation</code>（跨应用共享模块）、更好的 tree shaking（<code>innerGraph</code> 能分析模块内部导出使用）、长期缓存开箱（<code>deterministic</code> 的 chunkId&#x2F;moduleId）、内置 <code>terser</code>、<code>progress</code> 与构建统计增强、Node polyfill 默认移除（需要显式 <code>fallback</code>）。</p>
+<h2 id="2、难题"><a href="#2、难题" class="headerlink" title="2、难题"></a>2、难题</h2><h3 id="1-为什么-Babel-处理后的代码-tree-shaking-会失效？"><a href="#1-为什么-Babel-处理后的代码-tree-shaking-会失效？" class="headerlink" title="1. 为什么 Babel 处理后的代码 tree shaking 会失效？"></a><strong>1. 为什么 Babel 处理后的代码 tree shaking 会失效？</strong></h3><p>tree shaking 依赖 ESM 的静态结构，Babel 默认会把 <code>import/export</code> 转成 <code>require/module.exports</code>（CJS 是动态的、导出是运行时赋值），webpack 就很难静态判断哪个导出被使用。解决方法是在 Babel 配置里设 <code>modules: false</code>，保留 ESM 交给 webpack 处理（这也是 <code>@babel/preset-env</code> 的默认行为，但自定义配置常被改掉）。</p>
+<h3 id="2-sideEffects-到底控制了什么？"><a href="#2-sideEffects-到底控制了什么？" class="headerlink" title="2. sideEffects 到底控制了什么？"></a><strong>2. <code>sideEffects</code> 到底控制了什么？</strong></h3><p>它是“模块是否有副作用”的声明（<code>package.json</code> 里的 <code>sideEffects: false</code> 或数组列举有副作用的文件）。为 false 时 webpack 可以安全地<strong>整体跳过</strong>未被使用的模块（包括顶层副作用代码，比如全局样式注入、polyfill），而不只是删除导出；若模块确实有副作用（如 <code>import &#39;xx.css&#39;</code>、注册全局），必须显式列入数组，否则会被误删。所以它是“激进优化”的开关，配置错误通常表现为样式或初始化逻辑丢失。</p>
+<h3 id="3-HMR-的模块替换是怎么做到不整页刷新的？"><a href="#3-HMR-的模块替换是怎么做到不整页刷新的？" class="headerlink" title="3. HMR 的模块替换是怎么做到不整页刷新的？"></a><strong>3. HMR 的模块替换是怎么做到不整页刷新的？</strong></h3><p>HMR runtime 拉取到更新后，先找“接受该模块更新的父模块”（<code>module.hot.accept</code> 声明的），沿依赖链向上冒泡直到找到接受者；找到后卸载旧模块、执行新模块工厂函数、重新执行接受回调，从而只更新局部状态。若一路冒泡到入口都没人接受，就执行整页 reload。这也是为什么“有些改动能热更新、有些必须刷新”（比如改 store 初始化逻辑、改路由配置）。</p>
+<h3 id="4-持久化缓存的失效机制是什么？"><a href="#4-持久化缓存的失效机制是什么？" class="headerlink" title="4. 持久化缓存的失效机制是什么？"></a><strong>4. 持久化缓存的失效机制是什么？</strong></h3><p>webpack 会为每个模块与代码生成结果计算哈希快照（内容、loader、<code>resolve</code> 结果、依赖等），存到 <code>node_modules/.cache</code>。下次构建时只有快照变化才重新处理；配置变化通过 <code>buildDependencies</code> 与 <code>cache.version</code> 纳入失效判断。常见“缓存没生效”的原因是配置文件没被纳入依赖、或 loader 版本变化但未感知（升级 loader 后可手动清缓存）。</p>
+<h3 id="5-runtimeChunk-为什么能让缓存更稳？"><a href="#5-runtimeChunk-为什么能让缓存更稳？" class="headerlink" title="5. runtimeChunk 为什么能让缓存更稳？"></a><strong>5. <code>runtimeChunk</code> 为什么能让缓存更稳？</strong></h3><p>webpack 的运行时代码里维护着“chunk id → 文件名”的映射与异步加载逻辑。若不抽出 runtime，只要任何一个 chunk 的 id 或文件名变化，含 runtime 的入口 chunk 内容就变，其 <code>contenthash</code> 跟着变，导致业务代码的缓存失效。抽出为独立 <code>runtime</code> chunk 后，业务 chunk 的 <code>contenthash</code> 只随自身内容变化，命中率明显提升（同时便于把 runtime 内联到 HTML 减少请求）。</p>
+<h3 id="6-循环依赖在-Webpack-里什么时候会炸？"><a href="#6-循环依赖在-Webpack-里什么时候会炸？" class="headerlink" title="6. 循环依赖在 Webpack 里什么时候会炸？"></a><strong>6. 循环依赖在 Webpack 里什么时候会炸？</strong></h3><p>CJS 场景：A <code>require</code> B，B 又 <code>require</code> A，B 拿到的 A 是一个“已执行部分代码的 exports 对象”，若此时访问尚未赋值的属性就是 <code>undefined</code>，表现为“某些情况正常、某些情况得到空对象”。ESM 场景：静态绑定会在实例化阶段建立，但若在模块顶层以函数调用形式依赖对方尚未初始化的绑定，会因 TDZ 报错。排查手段是 <code>webpack --stats-error-details</code> 与循环依赖插件，设计上应该用依赖注入或抽公共模块打破环。</p>
+<h3 id="7-Module-Federation-的原理与风险是什么？"><a href="#7-Module-Federation-的原理与风险是什么？" class="headerlink" title="7. Module Federation 的原理与风险是什么？"></a><strong>7. Module Federation 的原理与风险是什么？</strong></h3><p>被远程暴露的模块通过 <code>remoteEntry.js</code>（一份运行时可加载的清单）在<strong>运行时</strong>动态加载，<code>shared</code> 声明共享依赖并由宿主与远程协商版本（<code>requiredVersion</code>、<code>singleton</code>），实现“多个独立构建的应用共享同一份 React&#x2F;Vue”。风险：版本协商失败会重复加载或冲突、依赖必须 <code>eager</code> 才能在同步代码里用、远程不可用会让宿主直接报错（需要降级与超时），且构建间的类型与接口约定没有编译期保证。</p>
+<h3 id="8-Webpack-与-Vite-的本质差异在哪？"><a href="#8-Webpack-与-Vite-的本质差异在哪？" class="headerlink" title="8. Webpack 与 Vite 的本质差异在哪？"></a><strong>8. Webpack 与 Vite 的本质差异在哪？</strong></h3><p>Webpack 是“打包式”：开发时也要构建依赖图并产出 bundle，靠 loader 生态覆盖各种资源。Vite 开发时利用浏览器原生 ESM <strong>按需</strong>请求源码，只对依赖做 <code>esbuild</code> 预构建（快是因为不打包），生产用 Rollup 打包。差异带来三点取舍：Vite 冷启动与 HMR 更快，但 dev 与 prod 用两套工具（行为可能不一致）；Webpack 生态与历史配置更成熟、复杂定制能力强（Module Federation、深度分包），但启动与热更新随项目增大而变慢。</p>
+<h1 id="二、Vite"><a href="#二、Vite" class="headerlink" title="二、Vite"></a>二、Vite</h1><h2 id="1、常见题-1"><a href="#1、常见题-1" class="headerlink" title="1、常见题"></a>1、常见题</h2><h3 id="1-Vite-是什么，为什么比-Webpack-快？"><a href="#1-Vite-是什么，为什么比-Webpack-快？" class="headerlink" title="1. Vite 是什么，为什么比 Webpack 快？"></a><strong>1. Vite 是什么，为什么比 Webpack 快？</strong></h3><p>利用浏览器原生 ESM 的构建工具：开发阶段<strong>不打包源码</strong>，浏览器请求哪个模块就按需编译返回哪个，因此冷启动时间与项目规模基本解耦；依赖用 esbuild 预构建（Go 编写、多线程并行，速度是 JS 编译器的十倍量级）；HMR 基于 ESM 的模块图只失效相关模块。生产用 Rollup 打包。一句话：快在“不做无用的预先打包 + 用更快的编译器”。</p>
+<h3 id="2-「依赖预构建」是干什么的？"><a href="#2-「依赖预构建」是干什么的？" class="headerlink" title="2. 「依赖预构建」是干什么的？"></a><strong>2. 「依赖预构建」是干什么的？</strong></h3><p>三件事：把 CJS&#x2F;UMD 依赖转成 ESM（浏览器只认 ESM）；把散碎文件（如 lodash 的众多子模块、按需引入的组件库）合并成单个文件，减少 HTTP 请求数；用 esbuild 并行编译，降低首次请求成本。产物放在 <code>node_modules/.vite/deps</code>，文件名带 hash，附 <code>_metadata.json</code> 记录解析结果。</p>
+<h3 id="3-预构建什么时候会失效重做？"><a href="#3-预构建什么时候会失效重做？" class="headerlink" title="3. 预构建什么时候会失效重做？"></a><strong>3. 预构建什么时候会失效重做？</strong></h3><p>lockfile 变化（依赖版本变）、Vite 配置或 <code>optimizeDeps</code> 项变化、浏览器缓存过期（<code>?v=hash</code> 不匹配）。运行时若发现源码里出现未预构建的裸依赖（例如动态路径引入），会<strong>重新预构建并整页刷新</strong>，这是“首次打开项目时页面自己刷一下”的原因。可用 <code>optimizeDeps.include/exclude</code> 显式控制，或 <code>--force</code> 强制重建。</p>
+<h3 id="4-为什么开发用-esbuild、生产用-Rollup？"><a href="#4-为什么开发用-esbuild、生产用-Rollup？" class="headerlink" title="4. 为什么开发用 esbuild、生产用 Rollup？"></a><strong>4. 为什么开发用 esbuild、生产用 Rollup？</strong></h3><p>esbuild 快在转换与压缩，但插件生态、代码分割策略、CSS 处理与产物控制不如 Rollup 成熟；生产构建更需要稳定精细的分包、tree shaking、CSS 提取与兼容处理，所以选 Rollup。代价是 dev 与 prod 使用两套工具链，行为可能不完全一致（这是 Vite 最大的架构取舍）。</p>
+<h3 id="5-Vite-的-HMR-原理是什么？"><a href="#5-Vite-的-HMR-原理是什么？" class="headerlink" title="5. Vite 的 HMR 原理是什么？"></a><strong>5. Vite 的 HMR 原理是什么？</strong></h3><p>Dev Server 维护模块图（谁 import 了谁）。文件变化时：先判定该模块是否“可自接受”（代码里有 <code>import.meta.hot.accept</code>），否则沿 importer 链向上找最近的接受边界；然后通过 WebSocket 只把需要更新的模块路径与时间戳发给浏览器，浏览器丢弃该模块及其依赖的缓存、重新请求（<code>?t=timestamp</code> 绕过缓存）。因此改一个文件不会重新加载整个应用；整链无人接受时才整页刷新。</p>
+<h3 id="6-Vite-插件和-Rollup-插件是什么关系？"><a href="#6-Vite-插件和-Rollup-插件是什么关系？" class="headerlink" title="6. Vite 插件和 Rollup 插件是什么关系？"></a><strong>6. Vite 插件和 Rollup 插件是什么关系？</strong></h3><p>Vite 的插件容器<strong>兼容 Rollup 插件钩子</strong>（<code>resolveId</code>、<code>load</code>、<code>transform</code>、<code>buildStart</code>、<code>generateBundle</code> 等），并额外提供开发专用钩子：<code>config</code>（改配置）、<code>configResolved</code>（拿最终配置）、<code>configureServer</code>（挂中间件）、<code>transformIndexHtml</code>（改 HTML，可声明 <code>order: &#39;pre&#39;|&#39;post&#39;</code>）、<code>handleHotUpdate</code>（自定义 HMR 行为）。注意部分 Rollup 输出阶段钩子只在 build 时执行。</p>
+<h3 id="7-插件执行顺序怎么控制？"><a href="#7-插件执行顺序怎么控制？" class="headerlink" title="7. 插件执行顺序怎么控制？"></a><strong>7. 插件执行顺序怎么控制？</strong></h3><p>用 <code>enforce: &#39;pre&#39; | &#39;post&#39;</code>：<code>pre</code> 在 Vite 核心插件之前，<code>post</code> 在之后，默认是中间段。同一 enforce 段内按数组顺序执行。<code>transform</code> 阶段按顺序串行，<code>transformIndexHtml</code> 可用 <code>order</code> 单独控制。</p>
+<h3 id="8-环境变量怎么用？"><a href="#8-环境变量怎么用？" class="headerlink" title="8. 环境变量怎么用？"></a><strong>8. 环境变量怎么用？</strong></h3><p>用 <code>import.meta.env</code> 访问（<code>MODE</code>、<code>DEV</code>、<code>PROD</code>、<code>BASE_URL</code> 内置）；自定义变量必须以 <code>VITE_</code> 前缀才会暴露给客户端（防止把密钥打包进去）；按 <code>mode</code> 加载 <code>.env</code>、<code>.env.development</code>、<code>.env.production</code>。改 <code>.env</code> 需要重启 dev server。</p>
+<h3 id="9-静态资源怎么处理？"><a href="#9-静态资源怎么处理？" class="headerlink" title="9. 静态资源怎么处理？"></a><strong>9. 静态资源怎么处理？</strong></h3><p><code>public/</code> 下的文件原样拷贝、用绝对路径引用、不参与构建（适合 favicon、不希望被 hash 的文件）；源码里 <code>import img from &#39;./a.png&#39;</code> 会走构建并返回 URL（小于 <code>assetsInlineLimit</code> 的转 base64）；后缀查询 <code>?url</code>（拿 URL）、<code>?raw</code>（拿源码字符串）、<code>?inline</code>（强制内联）；<code>new URL(&#39;./x.png&#39;, import.meta.url)</code> 用于动态路径。</p>
+<h3 id="10-CSS-相关怎么配？"><a href="#10-CSS-相关怎么配？" class="headerlink" title="10. CSS 相关怎么配？"></a><strong>10. CSS 相关怎么配？</strong></h3><p>预处理器在 <code>css.preprocessorOptions</code> 里配（<code>less.additionalData</code> 注入变量、<code>sass</code> 的 <code>additionalData</code>）；CSS Modules 用 <code>.module.css/.module.less</code>，<code>css.modules.localsConvention</code> 控制导出命名风格；<code>css.postcss</code> 读 <code>postcss.config</code>；<code>@import</code> 支持别名解析。注意生产环境 CSS 会被提取为独立文件，顺序由 import 顺序决定。</p>
+<h3 id="11-Vite-怎么做-TS-类型检查？"><a href="#11-Vite-怎么做-TS-类型检查？" class="headerlink" title="11. Vite 怎么做 TS 类型检查？"></a><strong>11. Vite 怎么做 TS 类型检查？</strong></h3><p>Vite 只做<strong>转译</strong>（esbuild 直接抹掉类型），不做类型检查。生产环境单独跑 <code>vue-tsc --noEmit</code> 或 <code>tsc --noEmit</code>（放 CI 或构建前置步骤），配合编辑器的 TS 服务做实时提示。因此必须开启 <code>isolatedModules</code>（每个文件独立转译），避免依赖跨文件的类型信息（如 <code>const enum</code>、类型再导出的运行时用法）。</p>
+<h3 id="12-别名怎么配？"><a href="#12-别名怎么配？" class="headerlink" title="12. 别名怎么配？"></a><strong>12. 别名怎么配？</strong></h3><p><code>resolve.alias</code> 用 <code>@</code> 指向 <code>src</code>；同时要在 <code>tsconfig.json</code> 的 <code>paths</code> 里同步声明，否则类型推导与编辑器跳转失效。若要“后缀自动解析”，<code>resolve.extensions</code> 保持默认即可，但 <code>import &#39;x&#39;</code> 不带后缀在 ESM 严格语义下有歧义风险，工程上建议写全后缀或统一用别名。</p>
+<h3 id="13-代理和-base-怎么配？"><a href="#13-代理和-base-怎么配？" class="headerlink" title="13. 代理和 base 怎么配？"></a><strong>13. 代理和 base 怎么配？</strong></h3><p><code>server.proxy</code> 配跨域代理（<code>target</code>、<code>changeOrigin</code>、<code>rewrite</code>），只在开发环境生效；生产要靠网关同源或 CORS。<code>base</code> 决定部署子路径（影响资源 URL、<code>import.meta.env.BASE_URL</code>、路由 basename），配错会出现“本地正常、部署后白屏”。</p>
+<h3 id="14-生产构建怎么分包？"><a href="#14-生产构建怎么分包？" class="headerlink" title="14. 生产构建怎么分包？"></a><strong>14. 生产构建怎么分包？</strong></h3><p>默认按动态 <code>import()</code> 自动切分；需要更细控制用 <code>build.rollupOptions.output.manualChunks</code>（把框架、UI 库、图表库分别拆开，利于长缓存）；<code>build.chunkSizeWarningLimit</code> 用于告警阈值；<code>build.assetsInlineLimit</code> 控制内联阈值。常用的思路是“变化频率越低越靠前拆分”。</p>
+<h3 id="15-浏览器兼容怎么处理？"><a href="#15-浏览器兼容怎么处理？" class="headerlink" title="15. 浏览器兼容怎么处理？"></a><strong>15. 浏览器兼容怎么处理？</strong></h3><p><code>build.target</code> 决定转译目标（默认 <code>modules</code>，即主流现代浏览器）；要兼容旧浏览器用 <code>@vitejs/plugin-legacy</code>，它会产出 legacy chunk + SystemJS polyfill 并按 UA 分发。注意 legacy 模式增加产物体积与构建时间，且需要 <code>terser</code>。</p>
+<h3 id="16-import-meta-glob-有什么用？"><a href="#16-import-meta-glob-有什么用？" class="headerlink" title="16. import.meta.glob 有什么用？"></a><strong>16. <code>import.meta.glob</code> 有什么用？</strong></h3><p>批量导入文件：<code>import.meta.glob(&#39;./pages/*.vue&#39;)</code> 默认返回懒加载函数的映射（适合路由表），加 <code>&#123; eager: true &#125;</code> 变成立即导入（适合小图标集），<code>&#123; import: &#39;default&#39;, query: &#39;?raw&#39; &#125;</code> 可指定导入内容。它是 Vite 特有的编译期能力，必须有字面量模式（不能是变量）。</p>
+<h3 id="17-Vite-与-Webpack-的本质区别是什么？"><a href="#17-Vite-与-Webpack-的本质区别是什么？" class="headerlink" title="17. Vite 与 Webpack 的本质区别是什么？"></a><strong>17. Vite 与 Webpack 的本质区别是什么？</strong></h3><p>Vite：dev 不打包 + 原生 ESM + esbuild 预构建，build 用 Rollup；Webpack：dev 也打包 + loader 生态覆盖所有资源，能力集中在配置里。取舍：Vite 冷启动与 HMR 有明显优势，配置更少；Webpack 在复杂定制（Module Federation、深度依赖注入、历史 loader 生态）上更成熟稳定。迁移到 Vite 的常见坑是 CJS 依赖、Node 全局变量缺失、动态 <code>require</code> 无法静态分析。</p>
+<h3 id="18-Vite-支持-SSR-吗？"><a href="#18-Vite-支持-SSR-吗？" class="headerlink" title="18. Vite 支持 SSR 吗？"></a><strong>18. Vite 支持 SSR 吗？</strong></h3><p>支持，但不是开箱方案：<code>createServer(&#123; server: &#123; middlewareMode: true &#125; &#125;)</code> 接入 Node 服务，<code>ssrLoadModule</code> 加载服务端模块，<code>transformIndexHtml</code> 注入首屏内容；SSR 中 <code>import.meta.env.SSR</code> 可分支。实际项目多用框架封装（Nuxt、Vite SSR 插件）。</p>
+<h3 id="19-多页应用怎么配？"><a href="#19-多页应用怎么配？" class="headerlink" title="19. 多页应用怎么配？"></a><strong>19. 多页应用怎么配？</strong></h3><p><code>build.rollupOptions.input</code> 配多个入口（<code>main</code>、<code>admin</code>），每个入口对应一个 HTML；开发时依赖 dev server 的 <code>appType: &#39;mpa&#39;</code> 或按路径回退。公共依赖会由 Rollup 自动抽到共享 chunk。</p>
+<h3 id="20-Vite-的常见坑有哪些？"><a href="#20-Vite-的常见坑有哪些？" class="headerlink" title="20. Vite 的常见坑有哪些？"></a><strong>20. Vite 的常见坑有哪些？</strong></h3><p>首屏请求过多模块导致 dev 慢（大量 barrel 导出、整套图标库）；只用 CJS 的依赖需要 <code>optimizeDeps.include</code>；<code>process.env</code> 与 Node 全局变量在浏览器不存在；动态 <code>import(variable)</code> 无法被分析、建议用 glob 生成映射；dev 与 prod 行为差异（CSS 顺序、<code>require</code> 可用性、环境变量注入方式）；<code>public/</code> 里的文件不参与构建、不要写 <code>import</code>。</p>
+<h2 id="2、难题-1"><a href="#2、难题-1" class="headerlink" title="2、难题"></a>2、难题</h2><h3 id="1-浏览器不认裸模块导入，Vite-是怎么把它变成可请求路径的？"><a href="#1-浏览器不认裸模块导入，Vite-是怎么把它变成可请求路径的？" class="headerlink" title="1. 浏览器不认裸模块导入，Vite 是怎么把它变成可请求路径的？"></a><strong>1. 浏览器不认裸模块导入，Vite 是怎么把它变成可请求路径的？</strong></h3><p>Vite 在 <code>transform</code> 阶段对源码做导入重写：<code>import vue from &#39;vue&#39;</code> → <code>import vue from &#39;/node_modules/.vite/deps/vue.js?v=hash&#39;</code>；相对路径也补全为可请求的 URL（<code>/src/xxx.ts</code>）。因此浏览器拿到的代码里全是绝对路径，能直接发起 ESM 请求。这也解释了为什么“改了依赖版本要重新预构建”——重写后的路径带 hash，hash 由预构建结果决定。</p>
+<h3 id="2-为什么首次访问常常触发“页面自己刷新一次”？"><a href="#2-为什么首次访问常常触发“页面自己刷新一次”？" class="headerlink" title="2. 为什么首次访问常常触发“页面自己刷新一次”？"></a><strong>2. 为什么首次访问常常触发“页面自己刷新一次”？</strong></h3><p>Dev Server 是按需编译的，启动时只预构建“扫描到”的依赖（入口 HTML 与静态分析出的 import）。若某个依赖出现在动态引入、字符串拼接或运行时才能确定的路径中，浏览器首次请求到它时 Vite 才“发现”这个裸依赖，于是当场做二次预构建、把产物 hash 换掉，并通知浏览器<strong>整页 reload</strong> 让所有已加载模块重新指向新路径。规避方式是 <code>optimizeDeps.include</code> 预声明这些依赖。</p>
+<h3 id="3-HMR-的“失效边界”为什么能只更新局部？"><a href="#3-HMR-的“失效边界”为什么能只更新局部？" class="headerlink" title="3. HMR 的“失效边界”为什么能只更新局部？"></a><strong>3. HMR 的“失效边界”为什么能只更新局部？</strong></h3><p>因为模块图记录了每个模块的 importer。更新时从变化文件出发，向上寻找第一个“声明了自接受”的模块（<code>import.meta.hot.accept</code>）：找到就只卸载并重新执行该模块及其下游；找不到就继续向上，直到入口则整页刷新。框架插件（<code>@vitejs/plugin-react</code>、<code>vue</code>）在组件文件里注入了 accept 逻辑与状态保留代码，所以“改组件不丢状态”。若无插件，改一个 util 文件会让引用它的整条链重新执行。</p>
+<h3 id="4-esbuild-为什么这么快，它做不到什么？"><a href="#4-esbuild-为什么这么快，它做不到什么？" class="headerlink" title="4. esbuild 为什么这么快，它做不到什么？"></a><strong>4. esbuild 为什么这么快，它做不到什么？</strong></h3><p>快在 Go 编写（无 JIT 预热、可直接多核并行）、单次扫描完成解析与转译、不做完整 AST 与类型信息、内部数据结构紧凑、字符串操作复用。做不到：类型检查；对极旧语法的完整降级（target 支持有限，ES5 类特性需要额外处理）；复杂插件生态与精细分包；CSS 的一些高级处理。这正是 Vite “dev 用 esbuild、prod 用 Rollup”的原因。</p>
+<h3 id="5-dev-与-prod-双工具链会带来哪些不一致？"><a href="#5-dev-与-prod-双工具链会带来哪些不一致？" class="headerlink" title="5. dev 与 prod 双工具链会带来哪些不一致？"></a><strong>5. dev 与 prod 双工具链会带来哪些不一致？</strong></h3><p>四类：CSS 处理顺序与提取方式（dev 是注入 <code>&lt;style&gt;</code>，prod 是抽离文件）；tree shaking 与副作用判断差异（dev 不做删除）；<code>require</code>、<code>process.env</code> 等 Node 能力在 dev 可能因插件兜底可用，prod 直接报错；<code>define</code> 与 <code>import.meta.env</code> 的替换时机不同。对策是把“必须在 prod 验证”的项（环境变量、动态导入、CJS 依赖）纳入 <code>vite preview</code> 检查，而不是只看 dev 表现。</p>
+<h3 id="6-生产构建为什么-tree-shaking-效果好？"><a href="#6-生产构建为什么-tree-shaking-效果好？" class="headerlink" title="6. 生产构建为什么 tree shaking 效果好？"></a><strong>6. 生产构建为什么 tree shaking 效果好？</strong></h3><p>Rollup 在打包时对所有模块做一次整体分析，基于 ESM 的静态绑定精确判断“哪些导出真的被用到、哪些语句无副作用”，并能在产物层面删除；配合 <code>sideEffects</code> 与 <code>/*#__PURE__*/</code> 注解更激进。Vite 在此之上还利用 esbuild&#x2F;terser 做二次压缩。前提仍是“全链路 ESM”，一旦有 CJS 介入，分析链条就断。</p>
+<h3 id="7-在-monorepo-里-Vite-为什么会报依赖问题？"><a href="#7-在-monorepo-里-Vite-为什么会报依赖问题？" class="headerlink" title="7. 在 monorepo 里 Vite 为什么会报依赖问题？"></a><strong>7. 在 monorepo 里 Vite 为什么会报依赖问题？</strong></h3><p>pnpm&#x2F;npm workspace 的本地包常以<strong>源码</strong>形式被引用（<code>link:</code> 或 <code>workspace:</code>），Vite 默认不把它们当依赖预构建，导致其内部的裸依赖被逐个请求、甚至出现重复实例（同一库被加载两份，React Hook 报“invalid hook call”）。处理：把本地包加入 <code>optimizeDeps.include</code>、必要时 <code>resolve.dedupe</code> 去重、<code>preserveSymlinks</code> 谨慎开启、<code>server.fs.allow</code> 放开工作区目录。</p>
+<h3 id="8-Vite-上做-Module-Federation-有什么限制？"><a href="#8-Vite-上做-Module-Federation-有什么限制？" class="headerlink" title="8. Vite 上做 Module Federation 有什么限制？"></a><strong>8. Vite 上做 Module Federation 有什么限制？</strong></h3><p>社区方案（<code>@originjs/vite-plugin-federation</code>）通过自定义运行时实现，限制较多：远程模块在 dev 下通常不可用（需要先 <code>build</code> 再 <code>preview</code>），远程方 HMR 不可靠；必须 <code>build.target: &#39;esnext&#39;</code> 并开启 <code>topLevelAwait</code>；<code>shared</code> 的版本协商不如 Webpack 完善，容易出现重复加载；类型无法跨应用传递。适合“少量、边界清晰、允许刷新”的微前端场景，大规模共享仍建议 Webpack 或构建级共享（如 monorepo 公共包 + 版本锁定）。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">谢良勇</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/posts/323548656/">http://example.com/posts/323548656/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">一生情画薇妮</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95/">前端面试</a></div><div class="post-share"><div class="social-share" data-image="/img/%E9%9D%A2%E8%AF%95/vite.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/323548657/" title="【前端面试】五、包管理和Node"><img class="cover" src="/img/%E5%8C%85%E7%AE%A1%E7%90%86/node.png" onerror="onerror=null;src='/img/404/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">【前端面试】五、包管理和Node</div></div><div class="info-2"><div class="info-item-1">一、包管理器1、常见题1. npm、yarn、pnpm 有什么区别？npm 是官方包管理器，扁平化把依赖 hoist 到顶层 node_modules；yarn（classic）早期以速度快与 lockfile 严格著称，后续有 Berry&#x2F;PnP；pnpm 用内容寻址存储 + 硬链接 + 符号链接，磁盘占用小、安装快，并且依赖结构严格（只暴露直接依赖）。选型要点：pnpm 在 monorepo 与依赖治理上更优，npm 兼容性最好，yarn 生态在部分企业项目仍在使用。 2. pnpm 为什么既快又省空间？所有包按内容寻址存到全局 store（同一份内容只存一次），项目里的 node_modules/.pnpm/ 只放硬链接指向 store；顶层 node_modules 里用符号链接只链出 package.json 声明的直接依赖。因此多个项目共享同一份文件（省磁盘）、安装时几乎只做链接（省时间），并且未声明的依赖无法被访问（避免幽灵依赖）。 3. dependencies、devDependencies、peerDependencies 有什么区别？depende...</div></div></div></a><a class="pagination-related" href="/posts/323548655/" title="【前端面试】三、浏览器和网络"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/net.png" onerror="onerror=null;src='/img/404/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">【前端面试】三、浏览器和网络</div></div><div class="info-2"><div class="info-item-1">一、浏览器1、常见题1. 浏览器的多进程架构是怎样的？主进程（Browser，负责标签页管理、地址栏、窗口与网络调度）、渲染进程（Renderer，负责 HTML&#x2F;CSS&#x2F;JS 解析与页面渲染，每个标签页一个、同站点可能共享，跨站点则强制隔离）、GPU 进程（负责合成与绘制加速）、网络进程（负责请求与缓存）、插件&#x2F;工具进程。多进程的价值是稳定性与安全隔离（一个页面崩溃不拖垮整个浏览器，站点隔离用于缓解 Spectre 这类侧信道攻击），代价是内存占用高。 2. 从输入 URL 到页面显示经历了什么？用户输入 → 判断是搜索还是 URL（浏览器进程）→ DNS 解析 → TCP&#x2F;TLS 建立连接（HTTP&#x2F;2 复用、HTTP&#x2F;3 走 QUIC）→ 发送请求（带缓存校验、Cookie）→ 服务端返回 → 浏览器解析 HTML 构建 DOM、请求子资源 → 解析 CSS 构建 CSSOM → 合成渲染树 → 布局 → 绘制 → 合成上屏。渲染阶段的关键是“HTML 解析是流式的、CSS 与 JS 可能阻塞”。 3. 渲染流程分...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/323548661/" title="【前端面试】九、部署和代理"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/deploy.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】九、部署和代理</div></div><div class="info-2"><div class="info-item-1">一、部署1、常见题1. 前端部署的完整流程是什么？分为五步：拉取代码 → 安装依赖（依据 lockfile 保证可复现）→ 构建（注入环境变量、生成带 hash 的产物）→ 把产物分发到目标（Nginx、对象存储或 CDN，或构建镜像）→ 刷新缓存并验证。关键原则是「构建一次，多环境复用同一制品」，即同一份产物依次经过测试、预发、生产，避免“每个环境各构建一次”导致行为漂移。验证包括健康检查、版本号核对与冒烟测试。 2. 前端静态资源一般怎么托管？常见三种：Nginx 自建（可控、成本低，适合内网与中小项目）、对象存储加 CDN（主流方案，天然抗量、就近分发、支持大文件与图片处理）、容器化（打成 Nginx 镜像由 K8s 调度）。选型看流量规模、是否需要灰度、以及运维成本；大流量静态站点基本都会用 CDN，Nginx 只作为回源或兜底。 3. SPA 为什么需要路由回退（history fallback）？history 模式下，/user/123 这类路径并不是真实文件，服务端直接请求会 404。因此需要把所有未命中静态文件的请求回退到 index.html，由前端路由接管。...</div></div></div></a><a class="pagination-related" href="/posts/323548659/" title="【前端面试】七、病毒与防范"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/netSafe.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】七、病毒与防范</div></div><div class="info-2"><div class="info-item-1">一、常见题1. XSS 有哪几类，防御的核心思路是什么？存储型（恶意内容入库，他人访问时执行）、反射型（随请求参数回显）、DOM 型（前端把不可信数据写入危险位置，如 innerHTML、location、document.write、eval）。防御核心是按输出上下文做转义：HTML 文本转实体、属性值加引号并转义、URL 做协议白名单（禁 javascript:）、JS 上下文用序列化而非拼接；富文本必须走 DOM 树白名单净化（如 DOMPurify）；再叠加 CSP 与 HttpOnly Cookie 作为兜底。 2. CSRF 的原理与防御？用户已登录 A 站，访问恶意站点时浏览器被诱导向 A 发请求，且自动带上 A 的 Cookie，服务端误判为用户本人操作。防御：Cookie 用 SameSite=Lax/Strict（最有效的基础防线）、关键请求带 CSRF Token 并服务端校验、校验 Origin/Referer、敏感操作二次确认。注意 CORS 防不住 CSRF（它限制的是读取响应，不是发出请求）。 3. SQL 注入的原理与防御？把用户输入拼进 SQL ...</div></div></div></a><a class="pagination-related" href="/posts/323548655/" title="【前端面试】三、浏览器和网络"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/net.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】三、浏览器和网络</div></div><div class="info-2"><div class="info-item-1">一、浏览器1、常见题1. 浏览器的多进程架构是怎样的？主进程（Browser，负责标签页管理、地址栏、窗口与网络调度）、渲染进程（Renderer，负责 HTML&#x2F;CSS&#x2F;JS 解析与页面渲染，每个标签页一个、同站点可能共享，跨站点则强制隔离）、GPU 进程（负责合成与绘制加速）、网络进程（负责请求与缓存）、插件&#x2F;工具进程。多进程的价值是稳定性与安全隔离（一个页面崩溃不拖垮整个浏览器，站点隔离用于缓解 Spectre 这类侧信道攻击），代价是内存占用高。 2. 从输入 URL 到页面显示经历了什么？用户输入 → 判断是搜索还是 URL（浏览器进程）→ DNS 解析 → TCP&#x2F;TLS 建立连接（HTTP&#x2F;2 复用、HTTP&#x2F;3 走 QUIC）→ 发送请求（带缓存校验、Cookie）→ 服务端返回 → 浏览器解析 HTML 构建 DOM、请求子资源 → 解析 CSS 构建 CSSOM → 合成渲染树 → 布局 → 绘制 → 合成上屏。渲染阶段的关键是“HTML 解析是流式的、CSS 与 JS 可能阻塞”。 3. 渲染流程分...</div></div></div></a><a class="pagination-related" href="/posts/323548660/" title="【前端面试】八、调试"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/devtool.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】八、调试</div></div><div class="info-2"><div class="info-item-1">一、常见题1. 前端调试的主要手段有哪些？六类：console 输出（快速验证，适合定位“有没有进来”）、断点（精确停在现场看变量与调用栈）、日志与埋点（线上无法断点时靠面包屑还原路径）、二分法（git bisect 定位引入问题的提交）、最小复现（剥离无关代码构造可复现 demo）、以及工具辅助（Network&#x2F;Performance&#x2F;Memory 面板、抓包、真机远程调试）。关键原则是“先缩小范围再深入”，而不是一上手就逐行读代码。 2. DevTools 各个面板分别解决什么问题？Elements（DOM 与样式，看谁覆盖了样式）；Console（日志与运行时表达式）；Sources（断点、调用栈、Overrides、Snippets）；Network（请求、时序分解、限速模拟、重放）；Performance（火焰图，查卡顿与帧耗时）；Memory（堆快照、分配时间线，查泄漏）；Application（localStorage/Cookie/Cache/SW）；Security（证书与混合内容）；Lighthouse（质量评分）。 3. 断点有哪些类型？...</div></div></div></a><a class="pagination-related" href="/posts/323548657/" title="【前端面试】五、包管理和Node"><img class="cover" src="/img/%E5%8C%85%E7%AE%A1%E7%90%86/node.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】五、包管理和Node</div></div><div class="info-2"><div class="info-item-1">一、包管理器1、常见题1. npm、yarn、pnpm 有什么区别？npm 是官方包管理器，扁平化把依赖 hoist 到顶层 node_modules；yarn（classic）早期以速度快与 lockfile 严格著称，后续有 Berry&#x2F;PnP；pnpm 用内容寻址存储 + 硬链接 + 符号链接，磁盘占用小、安装快，并且依赖结构严格（只暴露直接依赖）。选型要点：pnpm 在 monorepo 与依赖治理上更优，npm 兼容性最好，yarn 生态在部分企业项目仍在使用。 2. pnpm 为什么既快又省空间？所有包按内容寻址存到全局 store（同一份内容只存一次），项目里的 node_modules/.pnpm/ 只放硬链接指向 store；顶层 node_modules 里用符号链接只链出 package.json 声明的直接依赖。因此多个项目共享同一份文件（省磁盘）、安装时几乎只做链接（省时间），并且未声明的依赖无法被访问（避免幽灵依赖）。 3. dependencies、devDependencies、peerDependencies 有什么区别？depende...</div></div></div></a><a class="pagination-related" href="/posts/323548653/" title="【前端面试】一、前端基础"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/web.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】一、前端基础</div></div><div class="info-2"><div class="info-item-1">一、HTML1、常见题答案1. HTML5 新特性的分类答案语义化标签让结构可被机器理解；表单增强提供了原生校验与更合适的输入控件（type=email/date/number 在移动端会唤起对应的键盘）；多媒体与图形（video/audio、Canvas）摆脱了插件；存储能力从 4KB 的 Cookie 扩展到 localStorage 与 IndexedDB；通信能力（WebSocket、SSE）让页面能持续接收数据；性能相关能力（preload、modulepreload、fetchpriority）让资源加载可控；还有 history.pushState 支撑前端路由与 data-* 支撑组件化。追问：“这些你实际用过哪些？”要能把新特性与项目场景对应起来。 2. 语义化的价值一是可访问性，屏幕阅读器依赖角色与结构定位内容，div 堆砌的页面会被读成一片无层次的文本；二是 SEO，爬虫与结构化数据都更依赖语义标签；三是可维护性，结构本身就是文档，新人一眼能看出页面分区；四是健壮性，在无样式或阅读器模式下仍然可读。追问：section 要求有明确主题且一般带标题，纯样式容器...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div><div class="comment-switch"><span class="first-comment">Valine</span><span id="switch-btn"></span><span class="second-comment">Disqus</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/all/avatar.png" onerror="this.onerror=null;this.src='/img/404/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">谢良勇</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/XlyLm" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81Webpack"><span class="toc-text">一、Webpack</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%B8%B8%E8%A7%81%E9%A2%98"><span class="toc-text">1、常见题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Webpack-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">1. Webpack 的核心概念有哪些？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-loader-%E5%92%8C-plugin-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">2. loader 和 plugin 有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-loader-%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9A%84%EF%BC%9F"><span class="toc-text">3. loader 的执行顺序是怎样的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%AF%B4%E4%B8%80%E4%B8%8B-Webpack-%E7%9A%84%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B%E3%80%82"><span class="toc-text">4. 说一下 Webpack 的构建流程。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95-loader-%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">5. 手写一个简单 loader 要注意什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA-plugin-%E7%9A%84%E8%A6%81%E7%82%B9%EF%BC%9F"><span class="toc-text">6. 手写一个 plugin 的要点？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-HMR%EF%BC%88%E7%83%AD%E6%9B%B4%E6%96%B0%EF%BC%89%E7%9A%84%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">7. HMR（热更新）的原理是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E5%A6%82%E4%BD%95%E5%81%9A%E6%9E%84%E5%BB%BA%E9%80%9F%E5%BA%A6%E4%BC%98%E5%8C%96%EF%BC%9F"><span class="toc-text">8. 如何做构建速度优化？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E5%A6%82%E4%BD%95%E5%81%9A%E4%BA%A7%E7%89%A9%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96%EF%BC%9F"><span class="toc-text">9. 如何做产物体积优化？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-splitChunks-%E6%80%8E%E4%B9%88%E9%85%8D%EF%BC%9F"><span class="toc-text">10. splitChunks 怎么配？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-tree-shaking-%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E7%94%9F%E6%95%88%E6%9D%A1%E4%BB%B6%EF%BC%9F"><span class="toc-text">11. tree shaking 的原理和生效条件？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-hash%E3%80%81chunkhash%E3%80%81contenthash-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">12. hash、chunkhash、contenthash 有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-source-map-%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%96%E5%80%BC%E6%80%8E%E4%B9%88%E9%80%89%EF%BC%9F"><span class="toc-text">13. source map 的几种取值怎么选？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-%E7%BC%93%E5%AD%98%E6%80%8E%E4%B9%88%E9%85%8D%E6%89%8D%E5%AF%B9%EF%BC%9F"><span class="toc-text">14. 缓存怎么配才对？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-resolve-%E6%9C%89%E5%93%AA%E4%BA%9B%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%EF%BC%9F"><span class="toc-text">15. resolve 有哪些常用配置？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-devServer-%E5%B8%B8%E7%94%A8%E8%83%BD%E5%8A%9B%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">16. devServer 常用能力有哪些？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E6%80%8E%E4%B9%88%E7%BB%84%E7%BB%87%EF%BC%9F"><span class="toc-text">17. 多环境配置怎么组织？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-asset-modules-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">18. asset modules 是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-externals-%E7%94%A8%E6%9D%A5%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">19. externals 用来做什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-Webpack-5-%E6%9C%89%E5%93%AA%E4%BA%9B%E9%87%8D%E8%A6%81%E6%9B%B4%E6%96%B0%EF%BC%9F"><span class="toc-text">20. Webpack 5 有哪些重要更新？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E9%9A%BE%E9%A2%98"><span class="toc-text">2、难题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88-Babel-%E5%A4%84%E7%90%86%E5%90%8E%E7%9A%84%E4%BB%A3%E7%A0%81-tree-shaking-%E4%BC%9A%E5%A4%B1%E6%95%88%EF%BC%9F"><span class="toc-text">1. 为什么 Babel 处理后的代码 tree shaking 会失效？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-sideEffects-%E5%88%B0%E5%BA%95%E6%8E%A7%E5%88%B6%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">2. sideEffects 到底控制了什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-HMR-%E7%9A%84%E6%A8%A1%E5%9D%97%E6%9B%BF%E6%8D%A2%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E4%B8%8D%E6%95%B4%E9%A1%B5%E5%88%B7%E6%96%B0%E7%9A%84%EF%BC%9F"><span class="toc-text">3. HMR 的模块替换是怎么做到不整页刷新的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%8C%81%E4%B9%85%E5%8C%96%E7%BC%93%E5%AD%98%E7%9A%84%E5%A4%B1%E6%95%88%E6%9C%BA%E5%88%B6%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">4. 持久化缓存的失效机制是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-runtimeChunk-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E8%AE%A9%E7%BC%93%E5%AD%98%E6%9B%B4%E7%A8%B3%EF%BC%9F"><span class="toc-text">5. runtimeChunk 为什么能让缓存更稳？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E5%9C%A8-Webpack-%E9%87%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%BC%9A%E7%82%B8%EF%BC%9F"><span class="toc-text">6. 循环依赖在 Webpack 里什么时候会炸？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Module-Federation-%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E9%A3%8E%E9%99%A9%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">7. Module Federation 的原理与风险是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-Webpack-%E4%B8%8E-Vite-%E7%9A%84%E6%9C%AC%E8%B4%A8%E5%B7%AE%E5%BC%82%E5%9C%A8%E5%93%AA%EF%BC%9F"><span class="toc-text">8. Webpack 与 Vite 的本质差异在哪？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Vite"><span class="toc-text">二、Vite</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%B8%B8%E8%A7%81%E9%A2%98-1"><span class="toc-text">1、常见题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Vite-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E6%AF%94-Webpack-%E5%BF%AB%EF%BC%9F"><span class="toc-text">1. Vite 是什么，为什么比 Webpack 快？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E3%80%8C%E4%BE%9D%E8%B5%96%E9%A2%84%E6%9E%84%E5%BB%BA%E3%80%8D%E6%98%AF%E5%B9%B2%E4%BB%80%E4%B9%88%E7%9A%84%EF%BC%9F"><span class="toc-text">2. 「依赖预构建」是干什么的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E9%A2%84%E6%9E%84%E5%BB%BA%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%BC%9A%E5%A4%B1%E6%95%88%E9%87%8D%E5%81%9A%EF%BC%9F"><span class="toc-text">3. 预构建什么时候会失效重做？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BC%80%E5%8F%91%E7%94%A8-esbuild%E3%80%81%E7%94%9F%E4%BA%A7%E7%94%A8-Rollup%EF%BC%9F"><span class="toc-text">4. 为什么开发用 esbuild、生产用 Rollup？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-Vite-%E7%9A%84-HMR-%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">5. Vite 的 HMR 原理是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Vite-%E6%8F%92%E4%BB%B6%E5%92%8C-Rollup-%E6%8F%92%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB%EF%BC%9F"><span class="toc-text">6. Vite 插件和 Rollup 插件是什么关系？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E6%8F%92%E4%BB%B6%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%E6%80%8E%E4%B9%88%E6%8E%A7%E5%88%B6%EF%BC%9F"><span class="toc-text">7. 插件执行顺序怎么控制？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%80%8E%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">8. 环境变量怎么用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86%EF%BC%9F"><span class="toc-text">9. 静态资源怎么处理？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-CSS-%E7%9B%B8%E5%85%B3%E6%80%8E%E4%B9%88%E9%85%8D%EF%BC%9F"><span class="toc-text">10. CSS 相关怎么配？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-Vite-%E6%80%8E%E4%B9%88%E5%81%9A-TS-%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5%EF%BC%9F"><span class="toc-text">11. Vite 怎么做 TS 类型检查？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-%E5%88%AB%E5%90%8D%E6%80%8E%E4%B9%88%E9%85%8D%EF%BC%9F"><span class="toc-text">12. 别名怎么配？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-%E4%BB%A3%E7%90%86%E5%92%8C-base-%E6%80%8E%E4%B9%88%E9%85%8D%EF%BC%9F"><span class="toc-text">13. 代理和 base 怎么配？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-%E7%94%9F%E4%BA%A7%E6%9E%84%E5%BB%BA%E6%80%8E%E4%B9%88%E5%88%86%E5%8C%85%EF%BC%9F"><span class="toc-text">14. 生产构建怎么分包？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86%EF%BC%9F"><span class="toc-text">15. 浏览器兼容怎么处理？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-import-meta-glob-%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">16. import.meta.glob 有什么用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-Vite-%E4%B8%8E-Webpack-%E7%9A%84%E6%9C%AC%E8%B4%A8%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">17. Vite 与 Webpack 的本质区别是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-Vite-%E6%94%AF%E6%8C%81-SSR-%E5%90%97%EF%BC%9F"><span class="toc-text">18. Vite 支持 SSR 吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-%E5%A4%9A%E9%A1%B5%E5%BA%94%E7%94%A8%E6%80%8E%E4%B9%88%E9%85%8D%EF%BC%9F"><span class="toc-text">19. 多页应用怎么配？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-Vite-%E7%9A%84%E5%B8%B8%E8%A7%81%E5%9D%91%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">20. Vite 的常见坑有哪些？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E9%9A%BE%E9%A2%98-1"><span class="toc-text">2、难题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%8D%E8%AE%A4%E8%A3%B8%E6%A8%A1%E5%9D%97%E5%AF%BC%E5%85%A5%EF%BC%8CVite-%E6%98%AF%E6%80%8E%E4%B9%88%E6%8A%8A%E5%AE%83%E5%8F%98%E6%88%90%E5%8F%AF%E8%AF%B7%E6%B1%82%E8%B7%AF%E5%BE%84%E7%9A%84%EF%BC%9F"><span class="toc-text">1. 浏览器不认裸模块导入，Vite 是怎么把它变成可请求路径的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%A6%96%E6%AC%A1%E8%AE%BF%E9%97%AE%E5%B8%B8%E5%B8%B8%E8%A7%A6%E5%8F%91%E2%80%9C%E9%A1%B5%E9%9D%A2%E8%87%AA%E5%B7%B1%E5%88%B7%E6%96%B0%E4%B8%80%E6%AC%A1%E2%80%9D%EF%BC%9F"><span class="toc-text">2. 为什么首次访问常常触发“页面自己刷新一次”？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-HMR-%E7%9A%84%E2%80%9C%E5%A4%B1%E6%95%88%E8%BE%B9%E7%95%8C%E2%80%9D%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E5%8F%AA%E6%9B%B4%E6%96%B0%E5%B1%80%E9%83%A8%EF%BC%9F"><span class="toc-text">3. HMR 的“失效边界”为什么能只更新局部？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-esbuild-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E5%BF%AB%EF%BC%8C%E5%AE%83%E5%81%9A%E4%B8%8D%E5%88%B0%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">4. esbuild 为什么这么快，它做不到什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-dev-%E4%B8%8E-prod-%E5%8F%8C%E5%B7%A5%E5%85%B7%E9%93%BE%E4%BC%9A%E5%B8%A6%E6%9D%A5%E5%93%AA%E4%BA%9B%E4%B8%8D%E4%B8%80%E8%87%B4%EF%BC%9F"><span class="toc-text">5. dev 与 prod 双工具链会带来哪些不一致？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E7%94%9F%E4%BA%A7%E6%9E%84%E5%BB%BA%E4%B8%BA%E4%BB%80%E4%B9%88-tree-shaking-%E6%95%88%E6%9E%9C%E5%A5%BD%EF%BC%9F"><span class="toc-text">6. 生产构建为什么 tree shaking 效果好？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%9C%A8-monorepo-%E9%87%8C-Vite-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%8A%A5%E4%BE%9D%E8%B5%96%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-text">7. 在 monorepo 里 Vite 为什么会报依赖问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-Vite-%E4%B8%8A%E5%81%9A-Module-Federation-%E6%9C%89%E4%BB%80%E4%B9%88%E9%99%90%E5%88%B6%EF%BC%9F"><span class="toc-text">8. Vite 上做 Module Federation 有什么限制？</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/323548662/" title="【前端面试】十、常见场景"><img src="/img/%E9%9D%A2%E8%AF%95/scene.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】十、常见场景"/></a><div class="content"><a class="title" href="/posts/323548662/" title="【前端面试】十、常见场景">【前端面试】十、常见场景</a><time datetime="2026-11-19T12:07:39.000Z" title="发表于 2026-11-19 20:07:39">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548661/" title="【前端面试】九、部署和代理"><img src="/img/%E9%9D%A2%E8%AF%95/deploy.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】九、部署和代理"/></a><div class="content"><a class="title" href="/posts/323548661/" title="【前端面试】九、部署和代理">【前端面试】九、部署和代理</a><time datetime="2026-11-19T12:07:38.000Z" title="发表于 2026-11-19 20:07:38">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548660/" title="【前端面试】八、调试"><img src="/img/%E9%9D%A2%E8%AF%95/devtool.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】八、调试"/></a><div class="content"><a class="title" href="/posts/323548660/" title="【前端面试】八、调试">【前端面试】八、调试</a><time datetime="2026-11-19T12:07:37.000Z" title="发表于 2026-11-19 20:07:37">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548659/" title="【前端面试】七、病毒与防范"><img src="/img/%E9%9D%A2%E8%AF%95/netSafe.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】七、病毒与防范"/></a><div class="content"><a class="title" href="/posts/323548659/" title="【前端面试】七、病毒与防范">【前端面试】七、病毒与防范</a><time datetime="2026-11-19T12:07:36.000Z" title="发表于 2026-11-19 20:07:36">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548658/" title="【前端面试】六、工程化"><img src="/img/%E9%9D%A2%E8%AF%95/build.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】六、工程化"/></a><div class="content"><a class="title" href="/posts/323548658/" title="【前端面试】六、工程化">【前端面试】六、工程化</a><time datetime="2026-11-19T12:07:35.000Z" title="发表于 2026-11-19 20:07:35">2026-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 谢良勇</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">简</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><script src="/js/tw_cn.js?v=5.7.2"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const initValine = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyValine = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const valineConfig = {
+      el: '#vcomment',
+      appId: '',
+      appKey: '',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      visitor: false,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || window.location.pathname
+    }
+
+    new Valine(valineConfig)
+  }
+
+  const loadValine = async (el, path) => {
+    if (typeof Valine === 'function') {
+      initValine(el, path)
+    } else {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/valine@1.5.3/dist/Valine.min.js')
+      initValine(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Valine' === 'Valine'
+      ? window.shuoshuoComment = { loadComment: loadValine }
+      : window.loadOtherComment = loadValine
+    return
+  }
+
+  if ('Valine' === 'Valine' || !true) {
+    if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/posts/323548656/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'http://example.com/posts/323548656/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = '【前端面试】四、构建工具'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Valine' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Valine' === 'Disqus' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>

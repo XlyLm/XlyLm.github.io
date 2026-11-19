@@ -1,0 +1,392 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>【前端面试】五、包管理和Node | 一生情画薇妮</title><meta name="author" content="谢良勇"><meta name="copyright" content="谢良勇"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、包管理器1、常见题1. npm、yarn、pnpm 有什么区别？npm 是官方包管理器，扁平化把依赖 hoist 到顶层 node_modules；yarn（classic）早期以速度快与 lockfile 严格著称，后续有 Berry&#x2F;PnP；pnpm 用内容寻址存储 + 硬链接 + 符号链接，磁盘占用小、安装快，并且依赖结构严格（只暴露直接依赖）。选型要点：pnpm 在 mono">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【前端面试】五、包管理和Node">
+<meta property="og:url" content="http://example.com/posts/323548657/index.html">
+<meta property="og:site_name" content="一生情画薇妮">
+<meta property="og:description" content="一、包管理器1、常见题1. npm、yarn、pnpm 有什么区别？npm 是官方包管理器，扁平化把依赖 hoist 到顶层 node_modules；yarn（classic）早期以速度快与 lockfile 严格著称，后续有 Berry&#x2F;PnP；pnpm 用内容寻址存储 + 硬链接 + 符号链接，磁盘占用小、安装快，并且依赖结构严格（只暴露直接依赖）。选型要点：pnpm 在 mono">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/%E5%8C%85%E7%AE%A1%E7%90%86/node.png">
+<meta property="article:published_time" content="2026-11-19T12:07:34.000Z">
+<meta property="article:modified_time" content="2026-11-19T14:06:43.139Z">
+<meta property="article:author" content="谢良勇">
+<meta property="article:tag" content="前端面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/%E5%8C%85%E7%AE%A1%E7%90%86/node.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "【前端面试】五、包管理和Node",
+  "url": "http://example.com/posts/323548657/",
+  "image": "http://example.com/img/%E5%8C%85%E7%AE%A1%E7%90%86/node.png",
+  "datePublished": "2026-11-19T12:07:34.000Z",
+  "dateModified": "2026-11-19T14:06:43.139Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "谢良勇",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/all/favicon.jepg"><link rel="canonical" href="http://example.com/posts/323548657/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '【前端面试】五、包管理和Node',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="一生情画薇妮" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/all/avatar.png" onerror="this.onerror=null;this.src='/img/404/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/%E5%8C%85%E7%AE%A1%E7%90%86/node.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/all/favicon.jpeg" alt="Logo"><span class="site-name">一生情画薇妮</span></a><a class="nav-page-title" href="/"><span class="site-name">【前端面试】五、包管理和Node</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">【前端面试】五、包管理和Node</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-19T12:07:34.000Z" title="发表于 2026-11-19 20:07:34">2026-11-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-19T14:06:43.139Z" title="更新于 2026-11-19 22:06:43">2026-11-19</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="一、包管理器"><a href="#一、包管理器" class="headerlink" title="一、包管理器"></a>一、包管理器</h1><h2 id="1、常见题"><a href="#1、常见题" class="headerlink" title="1、常见题"></a>1、常见题</h2><h3 id="1-npm、yarn、pnpm-有什么区别？"><a href="#1-npm、yarn、pnpm-有什么区别？" class="headerlink" title="1. npm、yarn、pnpm 有什么区别？"></a><strong>1. npm、yarn、pnpm 有什么区别？</strong></h3><p>npm 是官方包管理器，扁平化把依赖 hoist 到顶层 <code>node_modules</code>；yarn（classic）早期以速度快与 <code>lockfile</code> 严格著称，后续有 Berry&#x2F;PnP；pnpm 用<strong>内容寻址存储 + 硬链接 + 符号链接</strong>，磁盘占用小、安装快，并且依赖结构严格（只暴露直接依赖）。选型要点：pnpm 在 monorepo 与依赖治理上更优，npm 兼容性最好，yarn 生态在部分企业项目仍在使用。</p>
+<h3 id="2-pnpm-为什么既快又省空间？"><a href="#2-pnpm-为什么既快又省空间？" class="headerlink" title="2. pnpm 为什么既快又省空间？"></a><strong>2. pnpm 为什么既快又省空间？</strong></h3><p>所有包按内容寻址存到全局 store（同一份内容只存一次），项目里的 <code>node_modules/.pnpm/</code> 只放<strong>硬链接</strong>指向 store；顶层 <code>node_modules</code> 里用<strong>符号链接</strong>只链出 <code>package.json</code> 声明的直接依赖。因此多个项目共享同一份文件（省磁盘）、安装时几乎只做链接（省时间），并且未声明的依赖无法被访问（避免幽灵依赖）。</p>
+<h3 id="3-dependencies、devDependencies、peerDependencies-有什么区别？"><a href="#3-dependencies、devDependencies、peerDependencies-有什么区别？" class="headerlink" title="3. dependencies、devDependencies、peerDependencies 有什么区别？"></a><strong>3. <code>dependencies</code>、<code>devDependencies</code>、<code>peerDependencies</code> 有什么区别？</strong></h3><p><code>dependencies</code> 是运行时必需、会被安装到使用者项目；<code>devDependencies</code> 只在开发&#x2F;构建时需要（测试、lint、构建工具），发布时不安装；<code>peerDependencies</code> 声明“我需要宿主提供某个包”（如组件库要求 React），用于避免同一库出现多份实例；<code>optionalDependencies</code> 允许安装失败而不中断（如平台相关的二进制包）。</p>
+<h3 id="4-semver-的规则要记住哪些？"><a href="#4-semver-的规则要记住哪些？" class="headerlink" title="4. semver 的规则要记住哪些？"></a><strong>4. semver 的规则要记住哪些？</strong></h3><p><code>^1.2.3</code> → <code>&gt;=1.2.3 &lt;2.0.0</code>（锁主版本）；<code>~1.2.3</code> → <code>&gt;=1.2.3 &lt;1.3.0</code>（锁次版本）；<code>1.x</code>、<code>*</code>、<code>&gt;=</code> 等比较符；**<code>0.x</code> 特殊**：<code>^0.2.3</code> 只允许 <code>&lt;0.3.0</code>（因为 0.x 被视为不稳定，次版本变化即视为破坏性）；预发布版本（<code>1.0.0-beta.1</code>）默认不满足普通范围，需要显式声明。</p>
+<h3 id="5-lockfile-有什么用，要不要提交？"><a href="#5-lockfile-有什么用，要不要提交？" class="headerlink" title="5. lockfile 有什么用，要不要提交？"></a><strong>5. lockfile 有什么用，要不要提交？</strong></h3><p>锁定整棵依赖树的<strong>精确版本与下载地址</strong>（含哈希），保证“本地、CI、生产”安装出完全一致的依赖，避免“今天装和明天装结果不同”的问题。必须提交到仓库、<strong>不允许手改</strong>（冲突时应删掉重新生成）。对应文件：<code>package-lock.json</code>、<code>yarn.lock</code>、<code>pnpm-lock.yaml</code>。</p>
+<h3 id="6-npm-install-和-npm-ci-有什么区别？"><a href="#6-npm-install-和-npm-ci-有什么区别？" class="headerlink" title="6. npm install 和 npm ci 有什么区别？"></a><strong>6. <code>npm install</code> 和 <code>npm ci</code> 有什么区别？</strong></h3><p><code>npm install</code> 会读 <code>package.json</code> 解析依赖、可能更新 lockfile、可增量安装；<code>npm ci</code> 严格按 lockfile 安装、先删除 <code>node_modules</code>、lockfile 与 <code>package.json</code> 不一致时直接报错、速度更快。CI&#x2F;CD 一律用 <code>npm ci</code>（pnpm 对应 <code>pnpm install --frozen-lockfile</code>），保证可复现。</p>
+<h3 id="7-npm-install-具体做了什么？"><a href="#7-npm-install-具体做了什么？" class="headerlink" title="7. npm install 具体做了什么？"></a><strong>7. <code>npm install</code> 具体做了什么？</strong></h3><p>读取 <code>package.json</code> → 解析依赖树（考虑版本范围、<code>peerDependencies</code>、冲突）→ 查本地缓存或向 registry 请求元数据与 tarball → 校验完整性（<code>integrity</code> 字段）→ 解压到 <code>node_modules</code> 并按规则 hoist → 执行 <code>preinstall/install/postinstall</code> 等生命周期脚本 → 更新 lockfile。排查安装问题要按这条链路分段定位（解析错、网络错、脚本错）。</p>
+<h3 id="8-peerDependencies-冲突是什么情况，怎么处理？"><a href="#8-peerDependencies-冲突是什么情况，怎么处理？" class="headerlink" title="8. peerDependencies 冲突是什么情况，怎么处理？"></a><strong>8. <code>peerDependencies</code> 冲突是什么情况，怎么处理？</strong></h3><p>组件库声明 <code>react: ^17 || ^18</code>，使用方装的是 React 19 时，npm 7+ 会尝试自动安装 peer 并在不满足时报 <code>ERESOLVE</code>；pnpm 严格模式下直接报错提示缺失 peer。处理方式：升级依赖或调整 peer 范围（首选）、临时用 <code>--legacy-peer-deps</code>（npm 回退旧行为，风险是抑制了真实冲突）、或用 <code>overrides</code> 强制统一版本（需验证运行时兼容）。</p>
+<h3 id="9-什么是幽灵依赖（phantom-dependency）？"><a href="#9-什么是幽灵依赖（phantom-dependency）？" class="headerlink" title="9. 什么是幽灵依赖（phantom dependency）？"></a><strong>9. 什么是幽灵依赖（phantom dependency）？</strong></h3><p>代码里 <code>import</code> 了某个包，但 <code>package.json</code> 里并没有声明，只因为 npm 把它 hoist 到了顶层 <code>node_modules</code> 而“碰巧能用”。风险是：别人升级或调整依赖后突然找不到了，且不同包管理器（pnpm）下直接报错。根治方式是显式声明所有直接使用的包，或用 pnpm 的严格结构提前暴露问题。</p>
+<h3 id="10-版本冲突导致同一个包装了两份，会有什么后果？"><a href="#10-版本冲突导致同一个包装了两份，会有什么后果？" class="headerlink" title="10. 版本冲突导致同一个包装了两份，会有什么后果？"></a><strong>10. 版本冲突导致同一个包装了两份，会有什么后果？</strong></h3><p>后果是<strong>多实例问题</strong>：<code>React</code> 两份实例会导致 <code>invalid hook call</code>；<code>dayjs</code> 两份导致插件注册失效；单例（<code>EventBus</code>、<code>axios 实例</code>、<code>class 静态状态</code>）不共享。排查用 <code>npm ls &lt;pkg&gt;</code>、<code>pnpm why &lt;pkg&gt;</code> 看谁引入了不同版本，再用 <code>overrides/resolutions</code> 统一版本或让上游放宽依赖范围。</p>
+<h3 id="11-overrides-resolutions-是干什么的？"><a href="#11-overrides-resolutions-是干什么的？" class="headerlink" title="11. overrides &#x2F; resolutions 是干什么的？"></a><strong>11. <code>overrides</code> &#x2F; <code>resolutions</code> 是干什么的？</strong></h3><p>在不修改上游包的前提下，强制整棵依赖树里某个包使用指定版本：npm 用 <code>overrides</code>、yarn 用 <code>resolutions</code>、pnpm 用 <code>pnpm.overrides</code>（可写进 <code>pnpm-workspace.yaml</code>）。常用于统一安全修复版本或消解多实例；风险是绕过了上游声明的兼容范围，可能引入隐性破坏，必须配合回归验证。</p>
+<h3 id="12-npx-是干什么的？"><a href="#12-npx-是干什么的？" class="headerlink" title="12. npx 是干什么的？"></a><strong>12. <code>npx</code> 是干什么的？</strong></h3><p>临时下载并执行一个包提供的命令行（装到缓存而非项目），用于一次性工具（<code>npx create-vite</code>、<code>npx serve</code>）。npm 7 之后由 <code>npm exec</code> 提供能力。风险是执行来源不明的包（会跑 <code>postinstall</code>），所以生产环境要用固定版本并在受控环境执行。</p>
+<h3 id="13-私有源和企业内网怎么配？"><a href="#13-私有源和企业内网怎么配？" class="headerlink" title="13. 私有源和企业内网怎么配？"></a><strong>13. 私有源和企业内网怎么配？</strong></h3><p><code>.npmrc</code> 配置 <code>registry</code> 与按 scope 分流：<code>@company:registry=[https://npm.company.com](https://npm.company.com)</code>，<code>always-auth=true</code>（带鉴权）、<code>strict-ssl</code> 与自签证书处理。常见方案是 Verdaccio（轻量自建）、Nexus&#x2F;Artifactory（企业制品库）。要点是<strong>scope 前缀</strong>必须统一，避免公网包与内网包同名。</p>
+<h3 id="14-monorepo-里-workspace-怎么用？"><a href="#14-monorepo-里-workspace-怎么用？" class="headerlink" title="14. monorepo 里 workspace 怎么用？"></a><strong>14. monorepo 里 workspace 怎么用？</strong></h3><p>pnpm 用 <code>pnpm-workspace.yaml</code> 声明 packages 目录，包之间用 <code>workspace:*</code> 互相引用（发布时自动替换为实际版本号）；用 <code>--filter</code> 精准执行（<code>pnpm --filter @app/web build</code>）；共享依赖提升到根 <code>package.json</code> 以便统一版本，<code>pnpm -r</code> 做递归任务。要点是“依赖能复用、但边界要清晰”。</p>
+<h3 id="15-package-json-里-main、module、exports、types-分别干什么？"><a href="#15-package-json-里-main、module、exports、types-分别干什么？" class="headerlink" title="15. package.json 里 main、module、exports、types 分别干什么？"></a><strong>15. <code>package.json</code> 里 <code>main</code>、<code>module</code>、<code>exports</code>、<code>types</code> 分别干什么？</strong></h3><p><code>main</code> 是 CJS 入口（老工具链依赖）、<code>module</code> 是 ESM 入口（供 Rollup&#x2F;Webpack 优先选）、<code>exports</code> 是现代<strong>唯一权威</strong>的子路径导出与条件导出（<code>import/require/types</code>，一旦声明就屏蔽其他路径）、<code>types</code> 指向类型声明、<code>files</code> 控制发布哪些文件（白名单）、<code>sideEffects</code> 影响 tree shaking、<code>engines</code> 约束 Node 版本。</p>
+<h3 id="16-依赖安全要注意什么？"><a href="#16-依赖安全要注意什么？" class="headerlink" title="16. 依赖安全要注意什么？"></a><strong>16. 依赖安全要注意什么？</strong></h3><p><code>npm audit</code> 基于漏洞库检测已知问题（<code>--fix</code> 可能引入破坏性升级，<code>--force</code> 需人工评估）；更关键的是<strong>供应链风险</strong>：恶意 <code>postinstall</code> 脚本、typosquatting（近似包名）、依赖劫持、维护者账号被盗。实践：锁版本 + 提交 lockfile、CI 用 <code>--ignore-scripts</code> 处理不可信依赖、内部源开启白名单与制品扫描、关注 <code>npm publish</code> 的 2FA。</p>
+<h3 id="17-安装慢-失败怎么排查？"><a href="#17-安装慢-失败怎么排查？" class="headerlink" title="17. 安装慢&#x2F;失败怎么排查？"></a><strong>17. 安装慢&#x2F;失败怎么排查？</strong></h3><p>先看源（<code>npm config get registry</code>，是否被代理或私有源覆盖）；再网络（代理、<code>strict-ssl</code>、公司证书）；再依赖本身（<code>optionalDependencies</code> 里的二进制包在平台不匹配、<code>postinstall</code> 编译失败需要构建工具链）；同时注意版本解析耗时（过宽的 semver 范围会拉大量元数据）。手段：<code>--verbose</code> 看细节、<code>npm cache verify</code> 清缓存、优先用 pnpm 的硬链接减少 IO。</p>
+<h3 id="18-发包流程要注意什么？"><a href="#18-发包流程要注意什么？" class="headerlink" title="18. 发包流程要注意什么？"></a><strong>18. 发包流程要注意什么？</strong></h3><p>版本语义（<code>npm version patch/minor/major</code> 按变更性质选）、<code>files</code> 白名单避免把源码&#x2F;测试&#x2F;大资源发出去、<code>prepublishOnly</code> 里跑构建与测试、私有包加 scope 与访问控制、用 <code>changesets</code>&#x2F;<code>lerna</code> 管理多包版本与 changelog、先 <code>npm pack</code> 检查产物再 <code>publish</code>、必要时用 <code>--dry-run</code> 与 <code>--tag next</code> 灰度。</p>
+<h2 id="2、难题"><a href="#2、难题" class="headerlink" title="2、难题"></a>2、难题</h2><h3 id="1-pnpm-的目录结构为什么能同时解决幽灵依赖与路径兼容？"><a href="#1-pnpm-的目录结构为什么能同时解决幽灵依赖与路径兼容？" class="headerlink" title="1. pnpm 的目录结构为什么能同时解决幽灵依赖与路径兼容？"></a><strong>1. pnpm 的目录结构为什么能同时解决幽灵依赖与路径兼容？</strong></h3><p>实际包体放在 <code>node_modules/.pnpm/&lt;name&gt;@&lt;version&gt;/node_modules/&lt;name&gt;</code>，同一版本的多个使用者共享这一份（通过硬链接复用到全局 store）；每个包的依赖通过<strong>它自己目录下的符号链接</strong>指向兄弟目录，因此“某包只能访问自己的声明依赖”；项目顶层 <code>node_modules</code> 只符号链接直接依赖，所以未声明就找不到（消除幽灵依赖）。同时因为路径仍是 <code>node_modules</code> 下的真实位置，绝大多数工具无需特殊适配（相比之下 Yarn PnP 要改解析器）。</p>
+<h3 id="2-npm-7-自动安装-peer-带来了什么新问题？"><a href="#2-npm-7-自动安装-peer-带来了什么新问题？" class="headerlink" title="2. npm 7+ 自动安装 peer 带来了什么新问题？"></a><strong>2. npm 7+ 自动安装 peer 带来了什么新问题？</strong></h3><p>自动安装让“忘记装 peer”不再报缺失，但会引入两类问题：一是<strong>版本冲突放大</strong>（多个包对同一 peer 要求不同，直接 <code>ERESOLVE</code> 失败）；二是<strong>隐式提升版本</strong>（自动装了最新的 peer，与你项目显式版本不一致，导致多实例）。应对：优先修上游的 peer 范围、用 <code>--legacy-peer-deps</code> 仅作兜底、或明确把 peer 提升为项目 <code>dependencies</code> 并统一版本。</p>
+<h3 id="3-semver-范围有哪些反直觉的陷阱？"><a href="#3-semver-范围有哪些反直觉的陷阱？" class="headerlink" title="3. semver 范围有哪些反直觉的陷阱？"></a><strong>3. semver 范围有哪些反直觉的陷阱？</strong></h3><p><code>^0.0.x</code> 几乎等于固定版本（<code>^0.0.3</code> 只允许 <code>&lt;0.0.4</code>）；<code>~</code> 与 <code>^</code> 在 0 主版本下行为差异更明显；预发布版本不会被普通范围选中（<code>^1.0.0</code> 不会装 <code>1.1.0-beta</code>）；<code>*</code> 与 <code>latest</code> tag 会让构建不可复现；同一依赖被不同的范围约束时，解析器可能保留多份以满足所有约束（这也是重复依赖的根源）。所以“锁 lockfile + 收窄范围”才是可复现的根本。</p>
+<h3 id="4-lockfile-在多人协作中为什么容易出错？"><a href="#4-lockfile-在多人协作中为什么容易出错？" class="headerlink" title="4. lockfile 在多人协作中为什么容易出错？"></a><strong>4. lockfile 在多人协作中为什么容易出错？</strong></h3><p>它记录整棵树的精确解析结果，只要有人改动 <code>package.json</code> 或换包管理器&#x2F;换 registry，就会产生大范围 diff；手工解决冲突几乎必然产生不一致的树（甚至出现“本地能跑、CI 报错”）。规范做法：统一包管理器与版本（<code>packageManager</code> 字段 + <code>corepack</code>）、冲突时接受任意一侧后重新执行安装生成、CI 用 <code>--frozen-lockfile</code> 强制校验，禁止手改。</p>
+<h3 id="5-workspace-发布时会怎么处理？"><a href="#5-workspace-发布时会怎么处理？" class="headerlink" title="5. workspace:\* 发布时会怎么处理？"></a><strong>5. <code>workspace:\*</code> 发布时会怎么处理？</strong></h3><p>在 monorepo 内部用 <code>workspace:*</code>（或 <code>workspace:^1.2.3</code>）表示“引用本地包”，安装时走符号链接、不走 registry；打包发布时由包管理器把该协议替换成解析后的真实版本范围（如 <code>^1.2.3</code>），从而发布出去的包能被外部正常安装。若工具链不识别该协议（旧 npm 或某些发布脚本），会出现“发布产物里残留 <code>workspace:*</code>”的事故，所以发布前要检查 <code>npm pack</code> 的 <code>package.json</code>。</p>
+<h3 id="6-dependency-confusion-是怎么回事，怎么防？"><a href="#6-dependency-confusion-是怎么回事，怎么防？" class="headerlink" title="6. dependency confusion 是怎么回事，怎么防？"></a><strong>6. dependency confusion 是怎么回事，怎么防？</strong></h3><p>内网使用了一个未加 scope 的包名（如 <code>internal-utils</code>），而公网上恰好有同名包（恶意者抢注），当解析器按“先公网后私有”或配置错误时，就会安装到公网恶意版本并执行其 <code>postinstall</code>。防御：私有包强制加 <code>@company/</code> scope 并在 <code>.npmrc</code> 明确 <code>@company:registry</code>、源配置里把私有源置于优先、CI 中禁止匿名访问公网同名包、开启依赖白名单与制品扫描。</p>
+<h3 id="7-Yarn-PnP（Plug’n’Play）的原理与取舍？"><a href="#7-Yarn-PnP（Plug’n’Play）的原理与取舍？" class="headerlink" title="7. Yarn PnP（Plug’n’Play）的原理与取舍？"></a><strong>7. Yarn PnP（Plug’n’Play）的原理与取舍？</strong></h3><p>它取消 <code>node_modules</code>，把依赖以 zip 存进 <code>.yarn/cache</code>，用 <code>.pnp.cjs</code> 维护“哪个包能解析到哪个文件”的映射表，通过 patch Node 的解析器生效。优点是安装极快、零 IO 展开、严格（不可能出现幽灵依赖）、缓存可版本化；代价是生态兼容性差（大量工具直接读 <code>node_modules</code> 路径而失败，需要 <code>pnpify</code>&#x2F;SDK）、调试与报错路径不直观、要求团队统一工具链。</p>
+<h3 id="8-为什么不该随意加-overrides？"><a href="#8-为什么不该随意加-overrides？" class="headerlink" title="8. 为什么不该随意加 overrides？"></a><strong>8. 为什么不该随意加 <code>overrides</code>？</strong></h3><p><code>overrides</code> 会强行绕过上游声明的 semver 范围，等于替上游做了兼容性承诺：可能修好了冲突，却引入 API 变化导致的运行时错误（常见于 <code>lodash</code>、<code>@types/*</code>、<code>axios</code> 这类跨版本行为有差异的包）。使用原则：只用来修安全问题或消解已确认的多实例问题、每次加都要写明原因与到期时间、配合完整回归与依赖扫描，能通过升级上游解决时优先升级。</p>
+<h1 id="二、Node"><a href="#二、Node" class="headerlink" title="二、Node"></a>二、Node</h1><h2 id="1、常见题-1"><a href="#1、常见题-1" class="headerlink" title="1、常见题"></a>1、常见题</h2><h3 id="1-Node-js-是什么，和浏览器里的-JS-有什么不同？"><a href="#1-Node-js-是什么，和浏览器里的-JS-有什么不同？" class="headerlink" title="1. Node.js 是什么，和浏览器里的 JS 有什么不同？"></a><strong>1. Node.js 是什么，和浏览器里的 JS 有什么不同？</strong></h3><p>Node 是基于 V8 的<strong>服务端运行时</strong>：同样跑 JS，但没有 DOM&#x2F;BOM，提供 <code>fs</code>、<code>net</code>、<code>http</code>、<code>process</code> 等能力；全局对象是 <code>global</code> 而非 <code>window</code>；模块体系长期以 CJS 为主（现在 ESM 已完整支持）；事件循环实现也不同（有明确的阶段划分与 <code>setImmediate</code>、<code>process.nextTick</code>）。所以“JS 是同一门语言，运行环境不同”。</p>
+<h3 id="2-为什么说-Node-是“单线程”的，又怎么能高并发？"><a href="#2-为什么说-Node-是“单线程”的，又怎么能高并发？" class="headerlink" title="2. 为什么说 Node 是“单线程”的，又怎么能高并发？"></a><strong>2. 为什么说 Node 是“单线程”的，又怎么能高并发？</strong></h3><p>单线程指的是<strong>主线程执行 JS 是单线程</strong>（没有多线程竞争与锁）。高并发靠：非阻塞 IO（发起后立即返回，由内核或 libuv 线程池完成实际工作）+ 事件循环回调 + 每个连接的内存开销远小于线程模型。所以它擅长 IO 密集（网关、API 聚合、实时通信），不擅长 CPU 密集（会阻塞整条事件循环）。</p>
+<h3 id="3-事件循环有哪些阶段？"><a href="#3-事件循环有哪些阶段？" class="headerlink" title="3. 事件循环有哪些阶段？"></a><strong>3. 事件循环有哪些阶段？</strong></h3><p><code>timers</code>（<code>setTimeout/setInterval</code> 到期回调）→ <code>pending callbacks</code>（部分系统级 IO 错误回调）→ <code>idle/prepare</code>（内部准备）→ <code>poll</code>（等待并执行 IO 回调；没有其他任务时会在此等待）→ <code>check</code>（<code>setImmediate</code>）→ <code>close callbacks</code>（<code>socket.on(&#39;close&#39;)</code>）。每个阶段之间会清空<strong>微任务队列</strong>（先 <code>process.nextTick</code> 队列，再 Promise 队列）。</p>
+<h3 id="4-process-nextTick、setImmediate、setTimeout-有什么区别？"><a href="#4-process-nextTick、setImmediate、setTimeout-有什么区别？" class="headerlink" title="4. process.nextTick、setImmediate、setTimeout 有什么区别？"></a><strong>4. <code>process.nextTick</code>、<code>setImmediate</code>、<code>setTimeout</code> 有什么区别？</strong></h3><p><code>nextTick</code> 不属于任何阶段，在当前操作结束后<strong>立即</strong>执行，优先级高于 Promise 微任务，递归调用会饿死 IO；<code>setImmediate</code> 在 <code>check</code> 阶段执行，即本轮循环末尾；<code>setTimeout(fn, 0)</code> 在 <code>timers</code> 阶段执行（实际受最小延迟与系统时钟影响）。在主模块里 <code>setImmediate</code> 与 <code>setTimeout(fn,0)</code> 顺序不确定，但在 IO 回调内部 <code>setImmediate</code> 一定先执行。</p>
+<h3 id="5-阻塞与非阻塞、异步-IO-的原理？"><a href="#5-阻塞与非阻塞、异步-IO-的原理？" class="headerlink" title="5. 阻塞与非阻塞、异步 IO 的原理？"></a><strong>5. 阻塞与非阻塞、异步 IO 的原理？</strong></h3><p>阻塞调用会占住线程直到完成；Node 的异步 IO 分两类：一类走<strong>内核异步机制</strong>（Linux 的 epoll、macOS 的 kqueue、Windows 的 IOCP，用于网络），一类走 <strong>libuv 线程池</strong>（<code>fs</code>、<code>dns.lookup</code>、<code>crypto</code>、<code>zlib</code> 等没有内核异步接口的操作，默认 4 个线程）。理解这条分界能解释“为什么读文件默认是异步的、但某些加密操作会拖慢并发”。</p>
+<h3 id="6-CJS-与-ESM-在-Node-中的区别？"><a href="#6-CJS-与-ESM-在-Node-中的区别？" class="headerlink" title="6. CJS 与 ESM 在 Node 中的区别？"></a><strong>6. CJS 与 ESM 在 Node 中的区别？</strong></h3><p>CJS：<code>require</code> 同步加载、运行时解析、有 <code>module.exports/exports</code>、可用 <code>__dirname</code>、可被条件加载；ESM：<code>import</code> 静态解析、异步加载、顶层 <code>this</code> 为 <code>undefined</code>、无 <code>__dirname</code>（用 <code>import.meta.url</code> 推导）、必须写扩展名、支持顶层 <code>await</code>。两者混用需注意：ESM 可 <code>import</code> CJS，CJS 引用 ESM 需要 <code>import()</code>（新版 Node 已支持部分场景的 <code>require(esm)</code>，仍建议项目内统一）。</p>
+<h3 id="7-require-的查找与缓存机制？"><a href="#7-require-的查找与缓存机制？" class="headerlink" title="7. require 的查找与缓存机制？"></a><strong>7. <code>require</code> 的查找与缓存机制？</strong></h3><p>查找顺序：内置模块 → 以 <code>/</code> <code>./</code> <code>../</code> 开头的相对或绝对路径（补全扩展名与目录 <code>index</code>）→ <code>node_modules</code> 逐级向上查找（先看 <code>package.json</code> 的 <code>main</code>，再看 <code>index</code>）。加载后按<strong>解析后的绝对路径</strong>缓存到 <code>require.cache</code>，同一模块只执行一次；删除缓存项可实现热重载式重新加载（生产不建议）。</p>
+<h3 id="8-CJS-的循环依赖会怎样？"><a href="#8-CJS-的循环依赖会怎样？" class="headerlink" title="8. CJS 的循环依赖会怎样？"></a><strong>8. CJS 的循环依赖会怎样？</strong></h3><p>A <code>require</code> B，B 又 <code>require</code> A 时，B 拿到的 A 是**尚未执行完的 <code>module.exports</code>**（部分导出），此时访问未赋值的属性得到 <code>undefined</code>。表现为“有时能拿到、有时是空对象”。对策：把共享依赖抽到第三个模块、把使用延后到函数调用时（而非模块顶层），或用依赖注入。</p>
+<h3 id="9-Buffer-是什么，为什么需要它？"><a href="#9-Buffer-是什么，为什么需要它？" class="headerlink" title="9. Buffer 是什么，为什么需要它？"></a><strong>9. Buffer 是什么，为什么需要它？</strong></h3><p>Buffer 是 Node 用于处理二进制数据的类型（底层是堆外的定长内存，继承自 <code>Uint8Array</code>），因为 JS 字符串只适合文本、且 <code>TypedArray</code> 原生支持不够早。常用：<code>Buffer.from</code>、<code>alloc/allocUnsafe</code>（后者不初始化，更快但可能读到旧数据）、<code>concat</code>、<code>toString</code>、<code>byteLength</code>。注意大 Buffer 会占用外部内存，可能触发 GC 压力。</p>
+<h3 id="10-Stream-有哪几种，解决什么问题？"><a href="#10-Stream-有哪几种，解决什么问题？" class="headerlink" title="10. Stream 有哪几种，解决什么问题？"></a><strong>10. Stream 有哪几种，解决什么问题？</strong></h3><p>四种：<code>Readable</code>（可读）、<code>Writable</code>（可写）、<code>Duplex</code>（双向，如 socket）、<code>Transform</code>（读写间转换，如压缩）。价值是<strong>流式处理</strong>：大文件、大响应不需要一次性读进内存，边读边处理，内存恒定。配合 <code>pipeline</code>（<code>stream/promises</code>）自动处理错误传播与销毁，比手写 <code>pipe</code> + 监听更可靠。</p>
+<h3 id="11-背压（backpressure）是什么？"><a href="#11-背压（backpressure）是什么？" class="headerlink" title="11. 背压（backpressure）是什么？"></a><strong>11. 背压（backpressure）是什么？</strong></h3><p>消费者处理速度跟不上生产者时，如果没有节制，数据会在内存中堆积。Stream 用 <code>highWaterMark</code> 控制缓冲阈值：<code>writable.write()</code> 返回 <code>false</code> 表示缓冲已满，生产者应暂停，等 <code>&#39;drain&#39;</code> 事件再继续；<code>Readable</code> 侧对应 <code>pause/resume</code> 与 <code>pipe</code> 的自动调节。工程含义是“流式接口必须处理背压，否则内存会涨到 OOM”。</p>
+<h3 id="12-Node-的错误处理有哪些要点？"><a href="#12-Node-的错误处理有哪些要点？" class="headerlink" title="12. Node 的错误处理有哪些要点？"></a><strong>12. Node 的错误处理有哪些要点？</strong></h3><p>同步错误用 <code>try/catch</code>；回调风格遵循“错误优先”（<code>(err, data)</code>）；Promise 用 <code>catch</code> 或 <code>unhandledRejection</code> 监听兜底；<code>uncaughtException</code> <strong>只应记录日志后退出</strong>（此时进程状态可能不一致，继续运行不可靠）；异步链用 <code>pipeline</code>&#x2F;<code>domain</code>（已废弃）&#x2F;<code>AsyncLocalStorage</code> 追踪上下文。原则是：错误要能在请求边界被捕获并转成响应，而不是让进程崩溃。</p>
+<h3 id="13-child-process-的-spawn-exec-fork-有什么区别？"><a href="#13-child-process-的-spawn-exec-fork-有什么区别？" class="headerlink" title="13. child_process 的 spawn/exec/fork 有什么区别？"></a><strong>13. <code>child_process</code> 的 <code>spawn/exec/fork</code> 有什么区别？</strong></h3><p><code>spawn</code> 适合长时间运行、输出流式处理、参数不经 shell（更安全）；<code>exec</code> 走 shell、有缓冲区上限（超限会截断&#x2F;报错），适合简单命令；<code>fork</code> 专门启动一个 Node 子进程并建立 IPC 通道（可 <code>send/on(&#39;message&#39;)</code>）。执行外部命令时优先 <code>spawn</code> + 参数数组，避免命令注入。</p>
+<h3 id="14-worker-threads-和-cluster-分别解决什么？"><a href="#14-worker-threads-和-cluster-分别解决什么？" class="headerlink" title="14. worker_threads 和 cluster 分别解决什么？"></a><strong>14. <code>worker_threads</code> 和 <code>cluster</code> 分别解决什么？</strong></h3><p><code>worker_threads</code> 解决<strong>CPU 密集</strong>：在进程内创建真正的并行线程，可通过 <code>SharedArrayBuffer</code> 共享内存、用 <code>MessagePort</code> 通信，适合图像处理、加解密、大计算。<code>cluster</code> 解决<strong>多核利用与高可用</strong>：起多个进程共享同一端口（主进程监听后分发连接），任一进程崩溃不影响其他，适合无状态 Web 服务。容器化部署时常改用“多副本 + 外部负载均衡”代替 cluster。</p>
+<h3 id="15-Express-与-Koa-的中间件模型有什么区别？"><a href="#15-Express-与-Koa-的中间件模型有什么区别？" class="headerlink" title="15. Express 与 Koa 的中间件模型有什么区别？"></a><strong>15. Express 与 Koa 的中间件模型有什么区别？</strong></h3><p>Express 是<strong>线性回调链</strong>：<code>(req, res, next)</code>，调用 <code>next()</code> 进入下一个，错误用 <code>next(err)</code> 跳到错误中间件；Koa 是<strong>洋葱模型</strong>：<code>async (ctx, next) =&gt; &#123; await next(); ... &#125;</code>，<code>await next()</code> 之前的逻辑下行、之后的上行，请求耗时统计、统一响应包装非常自然。Koa 更轻（不内置路由），Express 生态更大、约定更“老派”。</p>
+<h3 id="16-数据库连接池与事务怎么用？"><a href="#16-数据库连接池与事务怎么用？" class="headerlink" title="16. 数据库连接池与事务怎么用？"></a><strong>16. 数据库连接池与事务怎么用？</strong></h3><p>连接池（<code>mysql2</code> 的 <code>createPool</code>）复用连接，关键参数是 <code>connectionLimit</code>（匹配数据库上限与并发量）、<code>acquireTimeout</code>、<code>idleTimeout</code>。事务必须在<strong>同一个连接</strong>上执行：从池中取连接 → <code>beginTransaction</code> → 执行多条语句 → <code>commit/rollback</code> → <code>release</code>；用 <code>try/finally</code> 保证异常时回滚并归还连接（否则连接泄漏，池会被耗尽）。</p>
+<h3 id="17-文件上传怎么处理？"><a href="#17-文件上传怎么处理？" class="headerlink" title="17. 文件上传怎么处理？"></a><strong>17. 文件上传怎么处理？</strong></h3><p>前端 <code>multipart/form-data</code> 提交；服务端用 <code>multer</code>&#x2F;<code>busboy</code> 流式解析，避免把整个文件读进内存；落盘时用流写入（<code>createWriteStream</code>）或直接转存对象存储；校验文件大小、类型（不能只信 <code>Content-Type</code>）、文件名（防路径穿越）；分片上传则按片写入临时目录后合并。要点是“全程流式 + 严格校验”。</p>
+<h3 id="18-如何做优雅关闭？"><a href="#18-如何做优雅关闭？" class="headerlink" title="18. 如何做优雅关闭？"></a><strong>18. 如何做优雅关闭？</strong></h3><p>收到 <code>SIGTERM</code>（容器停止信号）后：停止接受新连接（<code>server.close()</code>）、等待在途请求完成（设置超时强制关闭）、清理资源（关闭数据库连接池、Redis、定时器、消息消费者）、最后 <code>process.exit(0)</code>。配套要有健康检查端点（<code>/healthz</code>）让负载均衡提前摘流量；<code>SIGINT</code> 用于本地调试，<code>SIGKILL</code> 不可捕获。</p>
+<h3 id="19-Node-性能优化从哪里下手？"><a href="#19-Node-性能优化从哪里下手？" class="headerlink" title="19. Node 性能优化从哪里下手？"></a><strong>19. Node 性能优化从哪里下手？</strong></h3><p>先确认瓶颈类型：CPU（看 <code>--prof</code>&#x2F;火焰图，是否某段计算阻塞）还是 IO（等待时间占比）。常见手段：避免在主线程做同步调用（<code>readFileSync</code>、大 JSON 解析）、把 CPU 任务移到 <code>worker_threads</code>、用连接池与批量查询消除 N+1、加缓存（内存&#x2F;Redis）、开启压缩与 keep-alive、调 <code>UV_THREADPOOL_SIZE</code>（IO 密集型且大量 <code>fs/crypto</code> 时可适当增大）、用流式响应降低内存峰值。</p>
+<h3 id="20-Node-服务常见的安全风险有哪些？"><a href="#20-Node-服务常见的安全风险有哪些？" class="headerlink" title="20. Node 服务常见的安全风险有哪些？"></a><strong>20. Node 服务常见的安全风险有哪些？</strong></h3><p>SQL 注入（必须参数化查询，不拼字符串）、命令注入（<code>spawn</code> 传参数数组、不经 shell）、路径穿越（<code>path.resolve</code> 后校验是否在允许目录内）、SSRF（代理类接口要限制目标白名单）、越权（不要只依赖前端传的 userId）、敏感信息泄露（日志脱敏、错误响应不返回堆栈）、暴力请求（限流与验证码）、反序列化与 <code>eval</code>（避免执行不可信输入）。</p>
+<h2 id="2、难题-1"><a href="#2、难题-1" class="headerlink" title="2、难题"></a>2、难题</h2><h3 id="1-为什么-process-nextTick-可能“饿死”IO？"><a href="#1-为什么-process-nextTick-可能“饿死”IO？" class="headerlink" title="1. 为什么 process.nextTick 可能“饿死”IO？"></a><strong>1. 为什么 <code>process.nextTick</code> 可能“饿死”IO？</strong></h3><p><code>nextTick</code> 队列在每个阶段之间、甚至每个回调之后都会被完整清空，且优先级高于 Promise 微任务。若回调里递归调用 <code>nextTick</code>，队列永远清不完，事件循环就无法推进到下一阶段（<code>poll</code> 阶段永远进不去），表现为服务完全不响应但 CPU 满载。同理，长微任务链也会阻塞。改用 <code>setImmediate</code> 可以把任务推到下一轮，避免独占。</p>
+<h3 id="2-libuv-线程池的大小如何影响并发？"><a href="#2-libuv-线程池的大小如何影响并发？" class="headerlink" title="2. libuv 线程池的大小如何影响并发？"></a><strong>2. libuv 线程池的大小如何影响并发？</strong></h3><p>默认 4 个线程处理 <code>fs</code>、<code>dns.lookup</code>、<code>crypto</code>（如 <code>pbkdf2</code>、<code>scrypt</code>）、<code>zlib</code>。若业务大量依赖这些操作（比如每次请求都读文件、做密码哈希），请求会在线程池排队，延迟随并发线性恶化。可通过 <code>UV_THREADPOOL_SIZE</code> 调大（启动前设置，过大反而增加上下文切换）；也可以改用异步 IO 替代（<code>dns.resolve</code> 走内核、缓存哈希结果、减少同步依赖）。</p>
+<h3 id="3-Node-里怎么实现真正的并行计算？"><a href="#3-Node-里怎么实现真正的并行计算？" class="headerlink" title="3. Node 里怎么实现真正的并行计算？"></a><strong>3. Node 里怎么实现真正的并行计算？</strong></h3><p>用 <code>worker_threads</code>：每个 worker 有独立的事件循环与 V8 实例，可并行执行 CPU 任务；数据通过 <code>postMessage</code>（结构化克隆，开销随数据量增长）传递，大数组可用 <code>SharedArrayBuffer</code> + <code>Atomics</code> 零拷贝共享。实践要点：worker 池化复用（避免反复创建）、任务切分粒度合理（太小则通信开销占比过高）、错误与超时要有兜底（worker 崩溃要能重启）。</p>
+<h3 id="4-Stream-的背压机制在代码层面是怎么运作的？"><a href="#4-Stream-的背压机制在代码层面是怎么运作的？" class="headerlink" title="4. Stream 的背压机制在代码层面是怎么运作的？"></a><strong>4. Stream 的背压机制在代码层面是怎么运作的？</strong></h3><p><code>Writable</code> 维护内部缓冲，<code>write()</code> 同步返回布尔值：返回 <code>false</code> 表示缓冲已达到 <code>highWaterMark</code>，此时生产者应停止写入并监听 <code>&#39;drain&#39;</code>；<code>pipe()</code> 内部自动处理这个信号（<code>false</code> 时 <code>pause()</code> 源，<code>drain</code> 时 <code>resume()</code>）。<code>Readable</code> 侧通过 <code>_read</code> 按需拉取。问题常出在自定义 Stream 没用 <code>_write</code> 的 <code>callback</code> 正确回调，导致“看起来没背压、实际内存暴涨”。</p>
+<h3 id="5-cluster-为什么能让多个进程共享同一端口？"><a href="#5-cluster-为什么能让多个进程共享同一端口？" class="headerlink" title="5. cluster 为什么能让多个进程共享同一端口？"></a><strong>5. <code>cluster</code> 为什么能让多个进程共享同一端口？</strong></h3><p>主进程调用 <code>listen()</code> 后，把监听句柄（文件描述符）通过 IPC 传给子进程，子进程直接在该句柄上 <code>accept</code>，因此多个进程可以监听同一端口（非 Windows 平台默认用轮询方式分发连接）。这也意味着“连接分配策略”不在你的控制之下（可能不均匀），需要靠连接数监控与压测确认；容器化场景通常改为多副本 + Service 负载均衡。</p>
+<h3 id="6-内存泄漏在-Node-里通常怎么产生、怎么查？"><a href="#6-内存泄漏在-Node-里通常怎么产生、怎么查？" class="headerlink" title="6. 内存泄漏在 Node 里通常怎么产生、怎么查？"></a><strong>6. 内存泄漏在 Node 里通常怎么产生、怎么查？</strong></h3><p>常见来源：全局变量&#x2F;单例缓存无上限、闭包持有大对象（如把整份响应挂在长期存活的回调上）、事件监听器未移除（<code>MaxListenersExceededWarning</code> 就是信号）、定时器未清理、Buffer&#x2F;大数组在队列里堆积、<code>Map</code> 用对象做键但从不删除。排查：<code>process.memoryUsage()</code> 观察趋势 → 用 <code>heap snapshot</code> 对比多次快照找增长对象 → <code>--inspect</code> 接 Chrome DevTools 看 retainers → 结合 <code>AsyncLocalStorage</code>&#x2F;请求 id 定位泄漏源。</p>
+<h3 id="7-为什么-Node-服务里“同步代码”代价这么大？"><a href="#7-为什么-Node-服务里“同步代码”代价这么大？" class="headerlink" title="7. 为什么 Node 服务里“同步代码”代价这么大？"></a><strong>7. 为什么 Node 服务里“同步代码”代价这么大？</strong></h3><p>主线程单线程，任何同步阻塞（<code>readFileSync</code>、大循环、<code>JSON.parse</code> 巨大字符串、复杂正则回溯、同步 <code>crypto</code>、<code>while</code> 轮询）都会让事件循环停摆，此时所有并发请求一起排队，表现为“并发一高，P99 直接爆炸”。判断标准是“这段代码的最坏耗时 × QPS”是否可接受；超过几毫秒就该考虑异步化、分片或搬到 worker。</p>
+<h3 id="8-Node-的事件循环与浏览器的事件循环有什么不同？"><a href="#8-Node-的事件循环与浏览器的事件循环有什么不同？" class="headerlink" title="8. Node 的事件循环与浏览器的事件循环有什么不同？"></a><strong>8. Node 的事件循环与浏览器的事件循环有什么不同？</strong></h3><p>浏览器把任务粗分为宏任务&#x2F;微任务，渲染穿插其中；Node 有明确的<strong>六阶段</strong>（timers &#x2F; pending &#x2F; poll &#x2F; check &#x2F; close 等），并额外有 <code>process.nextTick</code> 队列（优先于 Promise 微任务），以及 <code>setImmediate</code> 专有阶段；Node 没有渲染阶段，但有 <code>poll</code> 阶段的“空闲等待”行为。另外 Node 的 <code>setTimeout(fn, 0)</code> 最小延迟在实践中更接近 1ms，且 <code>setImmediate</code> 与 <code>setTimeout</code> 的顺序在主模块里不确定。面试常考的就是这种“同名 API 语义不同”。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">谢良勇</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/posts/323548657/">http://example.com/posts/323548657/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">一生情画薇妮</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95/">前端面试</a></div><div class="post-share"><div class="social-share" data-image="/img/%E5%8C%85%E7%AE%A1%E7%90%86/node.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/323548658/" title="【前端面试】六、工程化"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/build.png" onerror="onerror=null;src='/img/404/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">【前端面试】六、工程化</div></div><div class="info-2"><div class="info-item-1">一、常见题1. 什么是前端工程化，包含哪些方面？用工程手段把“写代码”变成“可协作、可验证、可交付、可运维”的流程。六个方面：规范化（代码规范、提交规范、目录约定）、模块化（拆分与依赖管理）、构建（编译、打包、优化）、质量保障（类型检查、单测、CI 门禁）、发布部署（制品、灰度、回滚）、可观测（错误与性能监控）。判断工程化做得好不好，看的是“新人上手成本、发布频率、线上缺陷率、故障恢复时间”。 2. 前端模块化经历了怎样的演进？从全局函数与命名空间（易冲突）→ IIFE 与模块模式（隔离但无依赖管理）→ AMD&#x2F;CMD（浏览器端异步加载，define/require）→ CommonJS（Node 端同步加载）→ ES Modules（静态结构、编译期可分析、支持 tree shaking、浏览器原生支持）。演进的主线是“依赖声明从隐式变显式、加载从运行时变编译期可分析”，这也直接决定了现代构建工具的能力上限。 3. 脚手架的原理是什么？本质是“模板 + 交互 + 渲染 + 安装”：用交互式 prompt 收集选项（框架、语言、是否需要 lint&#x2F;测试）→ 从...</div></div></div></a><a class="pagination-related" href="/posts/323548656/" title="【前端面试】四、构建工具"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/vite.png" onerror="onerror=null;src='/img/404/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">【前端面试】四、构建工具</div></div><div class="info-2"><div class="info-item-1">一、Webpack1、常见题1. Webpack 的核心概念有哪些？entry（入口，起点模块）、output（产物路径与文件名）、loader（把非 JS 资源或新语法转换成模块）、plugin（在构建生命周期上挂载能力，如压缩、抽离 CSS、注入变量）、mode（development&#x2F;production，决定内置优化与 DefinePlugin 的默认值）、devtool（source map 策略）、resolve（模块解析规则）、optimization（分包与压缩）。 2. loader 和 plugin 有什么区别？loader 是模块级转换函数：输入源码字符串或 AST，输出新内容，只在模块加载阶段工作（babel-loader、css-loader）。plugin 是构建过程级扩展：基于 Tapable 的事件钩子（compiler.hooks 编译级、compilation.hooks 单次构建级），能做产物改写、文件生成、注入变量等 loader 做不到的事（MiniCssExtractPlugin、HtmlWebpackPlugin、Defin...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/323548655/" title="【前端面试】三、浏览器和网络"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/net.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】三、浏览器和网络</div></div><div class="info-2"><div class="info-item-1">一、浏览器1、常见题1. 浏览器的多进程架构是怎样的？主进程（Browser，负责标签页管理、地址栏、窗口与网络调度）、渲染进程（Renderer，负责 HTML&#x2F;CSS&#x2F;JS 解析与页面渲染，每个标签页一个、同站点可能共享，跨站点则强制隔离）、GPU 进程（负责合成与绘制加速）、网络进程（负责请求与缓存）、插件&#x2F;工具进程。多进程的价值是稳定性与安全隔离（一个页面崩溃不拖垮整个浏览器，站点隔离用于缓解 Spectre 这类侧信道攻击），代价是内存占用高。 2. 从输入 URL 到页面显示经历了什么？用户输入 → 判断是搜索还是 URL（浏览器进程）→ DNS 解析 → TCP&#x2F;TLS 建立连接（HTTP&#x2F;2 复用、HTTP&#x2F;3 走 QUIC）→ 发送请求（带缓存校验、Cookie）→ 服务端返回 → 浏览器解析 HTML 构建 DOM、请求子资源 → 解析 CSS 构建 CSSOM → 合成渲染树 → 布局 → 绘制 → 合成上屏。渲染阶段的关键是“HTML 解析是流式的、CSS 与 JS 可能阻塞”。 3. 渲染流程分...</div></div></div></a><a class="pagination-related" href="/posts/323548654/" title="【前端面试】二、框架学习"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/react.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】二、框架学习</div></div><div class="info-2"><div class="info-item-1">一、React1、常见题1. React 的核心设计理念是什么？声明式（描述 UI 应该长什么样，而不是手工操作 DOM）、组件化（UI 拆成可复用的单元）、单向数据流（数据从父到子，变化由事件向上传递）、以及“UI 是状态的函数”UI = f(state)。虚拟 DOM 是这套理念的实现手段而不是目的：它带来跨平台渲染能力（React Native）、可预测的更新与批处理，但不代表比原生 DOM 操作更快。 2. JSX 的本质是什么？是 React.createElement(type, props, ...children)（或新 JSX runtime 下的 jsx/jsxs）的语法糖，产物是描述 UI 的普通对象（React Element），不是 HTML 字符串。所以 JSX 里写 class 要用 className，&#123;&#125; 里可以放表达式但不能放语句；正因为是对象，才能被 diff、被序列化到服务端（Server Components 的传输格式）。 3. 类组件与函数组件有什么区别？类组件有实例与生命周期、this 上的 state；函数组件...</div></div></div></a><a class="pagination-related" href="/posts/323548658/" title="【前端面试】六、工程化"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/build.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】六、工程化</div></div><div class="info-2"><div class="info-item-1">一、常见题1. 什么是前端工程化，包含哪些方面？用工程手段把“写代码”变成“可协作、可验证、可交付、可运维”的流程。六个方面：规范化（代码规范、提交规范、目录约定）、模块化（拆分与依赖管理）、构建（编译、打包、优化）、质量保障（类型检查、单测、CI 门禁）、发布部署（制品、灰度、回滚）、可观测（错误与性能监控）。判断工程化做得好不好，看的是“新人上手成本、发布频率、线上缺陷率、故障恢复时间”。 2. 前端模块化经历了怎样的演进？从全局函数与命名空间（易冲突）→ IIFE 与模块模式（隔离但无依赖管理）→ AMD&#x2F;CMD（浏览器端异步加载，define/require）→ CommonJS（Node 端同步加载）→ ES Modules（静态结构、编译期可分析、支持 tree shaking、浏览器原生支持）。演进的主线是“依赖声明从隐式变显式、加载从运行时变编译期可分析”，这也直接决定了现代构建工具的能力上限。 3. 脚手架的原理是什么？本质是“模板 + 交互 + 渲染 + 安装”：用交互式 prompt 收集选项（框架、语言、是否需要 lint&#x2F;测试）→ 从...</div></div></div></a><a class="pagination-related" href="/posts/323548662/" title="【前端面试】十、常见场景"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/scene.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】十、常见场景</div></div><div class="info-2"><div class="info-item-1">一、常见场景1. 设计一个能渲染万级数据的列表，怎么做？考察点：是否知道虚拟滚动与渲染瓶颈。思路：只渲染可视区 + 缓冲区（上下各若干行），用容器占位撑起总高度，滚动时按 scrollTop 计算起始索引并做绝对定位偏移；行高固定时最简单（可精确计算），行高不定时用预估高度 + 动态测量与位置缓存修正；配合 requestAnimationFrame 合并滚动更新、ResizeObserver 处理容器变化。易错边界：滚动条抖动、动态高度导致的跳动、快速滚动出现空白、删除行后的位置重算。 2. 表格有几万行还有固定列、合并单元格，怎么优化？分层：数据层分页或虚拟滚动（二者选一，不要叠加）、列层只渲染可视列（横向虚拟化）、渲染层用 Canvas 或轻量单元格组件（避免每格一个重量级组件）、交互层冻结列用 CSS sticky 而非复制一份表格、合并单元格在可视区计算后再合并（不可全量计算）。易错边界：sticky 与横向滚动、键盘操作与虚拟滚动的选区同步、合计行与虚拟滚动的冲突。 3. 搜索联想怎么做才不出现请求错乱？三件事：防抖（输入停止 300ms 再查）、取消（新请求发出前 ...</div></div></div></a><a class="pagination-related" href="/posts/323548653/" title="【前端面试】一、前端基础"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/web.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】一、前端基础</div></div><div class="info-2"><div class="info-item-1">一、HTML1、常见题答案1. HTML5 新特性的分类答案语义化标签让结构可被机器理解；表单增强提供了原生校验与更合适的输入控件（type=email/date/number 在移动端会唤起对应的键盘）；多媒体与图形（video/audio、Canvas）摆脱了插件；存储能力从 4KB 的 Cookie 扩展到 localStorage 与 IndexedDB；通信能力（WebSocket、SSE）让页面能持续接收数据；性能相关能力（preload、modulepreload、fetchpriority）让资源加载可控；还有 history.pushState 支撑前端路由与 data-* 支撑组件化。追问：“这些你实际用过哪些？”要能把新特性与项目场景对应起来。 2. 语义化的价值一是可访问性，屏幕阅读器依赖角色与结构定位内容，div 堆砌的页面会被读成一片无层次的文本；二是 SEO，爬虫与结构化数据都更依赖语义标签；三是可维护性，结构本身就是文档，新人一眼能看出页面分区；四是健壮性，在无样式或阅读器模式下仍然可读。追问：section 要求有明确主题且一般带标题，纯样式容器...</div></div></div></a><a class="pagination-related" href="/posts/323548660/" title="【前端面试】八、调试"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/devtool.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】八、调试</div></div><div class="info-2"><div class="info-item-1">一、常见题1. 前端调试的主要手段有哪些？六类：console 输出（快速验证，适合定位“有没有进来”）、断点（精确停在现场看变量与调用栈）、日志与埋点（线上无法断点时靠面包屑还原路径）、二分法（git bisect 定位引入问题的提交）、最小复现（剥离无关代码构造可复现 demo）、以及工具辅助（Network&#x2F;Performance&#x2F;Memory 面板、抓包、真机远程调试）。关键原则是“先缩小范围再深入”，而不是一上手就逐行读代码。 2. DevTools 各个面板分别解决什么问题？Elements（DOM 与样式，看谁覆盖了样式）；Console（日志与运行时表达式）；Sources（断点、调用栈、Overrides、Snippets）；Network（请求、时序分解、限速模拟、重放）；Performance（火焰图，查卡顿与帧耗时）；Memory（堆快照、分配时间线，查泄漏）；Application（localStorage/Cookie/Cache/SW）；Security（证书与混合内容）；Lighthouse（质量评分）。 3. 断点有哪些类型？...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div><div class="comment-switch"><span class="first-comment">Valine</span><span id="switch-btn"></span><span class="second-comment">Disqus</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/all/avatar.png" onerror="this.onerror=null;this.src='/img/404/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">谢良勇</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/XlyLm" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8"><span class="toc-text">一、包管理器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%B8%B8%E8%A7%81%E9%A2%98"><span class="toc-text">1、常见题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-npm%E3%80%81yarn%E3%80%81pnpm-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">1. npm、yarn、pnpm 有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-pnpm-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%97%A2%E5%BF%AB%E5%8F%88%E7%9C%81%E7%A9%BA%E9%97%B4%EF%BC%9F"><span class="toc-text">2. pnpm 为什么既快又省空间？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-dependencies%E3%80%81devDependencies%E3%80%81peerDependencies-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">3. dependencies、devDependencies、peerDependencies 有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-semver-%E7%9A%84%E8%A7%84%E5%88%99%E8%A6%81%E8%AE%B0%E4%BD%8F%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">4. semver 的规则要记住哪些？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-lockfile-%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%8C%E8%A6%81%E4%B8%8D%E8%A6%81%E6%8F%90%E4%BA%A4%EF%BC%9F"><span class="toc-text">5. lockfile 有什么用，要不要提交？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-npm-install-%E5%92%8C-npm-ci-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">6. npm install 和 npm ci 有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-npm-install-%E5%85%B7%E4%BD%93%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">7. npm install 具体做了什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-peerDependencies-%E5%86%B2%E7%AA%81%E6%98%AF%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%EF%BC%8C%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86%EF%BC%9F"><span class="toc-text">8. peerDependencies 冲突是什么情况，怎么处理？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E4%BB%80%E4%B9%88%E6%98%AF%E5%B9%BD%E7%81%B5%E4%BE%9D%E8%B5%96%EF%BC%88phantom-dependency%EF%BC%89%EF%BC%9F"><span class="toc-text">9. 什么是幽灵依赖（phantom dependency）？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E7%89%88%E6%9C%AC%E5%86%B2%E7%AA%81%E5%AF%BC%E8%87%B4%E5%90%8C%E4%B8%80%E4%B8%AA%E5%8C%85%E8%A3%85%E4%BA%86%E4%B8%A4%E4%BB%BD%EF%BC%8C%E4%BC%9A%E6%9C%89%E4%BB%80%E4%B9%88%E5%90%8E%E6%9E%9C%EF%BC%9F"><span class="toc-text">10. 版本冲突导致同一个包装了两份，会有什么后果？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-overrides-resolutions-%E6%98%AF%E5%B9%B2%E4%BB%80%E4%B9%88%E7%9A%84%EF%BC%9F"><span class="toc-text">11. overrides &#x2F; resolutions 是干什么的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-npx-%E6%98%AF%E5%B9%B2%E4%BB%80%E4%B9%88%E7%9A%84%EF%BC%9F"><span class="toc-text">12. npx 是干什么的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-%E7%A7%81%E6%9C%89%E6%BA%90%E5%92%8C%E4%BC%81%E4%B8%9A%E5%86%85%E7%BD%91%E6%80%8E%E4%B9%88%E9%85%8D%EF%BC%9F"><span class="toc-text">13. 私有源和企业内网怎么配？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-monorepo-%E9%87%8C-workspace-%E6%80%8E%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">14. monorepo 里 workspace 怎么用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-package-json-%E9%87%8C-main%E3%80%81module%E3%80%81exports%E3%80%81types-%E5%88%86%E5%88%AB%E5%B9%B2%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">15. package.json 里 main、module、exports、types 分别干什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-%E4%BE%9D%E8%B5%96%E5%AE%89%E5%85%A8%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">16. 依赖安全要注意什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-%E5%AE%89%E8%A3%85%E6%85%A2-%E5%A4%B1%E8%B4%A5%E6%80%8E%E4%B9%88%E6%8E%92%E6%9F%A5%EF%BC%9F"><span class="toc-text">17. 安装慢&#x2F;失败怎么排查？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-%E5%8F%91%E5%8C%85%E6%B5%81%E7%A8%8B%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">18. 发包流程要注意什么？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E9%9A%BE%E9%A2%98"><span class="toc-text">2、难题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-pnpm-%E7%9A%84%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E5%90%8C%E6%97%B6%E8%A7%A3%E5%86%B3%E5%B9%BD%E7%81%B5%E4%BE%9D%E8%B5%96%E4%B8%8E%E8%B7%AF%E5%BE%84%E5%85%BC%E5%AE%B9%EF%BC%9F"><span class="toc-text">1. pnpm 的目录结构为什么能同时解决幽灵依赖与路径兼容？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-npm-7-%E8%87%AA%E5%8A%A8%E5%AE%89%E8%A3%85-peer-%E5%B8%A6%E6%9D%A5%E4%BA%86%E4%BB%80%E4%B9%88%E6%96%B0%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-text">2. npm 7+ 自动安装 peer 带来了什么新问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-semver-%E8%8C%83%E5%9B%B4%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8F%8D%E7%9B%B4%E8%A7%89%E7%9A%84%E9%99%B7%E9%98%B1%EF%BC%9F"><span class="toc-text">3. semver 范围有哪些反直觉的陷阱？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-lockfile-%E5%9C%A8%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E4%B8%AD%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%B9%E6%98%93%E5%87%BA%E9%94%99%EF%BC%9F"><span class="toc-text">4. lockfile 在多人协作中为什么容易出错？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-workspace-%E5%8F%91%E5%B8%83%E6%97%B6%E4%BC%9A%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86%EF%BC%9F"><span class="toc-text">5. workspace:\* 发布时会怎么处理？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-dependency-confusion-%E6%98%AF%E6%80%8E%E4%B9%88%E5%9B%9E%E4%BA%8B%EF%BC%8C%E6%80%8E%E4%B9%88%E9%98%B2%EF%BC%9F"><span class="toc-text">6. dependency confusion 是怎么回事，怎么防？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Yarn-PnP%EF%BC%88Plug%E2%80%99n%E2%80%99Play%EF%BC%89%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8F%96%E8%88%8D%EF%BC%9F"><span class="toc-text">7. Yarn PnP（Plug’n’Play）的原理与取舍？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%AF%A5%E9%9A%8F%E6%84%8F%E5%8A%A0-overrides%EF%BC%9F"><span class="toc-text">8. 为什么不该随意加 overrides？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Node"><span class="toc-text">二、Node</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%B8%B8%E8%A7%81%E9%A2%98-1"><span class="toc-text">1、常见题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Node-js-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E5%92%8C%E6%B5%8F%E8%A7%88%E5%99%A8%E9%87%8C%E7%9A%84-JS-%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F"><span class="toc-text">1. Node.js 是什么，和浏览器里的 JS 有什么不同？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AF%B4-Node-%E6%98%AF%E2%80%9C%E5%8D%95%E7%BA%BF%E7%A8%8B%E2%80%9D%E7%9A%84%EF%BC%8C%E5%8F%88%E6%80%8E%E4%B9%88%E8%83%BD%E9%AB%98%E5%B9%B6%E5%8F%91%EF%BC%9F"><span class="toc-text">2. 为什么说 Node 是“单线程”的，又怎么能高并发？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E6%9C%89%E5%93%AA%E4%BA%9B%E9%98%B6%E6%AE%B5%EF%BC%9F"><span class="toc-text">3. 事件循环有哪些阶段？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-process-nextTick%E3%80%81setImmediate%E3%80%81setTimeout-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">4. process.nextTick、setImmediate、setTimeout 有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E9%98%BB%E5%A1%9E%E4%B8%8E%E9%9D%9E%E9%98%BB%E5%A1%9E%E3%80%81%E5%BC%82%E6%AD%A5-IO-%E7%9A%84%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="toc-text">5. 阻塞与非阻塞、异步 IO 的原理？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-CJS-%E4%B8%8E-ESM-%E5%9C%A8-Node-%E4%B8%AD%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">6. CJS 与 ESM 在 Node 中的区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-require-%E7%9A%84%E6%9F%A5%E6%89%BE%E4%B8%8E%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6%EF%BC%9F"><span class="toc-text">7. require 的查找与缓存机制？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-CJS-%E7%9A%84%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E4%BC%9A%E6%80%8E%E6%A0%B7%EF%BC%9F"><span class="toc-text">8. CJS 的循环依赖会怎样？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-Buffer-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AE%83%EF%BC%9F"><span class="toc-text">9. Buffer 是什么，为什么需要它？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-Stream-%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%EF%BC%8C%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-text">10. Stream 有哪几种，解决什么问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E8%83%8C%E5%8E%8B%EF%BC%88backpressure%EF%BC%89%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">11. 背压（backpressure）是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-Node-%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E6%9C%89%E5%93%AA%E4%BA%9B%E8%A6%81%E7%82%B9%EF%BC%9F"><span class="toc-text">12. Node 的错误处理有哪些要点？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-child-process-%E7%9A%84-spawn-exec-fork-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">13. child_process 的 spawn&#x2F;exec&#x2F;fork 有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-worker-threads-%E5%92%8C-cluster-%E5%88%86%E5%88%AB%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">14. worker_threads 和 cluster 分别解决什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-Express-%E4%B8%8E-Koa-%E7%9A%84%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%A8%A1%E5%9E%8B%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">15. Express 与 Koa 的中间件模型有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0%E4%B8%8E%E4%BA%8B%E5%8A%A1%E6%80%8E%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">16. 数据库连接池与事务怎么用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86%EF%BC%9F"><span class="toc-text">17. 文件上传怎么处理？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-%E5%A6%82%E4%BD%95%E5%81%9A%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%EF%BC%9F"><span class="toc-text">18. 如何做优雅关闭？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-Node-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%BB%8E%E5%93%AA%E9%87%8C%E4%B8%8B%E6%89%8B%EF%BC%9F"><span class="toc-text">19. Node 性能优化从哪里下手？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-Node-%E6%9C%8D%E5%8A%A1%E5%B8%B8%E8%A7%81%E7%9A%84%E5%AE%89%E5%85%A8%E9%A3%8E%E9%99%A9%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">20. Node 服务常见的安全风险有哪些？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E9%9A%BE%E9%A2%98-1"><span class="toc-text">2、难题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88-process-nextTick-%E5%8F%AF%E8%83%BD%E2%80%9C%E9%A5%BF%E6%AD%BB%E2%80%9DIO%EF%BC%9F"><span class="toc-text">1. 为什么 process.nextTick 可能“饿死”IO？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-libuv-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%A4%A7%E5%B0%8F%E5%A6%82%E4%BD%95%E5%BD%B1%E5%93%8D%E5%B9%B6%E5%8F%91%EF%BC%9F"><span class="toc-text">2. libuv 线程池的大小如何影响并发？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Node-%E9%87%8C%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9C%9F%E6%AD%A3%E7%9A%84%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97%EF%BC%9F"><span class="toc-text">3. Node 里怎么实现真正的并行计算？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Stream-%E7%9A%84%E8%83%8C%E5%8E%8B%E6%9C%BA%E5%88%B6%E5%9C%A8%E4%BB%A3%E7%A0%81%E5%B1%82%E9%9D%A2%E6%98%AF%E6%80%8E%E4%B9%88%E8%BF%90%E4%BD%9C%E7%9A%84%EF%BC%9F"><span class="toc-text">4. Stream 的背压机制在代码层面是怎么运作的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-cluster-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E8%AE%A9%E5%A4%9A%E4%B8%AA%E8%BF%9B%E7%A8%8B%E5%85%B1%E4%BA%AB%E5%90%8C%E4%B8%80%E7%AB%AF%E5%8F%A3%EF%BC%9F"><span class="toc-text">5. cluster 为什么能让多个进程共享同一端口？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E5%9C%A8-Node-%E9%87%8C%E9%80%9A%E5%B8%B8%E6%80%8E%E4%B9%88%E4%BA%A7%E7%94%9F%E3%80%81%E6%80%8E%E4%B9%88%E6%9F%A5%EF%BC%9F"><span class="toc-text">6. 内存泄漏在 Node 里通常怎么产生、怎么查？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E4%B8%BA%E4%BB%80%E4%B9%88-Node-%E6%9C%8D%E5%8A%A1%E9%87%8C%E2%80%9C%E5%90%8C%E6%AD%A5%E4%BB%A3%E7%A0%81%E2%80%9D%E4%BB%A3%E4%BB%B7%E8%BF%99%E4%B9%88%E5%A4%A7%EF%BC%9F"><span class="toc-text">7. 为什么 Node 服务里“同步代码”代价这么大？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-Node-%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E4%B8%8E%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F"><span class="toc-text">8. Node 的事件循环与浏览器的事件循环有什么不同？</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/323548662/" title="【前端面试】十、常见场景"><img src="/img/%E9%9D%A2%E8%AF%95/scene.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】十、常见场景"/></a><div class="content"><a class="title" href="/posts/323548662/" title="【前端面试】十、常见场景">【前端面试】十、常见场景</a><time datetime="2026-11-19T12:07:39.000Z" title="发表于 2026-11-19 20:07:39">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548661/" title="【前端面试】九、部署和代理"><img src="/img/%E9%9D%A2%E8%AF%95/deploy.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】九、部署和代理"/></a><div class="content"><a class="title" href="/posts/323548661/" title="【前端面试】九、部署和代理">【前端面试】九、部署和代理</a><time datetime="2026-11-19T12:07:38.000Z" title="发表于 2026-11-19 20:07:38">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548660/" title="【前端面试】八、调试"><img src="/img/%E9%9D%A2%E8%AF%95/devtool.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】八、调试"/></a><div class="content"><a class="title" href="/posts/323548660/" title="【前端面试】八、调试">【前端面试】八、调试</a><time datetime="2026-11-19T12:07:37.000Z" title="发表于 2026-11-19 20:07:37">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548659/" title="【前端面试】七、病毒与防范"><img src="/img/%E9%9D%A2%E8%AF%95/netSafe.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】七、病毒与防范"/></a><div class="content"><a class="title" href="/posts/323548659/" title="【前端面试】七、病毒与防范">【前端面试】七、病毒与防范</a><time datetime="2026-11-19T12:07:36.000Z" title="发表于 2026-11-19 20:07:36">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548658/" title="【前端面试】六、工程化"><img src="/img/%E9%9D%A2%E8%AF%95/build.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】六、工程化"/></a><div class="content"><a class="title" href="/posts/323548658/" title="【前端面试】六、工程化">【前端面试】六、工程化</a><time datetime="2026-11-19T12:07:35.000Z" title="发表于 2026-11-19 20:07:35">2026-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 谢良勇</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">简</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><script src="/js/tw_cn.js?v=5.7.2"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const initValine = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyValine = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const valineConfig = {
+      el: '#vcomment',
+      appId: '',
+      appKey: '',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      visitor: false,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || window.location.pathname
+    }
+
+    new Valine(valineConfig)
+  }
+
+  const loadValine = async (el, path) => {
+    if (typeof Valine === 'function') {
+      initValine(el, path)
+    } else {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/valine@1.5.3/dist/Valine.min.js')
+      initValine(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Valine' === 'Valine'
+      ? window.shuoshuoComment = { loadComment: loadValine }
+      : window.loadOtherComment = loadValine
+    return
+  }
+
+  if ('Valine' === 'Valine' || !true) {
+    if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/posts/323548657/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'http://example.com/posts/323548657/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = '【前端面试】五、包管理和Node'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Valine' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Valine' === 'Disqus' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>

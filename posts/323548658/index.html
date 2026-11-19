@@ -1,0 +1,366 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>【前端面试】六、工程化 | 一生情画薇妮</title><meta name="author" content="谢良勇"><meta name="copyright" content="谢良勇"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、常见题1. 什么是前端工程化，包含哪些方面？用工程手段把“写代码”变成“可协作、可验证、可交付、可运维”的流程。六个方面：规范化（代码规范、提交规范、目录约定）、模块化（拆分与依赖管理）、构建（编译、打包、优化）、质量保障（类型检查、单测、CI 门禁）、发布部署（制品、灰度、回滚）、可观测（错误与性能监控）。判断工程化做得好不好，看的是“新人上手成本、发布频率、线上缺陷率、故障恢复时间”。 2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【前端面试】六、工程化">
+<meta property="og:url" content="http://example.com/posts/323548658/index.html">
+<meta property="og:site_name" content="一生情画薇妮">
+<meta property="og:description" content="一、常见题1. 什么是前端工程化，包含哪些方面？用工程手段把“写代码”变成“可协作、可验证、可交付、可运维”的流程。六个方面：规范化（代码规范、提交规范、目录约定）、模块化（拆分与依赖管理）、构建（编译、打包、优化）、质量保障（类型检查、单测、CI 门禁）、发布部署（制品、灰度、回滚）、可观测（错误与性能监控）。判断工程化做得好不好，看的是“新人上手成本、发布频率、线上缺陷率、故障恢复时间”。 2">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/%E9%9D%A2%E8%AF%95/build.png">
+<meta property="article:published_time" content="2026-11-19T12:07:35.000Z">
+<meta property="article:modified_time" content="2026-11-19T14:06:52.149Z">
+<meta property="article:author" content="谢良勇">
+<meta property="article:tag" content="前端面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/%E9%9D%A2%E8%AF%95/build.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "【前端面试】六、工程化",
+  "url": "http://example.com/posts/323548658/",
+  "image": "http://example.com/img/%E9%9D%A2%E8%AF%95/build.png",
+  "datePublished": "2026-11-19T12:07:35.000Z",
+  "dateModified": "2026-11-19T14:06:52.149Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "谢良勇",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/all/favicon.jepg"><link rel="canonical" href="http://example.com/posts/323548658/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '【前端面试】六、工程化',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="一生情画薇妮" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/all/avatar.png" onerror="this.onerror=null;this.src='/img/404/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/%E9%9D%A2%E8%AF%95/build.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/all/favicon.jpeg" alt="Logo"><span class="site-name">一生情画薇妮</span></a><a class="nav-page-title" href="/"><span class="site-name">【前端面试】六、工程化</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">【前端面试】六、工程化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-19T12:07:35.000Z" title="发表于 2026-11-19 20:07:35">2026-11-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-19T14:06:52.149Z" title="更新于 2026-11-19 22:06:52">2026-11-19</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="一、常见题"><a href="#一、常见题" class="headerlink" title="一、常见题"></a>一、常见题</h2><h3 id="1-什么是前端工程化，包含哪些方面？"><a href="#1-什么是前端工程化，包含哪些方面？" class="headerlink" title="1. 什么是前端工程化，包含哪些方面？"></a><strong>1. 什么是前端工程化，包含哪些方面？</strong></h3><p>用工程手段把“写代码”变成“可协作、可验证、可交付、可运维”的流程。六个方面：<strong>规范化</strong>（代码规范、提交规范、目录约定）、<strong>模块化</strong>（拆分与依赖管理）、<strong>构建</strong>（编译、打包、优化）、<strong>质量保障</strong>（类型检查、单测、CI 门禁）、<strong>发布部署</strong>（制品、灰度、回滚）、<strong>可观测</strong>（错误与性能监控）。判断工程化做得好不好，看的是“新人上手成本、发布频率、线上缺陷率、故障恢复时间”。</p>
+<h3 id="2-前端模块化经历了怎样的演进？"><a href="#2-前端模块化经历了怎样的演进？" class="headerlink" title="2. 前端模块化经历了怎样的演进？"></a><strong>2. 前端模块化经历了怎样的演进？</strong></h3><p>从全局函数与命名空间（易冲突）→ IIFE 与模块模式（隔离但无依赖管理）→ AMD&#x2F;CMD（浏览器端异步加载，<code>define/require</code>）→ CommonJS（Node 端同步加载）→ ES Modules（静态结构、编译期可分析、支持 tree shaking、浏览器原生支持）。演进的主线是“依赖声明从隐式变显式、加载从运行时变编译期可分析”，这也直接决定了现代构建工具的能力上限。</p>
+<h3 id="3-脚手架的原理是什么？"><a href="#3-脚手架的原理是什么？" class="headerlink" title="3. 脚手架的原理是什么？"></a><strong>3. 脚手架的原理是什么？</strong></h3><p>本质是“模板 + 交互 + 渲染 + 安装”：用交互式 prompt 收集选项（框架、语言、是否需要 lint&#x2F;测试）→ 从模板仓库拉取（git clone 或 npm 包）→ 用模板引擎（ejs&#x2F;handlebars）按选项渲染文件 → 生成 <code>package.json</code> 并安装依赖。进阶能力包括插件化（<code>create-vite</code> 的多模板）、preset 复用、以及升级机制（模板与生成物分离，便于后续同步）。</p>
+<h3 id="4-ESLint-的原理是什么，怎么配？"><a href="#4-ESLint-的原理是什么，怎么配？" class="headerlink" title="4. ESLint 的原理是什么，怎么配？"></a><strong>4. ESLint 的原理是什么，怎么配？</strong></h3><p>基于 AST 遍历：解析源码 → 生成 AST → 遍历节点并触发规则（每条规则监听特定节点类型，报告 <code>context.report</code>）→ 应用修复（<code>fix</code>）。配置由 <code>parser</code>（解析器，TS 用 <code>@typescript-eslint/parser</code>）、<code>plugins</code>（提供规则集）、<code>rules</code>（开关与等级）构成；ESLint 9 起默认用 <strong>flat config</strong>（<code>eslint.config.js</code>），不再用 <code>extends</code> 链，而是数组 + 按文件匹配。</p>
+<h3 id="5-ESLint-和-Prettier-有什么区别，怎么协作？"><a href="#5-ESLint-和-Prettier-有什么区别，怎么协作？" class="headerlink" title="5. ESLint 和 Prettier 有什么区别，怎么协作？"></a><strong>5. ESLint 和 Prettier 有什么区别，怎么协作？</strong></h3><p>职责不同：ESLint 管<strong>代码质量与潜在错误</strong>（未使用变量、<code>==</code>、hook 规则），Prettier 只管<strong>格式</strong>（缩进、引号、换行），且格式化能力更强更统一。协作方式是用 <code>eslint-config-prettier</code> 关闭所有与格式冲突的 ESLint 规则、让 Prettier 独占格式化，执行顺序是先 lint 修复再格式化（或反过来但避免互相打架）。</p>
+<h3 id="6-Git-hooks-怎么用在工程化里？"><a href="#6-Git-hooks-怎么用在工程化里？" class="headerlink" title="6. Git hooks 怎么用在工程化里？"></a><strong>6. Git hooks 怎么用在工程化里？</strong></h3><p><code>husky</code> 管理 git 钩子（<code>pre-commit</code>、<code>commit-msg</code>、<code>pre-push</code>）；<code>lint-staged</code> 只对<strong>暂存区文件</strong>跑 lint 与格式化（避免全量检查太慢）；<code>commitlint</code> 校验提交信息符合 Conventional Commits（<code>feat:</code>、<code>fix:</code>、<code>BREAKING CHANGE:</code>），从而支撑自动生成 changelog 与语义化版本。要点是“本地钩子要快（秒级）”，全量检查留给 CI，否则会被开发者用 <code>--no-verify</code> 绕过。</p>
+<h3 id="7-常见的-Git-工作流有哪些？"><a href="#7-常见的-Git-工作流有哪些？" class="headerlink" title="7. 常见的 Git 工作流有哪些？"></a><strong>7. 常见的 Git 工作流有哪些？</strong></h3><p>Git Flow（<code>develop/release/hotfix</code> 分支齐全，适合有固定发布节奏的重流程团队，缺点是分支管理重）、GitHub Flow（主干 + 功能分支 + PR，简单直接）、Trunk-Based（短生命周期分支、频繁合并主干、靠 feature flag 控制上线，适合高频发布的团队）。选型取决于发布频率与团队规模，而不是“哪个更先进”。</p>
+<h3 id="8-Babel-的工作原理是什么？"><a href="#8-Babel-的工作原理是什么？" class="headerlink" title="8. Babel 的工作原理是什么？"></a><strong>8. Babel 的工作原理是什么？</strong></h3><p>三阶段：<code>parse</code>（源码 → AST，靠 <code>@babel/parser</code>）→ <code>transform</code>（遍历 AST，插件按 visitor 修改节点）→ <code>generate</code>（AST → 代码 + sourcemap）。<code>preset</code> 是一组插件的集合；执行顺序是<strong>插件先于 preset，插件按数组顺序、preset 按逆序</strong>。理解顺序很关键，否则会出现“我的插件没生效”或“转换结果不符合预期”。</p>
+<h3 id="9-为什么要-polyfill，browserslist-起什么作用？"><a href="#9-为什么要-polyfill，browserslist-起什么作用？" class="headerlink" title="9. 为什么要 polyfill，browserslist 起什么作用？"></a><strong>9. 为什么要 polyfill，<code>browserslist</code> 起什么作用？</strong></h3><p>转译只能改语法（箭头函数、可选链），改不了<strong>运行时缺失的 API</strong>（<code>Promise</code>、<code>Array.prototype.at</code>、<code>Object.hasOwn</code>），后者需要 polyfill。<code>browserslist</code> 声明目标浏览器范围，Babel 与 autoprefixer 据此决定转译程度与需要补哪些特性——它是“按需转译”的唯一依据，配错会导致“该转的没转”或“产物过大”。</p>
+<h3 id="10-core-js-全量引入和按需引入怎么取舍？"><a href="#10-core-js-全量引入和按需引入怎么取舍？" class="headerlink" title="10. core-js 全量引入和按需引入怎么取舍？"></a><strong>10. <code>core-js</code> 全量引入和按需引入怎么取舍？</strong></h3><p>全量（<code>import &#39;core-js/stable&#39;</code>）简单但体积大；<code>useBuiltIns: &#39;usage&#39;</code> 按代码实际用到的特性注入，体积小但会<strong>污染全局</strong>（改写内置原型）；用 <code>@babel/plugin-transform-runtime</code> + <code>core-js-pure</code> 可以避免全局污染（适合库），代价是每个文件可能引入辅助代码。工程惯例：业务应用用 <code>usage</code>，类库用 <code>runtime</code>。</p>
+<h3 id="11-构建工具是怎么演进的？"><a href="#11-构建工具是怎么演进的？" class="headerlink" title="11. 构建工具是怎么演进的？"></a><strong>11. 构建工具是怎么演进的？</strong></h3><p>Grunt、Gulp（基于任务与文件流，本质是“批量执行”）→ Webpack（以模块图为核心，生态完备）→ Rollup（面向库、产物更干净）→ Vite（dev 不打包 + 原生 ESM）、esbuild、SWC、Rspack（Rust）、Turbopack（Rust，增量）。演进方向是“更快的编译内核 + 更细的增量 + dev 与 build 的解耦”，但生态兼容性始终是老工具的价值所在。</p>
+<h3 id="12-Monorepo-和-Multirepo-怎么选？"><a href="#12-Monorepo-和-Multirepo-怎么选？" class="headerlink" title="12. Monorepo 和 Multirepo 怎么选？"></a><strong>12. Monorepo 和 Multirepo 怎么选？</strong></h3><p>Monorepo（单仓多包）：跨包改动可原子提交、依赖版本统一、代码复用与重构方便、统一 CI 与规范；代价是仓库变大、构建与 CI 需要编排（<code>Nx</code>&#x2F;<code>Turborepo</code> 的任务图与缓存）、权限粒度粗。Multirepo：边界清晰、权限与发布独立、CI 轻；代价是跨库联动困难（改一个接口要发多个包）、版本漂移。判断标准是“包之间是否有频繁的协同改动”。</p>
+<h3 id="13-Monorepo-的构建怎么做才不慢？"><a href="#13-Monorepo-的构建怎么做才不慢？" class="headerlink" title="13. Monorepo 的构建怎么做才不慢？"></a><strong>13. Monorepo 的构建怎么做才不慢？</strong></h3><p>靠“任务图 + 缓存 + 只构建受影响的包”：<code>Turborepo</code>&#x2F;<code>Nx</code> 根据依赖关系推导执行顺序、并行跑无依赖任务；对任务输出做哈希缓存（同输入直接命中，本地缓存加远程缓存可跨机器复用）；用 <code>--filter</code>&#x2F;<code>affected</code> 只跑被改动的包及其下游。没有这三件套的 Monorepo 会随着包数增长而不可用。</p>
+<h3 id="14-组件库-工具库的产物该怎么构建？"><a href="#14-组件库-工具库的产物该怎么构建？" class="headerlink" title="14. 组件库&#x2F;工具库的产物该怎么构建？"></a><strong>14. 组件库&#x2F;工具库的产物该怎么构建？</strong></h3><p>产物要覆盖多种消费方式：ESM（供现代打包工具，支持 tree shaking）+ CJS（兼容旧工具）+ 类型声明（<code>.d.ts</code>）+ 样式文件；<code>package.json</code> 用 <code>exports</code> 声明条件导出（<code>import/require/types</code>）与子路径；<code>sideEffects</code> 标记以支持摇树；按需引入通过“每个组件一个入口文件 + <code>exports</code> 子路径”实现，而不是靠 babel 插件改导入语句。另外要产 sourcemap、做体积检查、跑单测与 API 报告。</p>
+<h3 id="15-版本发布怎么自动化？"><a href="#15-版本发布怎么自动化？" class="headerlink" title="15. 版本发布怎么自动化？"></a><strong>15. 版本发布怎么自动化？</strong></h3><p>用 <code>changesets</code>（按改动写变更说明，自动计算版本号、生成 changelog、批量发布）或 <code>semantic-release</code>（分析 commit 信息自动定版本与发布）。核心是“版本号由变更性质决定”（<code>feat</code> → minor、<code>fix</code> → patch、破坏性 → major），并保证发布前跑构建与测试、发布后打 tag 与通知；Monorepo 要注意“依赖内部包时版本必须同步更新”。</p>
+<h3 id="16-环境与配置怎么管理才安全？"><a href="#16-环境与配置怎么管理才安全？" class="headerlink" title="16. 环境与配置怎么管理才安全？"></a><strong>16. 环境与配置怎么管理才安全？</strong></h3><p>分三层：代码内 <code>.env</code>（本地默认值）、CI 变量（构建期注入）、运行时配置（容器启动注入或配置中心下发，便于“一份镜像跑多环境”）。安全要求：密钥不入库、不进产物、日志脱敏；前端只暴露非敏感配置（<code>VITE_</code> 前缀），敏感能力一律留在服务端。常见事故是把数据库密码写进 <code>DefinePlugin</code>，直接被打进 JS。</p>
+<h3 id="17-Mock-有哪几种方案？"><a href="#17-Mock-有哪几种方案？" class="headerlink" title="17. Mock 有哪几种方案？"></a><strong>17. Mock 有哪几种方案？</strong></h3><p>接口契约型（OpenAPI&#x2F;Mock 定义生成 mock 响应，契约即文档）、拦截型（MSW 在 Service Worker 层拦截，dev&#x2F;测试&#x2F;浏览器都能用）、代理型（dev server 中间件按规则返回 mock）。要点是“mock 数据与真实接口结构一致、能用同一份契约驱动类型与 mock”，否则前后端联调时必然返工。</p>
+<h3 id="18-代码质量怎么度量？"><a href="#18-代码质量怎么度量？" class="headerlink" title="18. 代码质量怎么度量？"></a><strong>18. 代码质量怎么度量？</strong></h3><p>分维度：覆盖率（行&#x2F;分支，注意“高覆盖率不等于高质量”）、复杂度（圈复杂度、函数长度）、重复率、规范违规数、类型覆盖（<code>any</code> 占比）、技术债趋势。工具链是 ESLint + 单测覆盖率报告 + SonarQube 类平台。关键是<strong>把指标做成门禁</strong>（新增代码覆盖率不得下降），否则度量只是报表。</p>
+<h3 id="19-性能预算（performance-budget）怎么落地？"><a href="#19-性能预算（performance-budget）怎么落地？" class="headerlink" title="19. 性能预算（performance budget）怎么落地？"></a><strong>19. 性能预算（performance budget）怎么落地？</strong></h3><p>在构建产物层面设阈值：入口 chunk 体积、总产物体积、关键资源数量、图片总量；用 <code>size-limit</code>&#x2F;<code>bundlewatch</code> 在 CI 里比较主分支，超阈值直接失败；配合 <code>bundle-analyzer</code> 看增量来源。运行时可加 Lighthouse CI 对 LCP&#x2F;TBT 设阈值。意义是“把性能从口号变成每次提交都要付的代价”。</p>
+<h3 id="20-前端可观测性在工程化里怎么落位？"><a href="#20-前端可观测性在工程化里怎么落位？" class="headerlink" title="20. 前端可观测性在工程化里怎么落位？"></a><strong>20. 前端可观测性在工程化里怎么落位？</strong></h3><p>三块：错误（全局异常 + Promise + 资源错误，带版本号与用户环境）、性能（PerformanceObserver 采集核心指标）、行为埋点。工程要点：采集 SDK 要轻、上报用 <code>sendBeacon</code> 并采样限流、<strong>sourcemap 与 release 版本关联</strong>（生产用 <code>hidden-source-map</code>，map 只上传到监控平台）、告警规则与值班流程。没有版本号的监控数据无法定位问题，这是最常见的设计缺失。</p>
+<h2 id="二、难题"><a href="#二、难题" class="headerlink" title="二、难题"></a>二、难题</h2><h3 id="1-ESLint-为什么慢，flat-config-改变了什么？"><a href="#1-ESLint-为什么慢，flat-config-改变了什么？" class="headerlink" title="1. ESLint 为什么慢，flat config 改变了什么？"></a><strong>1. ESLint 为什么慢，flat config 改变了什么？</strong></h3><p>慢的原因：需要完整解析 AST（TS 项目还要构建 type program，开销最大）、插件规则数量多、文件全量扫描。flat config 的变化是<strong>取消 <code>extends</code> 隐式链</strong>，改成可显式组合的数组、按文件 glob 匹配、规则来源清晰（便于定位“这条规则谁开的”），也让共享配置更容易审计。加速手段：<code>--cache</code>、<code>lint-staged</code> 只查暂存文件、type-aware 规则单独跑一个更慢的流水线、或迁移到 Rust 实现（oxlint、Biome）。</p>
+<h3 id="2-Babel-插件与-preset-的顺序为什么容易出错？"><a href="#2-Babel-插件与-preset-的顺序为什么容易出错？" class="headerlink" title="2. Babel 插件与 preset 的顺序为什么容易出错？"></a><strong>2. Babel 插件与 preset 的顺序为什么容易出错？</strong></h3><p>规则是“插件先执行、preset 后执行；同类内部插件按数组正序、preset 按逆序”。因此同一个语法被两个插件处理时，谁先谁后会产生完全不同的 AST；把插件塞进 preset 又会改变相对顺序。实践中应把“必须最先&#x2F;最后执行的转换”显式写在 <code>plugins</code> 数组的两端，并用 <code>@babel/helper-plugin-utils</code> 明确 visitor 的 <code>enter/exit</code>，不要依赖运气。</p>
+<h3 id="3-为什么-Babel-处理过的代码-tree-shaking-会失效？"><a href="#3-为什么-Babel-处理过的代码-tree-shaking-会失效？" class="headerlink" title="3. 为什么 Babel 处理过的代码 tree shaking 会失效？"></a><strong>3. 为什么 Babel 处理过的代码 tree shaking 会失效？</strong></h3><p>tree shaking 依赖 ESM 静态结构，Babel 默认把 <code>import/export</code> 转成 CJS（<code>modules: &#39;commonjs&#39;</code>），变成运行时赋值，构建工具无法静态判断哪些导出被使用。解决办法是设置 <code>modules: false</code> 保留 ESM，由 Rollup&#x2F;Webpack 负责模块处理；另外辅助函数（<code>_defineProperty</code> 等）若不抽离，也会造成重复代码而非可摇树的冗余。</p>
+<h3 id="4-Monorepo-的远程缓存是怎么工作的？"><a href="#4-Monorepo-的远程缓存是怎么工作的？" class="headerlink" title="4. Monorepo 的远程缓存是怎么工作的？"></a><strong>4. Monorepo 的远程缓存是怎么工作的？</strong></h3><p>每个任务（如 <code>build</code>）的输入（源码、依赖版本、配置、环境变量白名单）被哈希成一个 key；执行过就存“key → 产物 + 日志”到本地缓存，命中则直接还原产物并回放日志（跳过执行）。配置远程缓存（如 Turborepo 的 remote cache、Nx Cloud）后，CI 与不同开发机共享同一份缓存，于是“没改的包在所有机器上都不重新构建”。风险是缓存正确性：输入哈希必须覆盖所有影响输出的因素（漏了某个环境变量就会命中错误缓存）。</p>
+<h3 id="5-组件库的-exports-与按需引入怎么设计才正确？"><a href="#5-组件库的-exports-与按需引入怎么设计才正确？" class="headerlink" title="5. 组件库的 exports 与按需引入怎么设计才正确？"></a><strong>5. 组件库的 <code>exports</code> 与按需引入怎么设计才正确？</strong></h3><p><code>exports</code> 一旦声明，就等于<strong>封闭了其他子路径</strong>，因此要显式列出所有对外入口（<code>.</code>、<code>./es/*</code>、<code>./style.css</code> 等），并用条件导出区分 <code>import/require/types</code>；按需引入的正确实现是“每个组件独立入口文件 + 模块级 <code>sideEffects</code> 标记”，让打包工具自然摇树，而不是靠 <code>babel-plugin-import</code> 去改源码导入路径。还要注意 <code>types</code> 条件必须指向与格式匹配的声明文件（ESM 用 <code>.d.mts</code>&#x2F;<code>types</code> 字段配置），否则 TS 会判定为不可用。</p>
+<h3 id="6-CI-里怎么做体积门禁与增量分析？"><a href="#6-CI-里怎么做体积门禁与增量分析？" class="headerlink" title="6. CI 里怎么做体积门禁与增量分析？"></a><strong>6. CI 里怎么做体积门禁与增量分析？</strong></h3><p>两步：一是<strong>与基线对比</strong>（检出主分支构建或直接拉取基线统计，比较各 chunk 的体积增量，超过阈值失败）；二是<strong>归因</strong>（产物里注入模块来源统计，或对两次构建的 <code>stats.json</code> 做 diff，定位到具体新增依赖）。难点在于构建必须可复现（否则体积波动来自环境），所以要固定 Node 版本、锁定依赖、禁用随机与时间戳；对“合理的必要增长”要有审批通道，否则团队会习惯性调高阈值。</p>
+<h3 id="7-工程化怎么量化收益？"><a href="#7-工程化怎么量化收益？" class="headerlink" title="7. 工程化怎么量化收益？"></a><strong>7. 工程化怎么量化收益？</strong></h3><p>四个可观测指标：构建时长（本地与 CI 的 P50&#x2F;P95）、发布频率与发布耗时（从合并到上线的 lead time）、线上缺陷率与回滚率、故障恢复时间（MTTR）。改进要能对应到指标变化：引入缓存后 CI 时长下降多少、加类型检查后线上类型错误下降多少。没有基线的“工程化改造”很容易变成过度设计（这也是为什么先度量再优化）。</p>
+<h3 id="8-微前端在工程化层面要解决哪些问题？"><a href="#8-微前端在工程化层面要解决哪些问题？" class="headerlink" title="8. 微前端在工程化层面要解决哪些问题？"></a><strong>8. 微前端在工程化层面要解决哪些问题？</strong></h3><p>四个层面：<strong>构建独立</strong>（子应用独立构建与发布，不互相阻塞）、<strong>依赖共享</strong>（同一框架只加载一份，需版本协商与单例约束，否则出现多实例问题）、<strong>样式与运行时隔离</strong>（沙箱、样式前缀、全局变量冲突）、<strong>治理</strong>（统一路由约定、鉴权与埋点入口、公共依赖升级策略）。落地顺序建议是“先拆构建与发布、再谈运行时隔离”，很多团队失败在“为了技术炫技引入微前端，却没有独立的发布节奏需求”。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">谢良勇</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/posts/323548658/">http://example.com/posts/323548658/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">一生情画薇妮</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95/">前端面试</a></div><div class="post-share"><div class="social-share" data-image="/img/%E9%9D%A2%E8%AF%95/build.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/323548659/" title="【前端面试】七、病毒与防范"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/netSafe.png" onerror="onerror=null;src='/img/404/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">【前端面试】七、病毒与防范</div></div><div class="info-2"><div class="info-item-1">一、常见题1. XSS 有哪几类，防御的核心思路是什么？存储型（恶意内容入库，他人访问时执行）、反射型（随请求参数回显）、DOM 型（前端把不可信数据写入危险位置，如 innerHTML、location、document.write、eval）。防御核心是按输出上下文做转义：HTML 文本转实体、属性值加引号并转义、URL 做协议白名单（禁 javascript:）、JS 上下文用序列化而非拼接；富文本必须走 DOM 树白名单净化（如 DOMPurify）；再叠加 CSP 与 HttpOnly Cookie 作为兜底。 2. CSRF 的原理与防御？用户已登录 A 站，访问恶意站点时浏览器被诱导向 A 发请求，且自动带上 A 的 Cookie，服务端误判为用户本人操作。防御：Cookie 用 SameSite=Lax/Strict（最有效的基础防线）、关键请求带 CSRF Token 并服务端校验、校验 Origin/Referer、敏感操作二次确认。注意 CORS 防不住 CSRF（它限制的是读取响应，不是发出请求）。 3. SQL 注入的原理与防御？把用户输入拼进 SQL ...</div></div></div></a><a class="pagination-related" href="/posts/323548657/" title="【前端面试】五、包管理和Node"><img class="cover" src="/img/%E5%8C%85%E7%AE%A1%E7%90%86/node.png" onerror="onerror=null;src='/img/404/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">【前端面试】五、包管理和Node</div></div><div class="info-2"><div class="info-item-1">一、包管理器1、常见题1. npm、yarn、pnpm 有什么区别？npm 是官方包管理器，扁平化把依赖 hoist 到顶层 node_modules；yarn（classic）早期以速度快与 lockfile 严格著称，后续有 Berry&#x2F;PnP；pnpm 用内容寻址存储 + 硬链接 + 符号链接，磁盘占用小、安装快，并且依赖结构严格（只暴露直接依赖）。选型要点：pnpm 在 monorepo 与依赖治理上更优，npm 兼容性最好，yarn 生态在部分企业项目仍在使用。 2. pnpm 为什么既快又省空间？所有包按内容寻址存到全局 store（同一份内容只存一次），项目里的 node_modules/.pnpm/ 只放硬链接指向 store；顶层 node_modules 里用符号链接只链出 package.json 声明的直接依赖。因此多个项目共享同一份文件（省磁盘）、安装时几乎只做链接（省时间），并且未声明的依赖无法被访问（避免幽灵依赖）。 3. dependencies、devDependencies、peerDependencies 有什么区别？depende...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/323548656/" title="【前端面试】四、构建工具"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/vite.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】四、构建工具</div></div><div class="info-2"><div class="info-item-1">一、Webpack1、常见题1. Webpack 的核心概念有哪些？entry（入口，起点模块）、output（产物路径与文件名）、loader（把非 JS 资源或新语法转换成模块）、plugin（在构建生命周期上挂载能力，如压缩、抽离 CSS、注入变量）、mode（development&#x2F;production，决定内置优化与 DefinePlugin 的默认值）、devtool（source map 策略）、resolve（模块解析规则）、optimization（分包与压缩）。 2. loader 和 plugin 有什么区别？loader 是模块级转换函数：输入源码字符串或 AST，输出新内容，只在模块加载阶段工作（babel-loader、css-loader）。plugin 是构建过程级扩展：基于 Tapable 的事件钩子（compiler.hooks 编译级、compilation.hooks 单次构建级），能做产物改写、文件生成、注入变量等 loader 做不到的事（MiniCssExtractPlugin、HtmlWebpackPlugin、Defin...</div></div></div></a><a class="pagination-related" href="/posts/323548654/" title="【前端面试】二、框架学习"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/react.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】二、框架学习</div></div><div class="info-2"><div class="info-item-1">一、React1、常见题1. React 的核心设计理念是什么？声明式（描述 UI 应该长什么样，而不是手工操作 DOM）、组件化（UI 拆成可复用的单元）、单向数据流（数据从父到子，变化由事件向上传递）、以及“UI 是状态的函数”UI = f(state)。虚拟 DOM 是这套理念的实现手段而不是目的：它带来跨平台渲染能力（React Native）、可预测的更新与批处理，但不代表比原生 DOM 操作更快。 2. JSX 的本质是什么？是 React.createElement(type, props, ...children)（或新 JSX runtime 下的 jsx/jsxs）的语法糖，产物是描述 UI 的普通对象（React Element），不是 HTML 字符串。所以 JSX 里写 class 要用 className，&#123;&#125; 里可以放表达式但不能放语句；正因为是对象，才能被 diff、被序列化到服务端（Server Components 的传输格式）。 3. 类组件与函数组件有什么区别？类组件有实例与生命周期、this 上的 state；函数组件...</div></div></div></a><a class="pagination-related" href="/posts/323548660/" title="【前端面试】八、调试"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/devtool.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】八、调试</div></div><div class="info-2"><div class="info-item-1">一、常见题1. 前端调试的主要手段有哪些？六类：console 输出（快速验证，适合定位“有没有进来”）、断点（精确停在现场看变量与调用栈）、日志与埋点（线上无法断点时靠面包屑还原路径）、二分法（git bisect 定位引入问题的提交）、最小复现（剥离无关代码构造可复现 demo）、以及工具辅助（Network&#x2F;Performance&#x2F;Memory 面板、抓包、真机远程调试）。关键原则是“先缩小范围再深入”，而不是一上手就逐行读代码。 2. DevTools 各个面板分别解决什么问题？Elements（DOM 与样式，看谁覆盖了样式）；Console（日志与运行时表达式）；Sources（断点、调用栈、Overrides、Snippets）；Network（请求、时序分解、限速模拟、重放）；Performance（火焰图，查卡顿与帧耗时）；Memory（堆快照、分配时间线，查泄漏）；Application（localStorage/Cookie/Cache/SW）；Security（证书与混合内容）；Lighthouse（质量评分）。 3. 断点有哪些类型？...</div></div></div></a><a class="pagination-related" href="/posts/323548662/" title="【前端面试】十、常见场景"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/scene.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】十、常见场景</div></div><div class="info-2"><div class="info-item-1">一、常见场景1. 设计一个能渲染万级数据的列表，怎么做？考察点：是否知道虚拟滚动与渲染瓶颈。思路：只渲染可视区 + 缓冲区（上下各若干行），用容器占位撑起总高度，滚动时按 scrollTop 计算起始索引并做绝对定位偏移；行高固定时最简单（可精确计算），行高不定时用预估高度 + 动态测量与位置缓存修正；配合 requestAnimationFrame 合并滚动更新、ResizeObserver 处理容器变化。易错边界：滚动条抖动、动态高度导致的跳动、快速滚动出现空白、删除行后的位置重算。 2. 表格有几万行还有固定列、合并单元格，怎么优化？分层：数据层分页或虚拟滚动（二者选一，不要叠加）、列层只渲染可视列（横向虚拟化）、渲染层用 Canvas 或轻量单元格组件（避免每格一个重量级组件）、交互层冻结列用 CSS sticky 而非复制一份表格、合并单元格在可视区计算后再合并（不可全量计算）。易错边界：sticky 与横向滚动、键盘操作与虚拟滚动的选区同步、合计行与虚拟滚动的冲突。 3. 搜索联想怎么做才不出现请求错乱？三件事：防抖（输入停止 300ms 再查）、取消（新请求发出前 ...</div></div></div></a><a class="pagination-related" href="/posts/323548661/" title="【前端面试】九、部署和代理"><img class="cover" src="/img/%E9%9D%A2%E8%AF%95/deploy.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】九、部署和代理</div></div><div class="info-2"><div class="info-item-1">一、部署1、常见题1. 前端部署的完整流程是什么？分为五步：拉取代码 → 安装依赖（依据 lockfile 保证可复现）→ 构建（注入环境变量、生成带 hash 的产物）→ 把产物分发到目标（Nginx、对象存储或 CDN，或构建镜像）→ 刷新缓存并验证。关键原则是「构建一次，多环境复用同一制品」，即同一份产物依次经过测试、预发、生产，避免“每个环境各构建一次”导致行为漂移。验证包括健康检查、版本号核对与冒烟测试。 2. 前端静态资源一般怎么托管？常见三种：Nginx 自建（可控、成本低，适合内网与中小项目）、对象存储加 CDN（主流方案，天然抗量、就近分发、支持大文件与图片处理）、容器化（打成 Nginx 镜像由 K8s 调度）。选型看流量规模、是否需要灰度、以及运维成本；大流量静态站点基本都会用 CDN，Nginx 只作为回源或兜底。 3. SPA 为什么需要路由回退（history fallback）？history 模式下，/user/123 这类路径并不是真实文件，服务端直接请求会 404。因此需要把所有未命中静态文件的请求回退到 index.html，由前端路由接管。...</div></div></div></a><a class="pagination-related" href="/posts/323548657/" title="【前端面试】五、包管理和Node"><img class="cover" src="/img/%E5%8C%85%E7%AE%A1%E7%90%86/node.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-19</div><div class="info-item-2">【前端面试】五、包管理和Node</div></div><div class="info-2"><div class="info-item-1">一、包管理器1、常见题1. npm、yarn、pnpm 有什么区别？npm 是官方包管理器，扁平化把依赖 hoist 到顶层 node_modules；yarn（classic）早期以速度快与 lockfile 严格著称，后续有 Berry&#x2F;PnP；pnpm 用内容寻址存储 + 硬链接 + 符号链接，磁盘占用小、安装快，并且依赖结构严格（只暴露直接依赖）。选型要点：pnpm 在 monorepo 与依赖治理上更优，npm 兼容性最好，yarn 生态在部分企业项目仍在使用。 2. pnpm 为什么既快又省空间？所有包按内容寻址存到全局 store（同一份内容只存一次），项目里的 node_modules/.pnpm/ 只放硬链接指向 store；顶层 node_modules 里用符号链接只链出 package.json 声明的直接依赖。因此多个项目共享同一份文件（省磁盘）、安装时几乎只做链接（省时间），并且未声明的依赖无法被访问（避免幽灵依赖）。 3. dependencies、devDependencies、peerDependencies 有什么区别？depende...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div><div class="comment-switch"><span class="first-comment">Valine</span><span id="switch-btn"></span><span class="second-comment">Disqus</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/all/avatar.png" onerror="this.onerror=null;this.src='/img/404/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">谢良勇</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/XlyLm" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%B8%B8%E8%A7%81%E9%A2%98"><span class="toc-text">一、常见题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AF%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%EF%BC%8C%E5%8C%85%E5%90%AB%E5%93%AA%E4%BA%9B%E6%96%B9%E9%9D%A2%EF%BC%9F"><span class="toc-text">1. 什么是前端工程化，包含哪些方面？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%89%8D%E7%AB%AF%E6%A8%A1%E5%9D%97%E5%8C%96%E7%BB%8F%E5%8E%86%E4%BA%86%E6%80%8E%E6%A0%B7%E7%9A%84%E6%BC%94%E8%BF%9B%EF%BC%9F"><span class="toc-text">2. 前端模块化经历了怎样的演进？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%84%9A%E6%89%8B%E6%9E%B6%E7%9A%84%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">3. 脚手架的原理是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-ESLint-%E7%9A%84%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E6%80%8E%E4%B9%88%E9%85%8D%EF%BC%9F"><span class="toc-text">4. ESLint 的原理是什么，怎么配？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-ESLint-%E5%92%8C-Prettier-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%8C%E6%80%8E%E4%B9%88%E5%8D%8F%E4%BD%9C%EF%BC%9F"><span class="toc-text">5. ESLint 和 Prettier 有什么区别，怎么协作？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Git-hooks-%E6%80%8E%E4%B9%88%E7%94%A8%E5%9C%A8%E5%B7%A5%E7%A8%8B%E5%8C%96%E9%87%8C%EF%BC%9F"><span class="toc-text">6. Git hooks 怎么用在工程化里？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%B8%B8%E8%A7%81%E7%9A%84-Git-%E5%B7%A5%E4%BD%9C%E6%B5%81%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">7. 常见的 Git 工作流有哪些？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-Babel-%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">8. Babel 的工作原理是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81-polyfill%EF%BC%8Cbrowserslist-%E8%B5%B7%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%EF%BC%9F"><span class="toc-text">9. 为什么要 polyfill，browserslist 起什么作用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-core-js-%E5%85%A8%E9%87%8F%E5%BC%95%E5%85%A5%E5%92%8C%E6%8C%89%E9%9C%80%E5%BC%95%E5%85%A5%E6%80%8E%E4%B9%88%E5%8F%96%E8%88%8D%EF%BC%9F"><span class="toc-text">10. core-js 全量引入和按需引入怎么取舍？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E6%98%AF%E6%80%8E%E4%B9%88%E6%BC%94%E8%BF%9B%E7%9A%84%EF%BC%9F"><span class="toc-text">11. 构建工具是怎么演进的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-Monorepo-%E5%92%8C-Multirepo-%E6%80%8E%E4%B9%88%E9%80%89%EF%BC%9F"><span class="toc-text">12. Monorepo 和 Multirepo 怎么选？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-Monorepo-%E7%9A%84%E6%9E%84%E5%BB%BA%E6%80%8E%E4%B9%88%E5%81%9A%E6%89%8D%E4%B8%8D%E6%85%A2%EF%BC%9F"><span class="toc-text">13. Monorepo 的构建怎么做才不慢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-%E7%BB%84%E4%BB%B6%E5%BA%93-%E5%B7%A5%E5%85%B7%E5%BA%93%E7%9A%84%E4%BA%A7%E7%89%A9%E8%AF%A5%E6%80%8E%E4%B9%88%E6%9E%84%E5%BB%BA%EF%BC%9F"><span class="toc-text">14. 组件库&#x2F;工具库的产物该怎么构建？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83%E6%80%8E%E4%B9%88%E8%87%AA%E5%8A%A8%E5%8C%96%EF%BC%9F"><span class="toc-text">15. 版本发布怎么自动化？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-%E7%8E%AF%E5%A2%83%E4%B8%8E%E9%85%8D%E7%BD%AE%E6%80%8E%E4%B9%88%E7%AE%A1%E7%90%86%E6%89%8D%E5%AE%89%E5%85%A8%EF%BC%9F"><span class="toc-text">16. 环境与配置怎么管理才安全？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-Mock-%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E6%96%B9%E6%A1%88%EF%BC%9F"><span class="toc-text">17. Mock 有哪几种方案？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%80%8E%E4%B9%88%E5%BA%A6%E9%87%8F%EF%BC%9F"><span class="toc-text">18. 代码质量怎么度量？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-%E6%80%A7%E8%83%BD%E9%A2%84%E7%AE%97%EF%BC%88performance-budget%EF%BC%89%E6%80%8E%E4%B9%88%E8%90%BD%E5%9C%B0%EF%BC%9F"><span class="toc-text">19. 性能预算（performance budget）怎么落地？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-%E5%89%8D%E7%AB%AF%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%E5%9C%A8%E5%B7%A5%E7%A8%8B%E5%8C%96%E9%87%8C%E6%80%8E%E4%B9%88%E8%90%BD%E4%BD%8D%EF%BC%9F"><span class="toc-text">20. 前端可观测性在工程化里怎么落位？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%9A%BE%E9%A2%98"><span class="toc-text">二、难题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-ESLint-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%85%A2%EF%BC%8Cflat-config-%E6%94%B9%E5%8F%98%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">1. ESLint 为什么慢，flat config 改变了什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Babel-%E6%8F%92%E4%BB%B6%E4%B8%8E-preset-%E7%9A%84%E9%A1%BA%E5%BA%8F%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%B9%E6%98%93%E5%87%BA%E9%94%99%EF%BC%9F"><span class="toc-text">2. Babel 插件与 preset 的顺序为什么容易出错？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88-Babel-%E5%A4%84%E7%90%86%E8%BF%87%E7%9A%84%E4%BB%A3%E7%A0%81-tree-shaking-%E4%BC%9A%E5%A4%B1%E6%95%88%EF%BC%9F"><span class="toc-text">3. 为什么 Babel 处理过的代码 tree shaking 会失效？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Monorepo-%E7%9A%84%E8%BF%9C%E7%A8%8B%E7%BC%93%E5%AD%98%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F"><span class="toc-text">4. Monorepo 的远程缓存是怎么工作的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%BB%84%E4%BB%B6%E5%BA%93%E7%9A%84-exports-%E4%B8%8E%E6%8C%89%E9%9C%80%E5%BC%95%E5%85%A5%E6%80%8E%E4%B9%88%E8%AE%BE%E8%AE%A1%E6%89%8D%E6%AD%A3%E7%A1%AE%EF%BC%9F"><span class="toc-text">5. 组件库的 exports 与按需引入怎么设计才正确？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-CI-%E9%87%8C%E6%80%8E%E4%B9%88%E5%81%9A%E4%BD%93%E7%A7%AF%E9%97%A8%E7%A6%81%E4%B8%8E%E5%A2%9E%E9%87%8F%E5%88%86%E6%9E%90%EF%BC%9F"><span class="toc-text">6. CI 里怎么做体积门禁与增量分析？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%B7%A5%E7%A8%8B%E5%8C%96%E6%80%8E%E4%B9%88%E9%87%8F%E5%8C%96%E6%94%B6%E7%9B%8A%EF%BC%9F"><span class="toc-text">7. 工程化怎么量化收益？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E5%BE%AE%E5%89%8D%E7%AB%AF%E5%9C%A8%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%B1%82%E9%9D%A2%E8%A6%81%E8%A7%A3%E5%86%B3%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-text">8. 微前端在工程化层面要解决哪些问题？</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/323548662/" title="【前端面试】十、常见场景"><img src="/img/%E9%9D%A2%E8%AF%95/scene.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】十、常见场景"/></a><div class="content"><a class="title" href="/posts/323548662/" title="【前端面试】十、常见场景">【前端面试】十、常见场景</a><time datetime="2026-11-19T12:07:39.000Z" title="发表于 2026-11-19 20:07:39">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548661/" title="【前端面试】九、部署和代理"><img src="/img/%E9%9D%A2%E8%AF%95/deploy.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】九、部署和代理"/></a><div class="content"><a class="title" href="/posts/323548661/" title="【前端面试】九、部署和代理">【前端面试】九、部署和代理</a><time datetime="2026-11-19T12:07:38.000Z" title="发表于 2026-11-19 20:07:38">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548660/" title="【前端面试】八、调试"><img src="/img/%E9%9D%A2%E8%AF%95/devtool.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】八、调试"/></a><div class="content"><a class="title" href="/posts/323548660/" title="【前端面试】八、调试">【前端面试】八、调试</a><time datetime="2026-11-19T12:07:37.000Z" title="发表于 2026-11-19 20:07:37">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548659/" title="【前端面试】七、病毒与防范"><img src="/img/%E9%9D%A2%E8%AF%95/netSafe.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】七、病毒与防范"/></a><div class="content"><a class="title" href="/posts/323548659/" title="【前端面试】七、病毒与防范">【前端面试】七、病毒与防范</a><time datetime="2026-11-19T12:07:36.000Z" title="发表于 2026-11-19 20:07:36">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/323548658/" title="【前端面试】六、工程化"><img src="/img/%E9%9D%A2%E8%AF%95/build.png" onerror="this.onerror=null;this.src='/img/404/404.jpg'" alt="【前端面试】六、工程化"/></a><div class="content"><a class="title" href="/posts/323548658/" title="【前端面试】六、工程化">【前端面试】六、工程化</a><time datetime="2026-11-19T12:07:35.000Z" title="发表于 2026-11-19 20:07:35">2026-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 谢良勇</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">简</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><script src="/js/tw_cn.js?v=5.7.2"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const initValine = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyValine = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const valineConfig = {
+      el: '#vcomment',
+      appId: '',
+      appKey: '',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      visitor: false,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || window.location.pathname
+    }
+
+    new Valine(valineConfig)
+  }
+
+  const loadValine = async (el, path) => {
+    if (typeof Valine === 'function') {
+      initValine(el, path)
+    } else {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/valine@1.5.3/dist/Valine.min.js')
+      initValine(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Valine' === 'Valine'
+      ? window.shuoshuoComment = { loadComment: loadValine }
+      : window.loadOtherComment = loadValine
+    return
+  }
+
+  if ('Valine' === 'Valine' || !true) {
+    if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/posts/323548658/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'http://example.com/posts/323548658/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = '【前端面试】六、工程化'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Valine' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Valine' === 'Disqus' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>
