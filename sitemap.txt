@@ -1,3 +1,5 @@
+http://example.com/posts/323548654/
+http://example.com/posts/323548653/
 http://example.com/posts/323548662/
 http://example.com/posts/323548661/
 http://example.com/posts/323548660/
@@ -6,13 +8,11 @@ http://example.com/posts/323548658/
 http://example.com/posts/323548657/
 http://example.com/posts/323548656/
 http://example.com/posts/323548655/
-http://example.com/posts/323548654/
-http://example.com/posts/323548653/
 http://example.com/tags/index.html
 http://example.com/categories/index.html
-http://example.com/posts/38227/
 http://example.com/posts/2373421626/
 http://example.com/posts/4193741959/
+http://example.com/posts/38227/
 http://example.com/posts/600736463/
 http://example.com/
 http://example.com/tags/Hexo/
