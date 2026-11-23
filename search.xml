@@ -604,128 +604,6 @@ ssh -T git@github.com或ssh -T git@&lt;IP-address&gt;	//企业git域
       </tags>
   </entry>
   <entry>
-    <title>Node安装和使用</title>
-    <url>/posts/4193741959/</url>
-    <content><![CDATA[Node安装和使用一、安装1、直接官网下载和安装
-官网地址：Node.js下载 ，根据实际情况选择对应版本。【不推荐该方法，实际开发过程中可能涉及多个node版本】
-
-2、使用nvm管理多个Node版本
-Nvm下载地址，下载nvm-setup.zip这个包，它可以自动配置好环境，一路安装，第一个路径是nvm安装路径，第二个路径是node的安装路径。
-
-Nvm使用教程
-
-nvm常用指令
-
-
-nvm ls  							// 查看目前已经安装的版本nvm install 10.5.0 		 			// 安装指定的版本的nodejsnvm use 10.5.0 			 			// 使用指定版本的nodejsnvm current 						// 显示当前的版本nvm list							// 显示已下载列表nvm list available 					// 显示可下载版本的部分列表nvm uninstall 10.5.0				// 删除已安装的指定版本，语法与install类似nvm alias 							// 给不同的版本号添加别名nvm unalias					 		// 删除已定义的别名nvm reinstall-packages &lt;version&gt; 	// 在当前版本node环境下，重新全局安装指定版本号的npm包
-
-注意：如果在切换或下载时出错，可以到 cmd 中使用管理员身份进行重新命令。
-3、使用nrm管理npm​	安装node后，node会自带对应版本的npm。可以使用npm源管理工具nrm，一键切换 npm/yarn/pnpm 下载镜像（淘宝、官方、腾讯、华为等），解决国内npm下载慢、超时问题。
-
-npm官方文档
-
-安装nrm
-
-
-npm install -g nrm# 若提示权限报错（mac/linux）sudo npm install -g nrm
-
-
-nrm常用指令
-
-# 查看nrm版本nrm -Vnrm --version# 查看所有可用镜像源nrm ls# 切换镜像源nrm use &lt;对应的源&gt;# 查看当前正在使用的源nrm current# 测速所有源nrm test# 单独测试某一个源速度nrm test &lt;对应的源&gt;# 添加自定义私有 npm 源nrm add 源名称 源地址# 删除自定义源nrm del 源名称# 打开源地址网页nrm home &lt;对应的源&gt;# 同步配置 yarn/pnpm 镜像yarn config set registry $(nrm current)# pnpm 同理pnpm config set registry $(nrm current)# 查看 npm 当前 registrynpm config get registry# 手动切换源npm config set registry 源地址# 切换源后下载依旧慢 清除 npm 缓存npm cache clean --force# 卸载 nrmnpm uninstall -g nrm
-
-二、node常用指令# 运行 JS 文件node ***.js# 直接执行一行代码node -e &quot;console.log(&#x27;hello node&#x27;)&quot;# 查看 Node 版本node -vnode --version# 查看帮助文档node -hnode --help# 调试模式node --inspect ***.js
-
-三、npm常用指令版本查看# 监听文件自动重启npm i -g nodemonnodemon ***.js# 版本查看npm -vnpm --version
-
-1. 初始化项目（生成 package.json）# 一步步问答创建npm init# 快速默认创建，跳过问答npm init -y
-
-2. 安装依赖
-安装生产依赖（项目运行需要）
-
-npm install 包名npm i 包名# 示例npm i express axios
-
-
-安装开发依赖（仅开发 &#x2F; 打包用，不打包上线）
-
-npm i 包名 -Dnpm install 包名 --save-dev# 示例npm i webpack vite eslint -D
-
-
-全局安装工具（cli 命令，nrm&#x2F;nodemon&#x2F;vite 等）
-
-npm i -g 包名npm install --global 包名# 示例npm i -g nrm nodemon pnpm
-
-
-安装项目全部依赖（克隆项目后）
-
-npm install# 简写 npm inpm i
-
-3. 卸载依赖# 卸载本地依赖npm uninstall 包名npm un 包名# 卸载开发依赖npm un 包名 -D# 卸载全局包npm un -g 包名
-
-4. 更新依赖# 更新单个包到最新版本npm update 包名# 更新所有包npm update# 全局更新npm update -g 包名
-
-5. 运行 package.json scripts 脚本package.json 配置示例：
-&quot;scripts&quot;: &#123;  &quot;dev&quot;: &quot;nodemon index.js&quot;,  &quot;build&quot;: &quot;vite build&quot;,  &quot;start&quot;: &quot;node index.js&quot;&#125;
-
-执行命令：
-npm run devnpm run buildnpm start # start 可省略 runnpm test  # test 可省略 run
-
-6. 查看包信息# 查看本地安装包版本npm listnpm ls# 只看顶层依赖npm ls --depth=0# 查看全局安装的包npm ls -g --depth=0# 查看远程包详情、版本npm info 包名npm view 包名
-
-7. 缓存清理# 清理 npm 缓存npm cache clean --force# 校验缓存是否损坏npm cache verify
-
-8. registry 镜像源配置（搭配你之前学的 nrm）# 查看当前镜像源npm config get registry# 手动切换淘宝源npm config set registry https://registry.npmmirror.com/# 恢复官方源npm config set registry https://registry.npmjs.org/
-
-9. 安装 &#x2F; 删除 package-lock.jsonlock 文件锁定版本，不要手动删，如需重装依赖：
-rm -rf node_modules package-lock.jsonnpm i
-
-10. 发布私有 &#x2F; 公共包（开发 npm 包用）# 登录 npm 账号npm login# 发布包npm publish# 撤销发布（24小时内）npm unpublish 包名 --force
-
-四、npx 临时运行命令（无需全局安装）不用全局装包，临时调用工具，用完不占空间：
-# 临时创建 vite 项目npx create-vite@latest# 临时运行 eslint 检查文件npx eslint ./src# 临时启动 http 静态服务npx serve# 临时查看包版本npx node -v
-
-五、使用 node 发布自己的包​	在 Node.js 语言中，包和模块并没有本质的不同，包是在模块的基础上更深一步的抽象，包将某个独立的功能封装起来，用于发布、更新、依赖管理和进行版本控制。Node.js 根据 CommonJS 规范实现了包机制，开发了 npm 来解决包的发布和获取需求。
-1、注册自己的 npm 账号
-访问 npm 网站，点击 sign up 按钮，进入注册用户界面
-
-填写账号相关的信息：Full Name、Public Email、Username、Password
-
-点击 Create an Account 按钮，注册账号
-
-登录邮箱，点击验证链接，进行账号的验证
-
-
-2、登录 npm 账号
-npm 账号注册完成后，可以在终端中执行 npm login 命令 (或者 npm adduser 命令)，依次输入用户名、密码、邮箱后，即可登录成功
-注意：在运行 npm login 命令之前，必须先把下包的服务器地址切换为 npm 的官方服务器。否则会导致发布包失败！(终端执行 nrm use npm)
-
-nrm use npm
-
-3、把包发布到 npm 上
-将终端切换到包的根目录之后，运行 npm publish 命令，即可将包发布到 npm 上（注意：包名不能雷同，包名只能是小写字母 + 数字 + 中划线)
-
-利用终端查看包名是否重名，npm view 包名 (或者 npm view 包名 version)
-
-
-4、删除已发布的包
-运行 npm unpublish 包名 --force 命令，即可从 npm 删除已发布的包
-
-注意事项：
-
-npm unpublish 命令只能删除 72 小时以内发布的包
-npm unpublish 删除的包，在 24 小时内不允许重复发布
-
-5、更新包
-修改代码，保存。
-更新版本号。可直接在 package.json 中修改：只能改大，不能改小。
-重新 publish
-
-]]></content>
-      <tags>
-        <tag>包管理</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hexo博客网站搭建</title>
     <url>/posts/38227/</url>
     <content><![CDATA[Hexo博客网站搭建​	Hexo 是一个基于 Node.js 的静态博客框架，支持 Markdown 和多种插件，能够快速生成静态页面并部署到 GitHub Pages、Gitee 等平台。以下是从零开始搭建 Hexo 博客的详细步骤。
@@ -1366,6 +1244,370 @@ deploy:  type: git  repo: https://github.com/yourname/yourname.github.io.git  br
       </tags>
   </entry>
   <entry>
+    <title>Node安装和使用</title>
+    <url>/posts/4193741959/</url>
+    <content><![CDATA[Node安装和使用一、安装1、直接官网下载和安装
+官网地址：Node.js下载 ，根据实际情况选择对应版本。【不推荐该方法，实际开发过程中可能涉及多个node版本】
+
+2、使用nvm管理多个Node版本
+Nvm下载地址，下载nvm-setup.zip这个包，它可以自动配置好环境，一路安装，第一个路径是nvm安装路径，第二个路径是node的安装路径。
+
+Nvm使用教程
+
+nvm常用指令
+
+
+nvm ls  							// 查看目前已经安装的版本nvm install 10.5.0 		 			// 安装指定的版本的nodejsnvm use 10.5.0 			 			// 使用指定版本的nodejsnvm current 						// 显示当前的版本nvm list							// 显示已下载列表nvm list available 					// 显示可下载版本的部分列表nvm uninstall 10.5.0				// 删除已安装的指定版本，语法与install类似nvm alias 							// 给不同的版本号添加别名nvm unalias					 		// 删除已定义的别名nvm reinstall-packages &lt;version&gt; 	// 在当前版本node环境下，重新全局安装指定版本号的npm包
+
+注意：如果在切换或下载时出错，可以到 cmd 中使用管理员身份进行重新命令。
+3、使用nrm管理npm​	安装node后，node会自带对应版本的npm。可以使用npm源管理工具nrm，一键切换 npm/yarn/pnpm 下载镜像（淘宝、官方、腾讯、华为等），解决国内npm下载慢、超时问题。
+
+npm官方文档
+
+安装nrm
+
+
+npm install -g nrm# 若提示权限报错（mac/linux）sudo npm install -g nrm
+
+
+nrm常用指令
+
+# 查看nrm版本nrm -Vnrm --version# 查看所有可用镜像源nrm ls# 切换镜像源nrm use &lt;对应的源&gt;# 查看当前正在使用的源nrm current# 测速所有源nrm test# 单独测试某一个源速度nrm test &lt;对应的源&gt;# 添加自定义私有 npm 源nrm add 源名称 源地址# 删除自定义源nrm del 源名称# 打开源地址网页nrm home &lt;对应的源&gt;# 同步配置 yarn/pnpm 镜像yarn config set registry $(nrm current)# pnpm 同理pnpm config set registry $(nrm current)# 查看 npm 当前 registrynpm config get registry# 手动切换源npm config set registry 源地址# 切换源后下载依旧慢 清除 npm 缓存npm cache clean --force# 卸载 nrmnpm uninstall -g nrm
+
+二、node常用指令# 运行 JS 文件node ***.js# 直接执行一行代码node -e &quot;console.log(&#x27;hello node&#x27;)&quot;# 查看 Node 版本node -vnode --version# 查看帮助文档node -hnode --help# 调试模式node --inspect ***.js
+
+三、npm常用指令版本查看# 监听文件自动重启npm i -g nodemonnodemon ***.js# 版本查看npm -vnpm --version
+
+1. 初始化项目（生成 package.json）# 一步步问答创建npm init# 快速默认创建，跳过问答npm init -y
+
+2. 安装依赖
+安装生产依赖（项目运行需要）
+
+npm install 包名npm i 包名# 示例npm i express axios
+
+
+安装开发依赖（仅开发 &#x2F; 打包用，不打包上线）
+
+npm i 包名 -Dnpm install 包名 --save-dev# 示例npm i webpack vite eslint -D
+
+
+全局安装工具（cli 命令，nrm&#x2F;nodemon&#x2F;vite 等）
+
+npm i -g 包名npm install --global 包名# 示例npm i -g nrm nodemon pnpm
+
+
+安装项目全部依赖（克隆项目后）
+
+npm install# 简写 npm inpm i
+
+3. 卸载依赖# 卸载本地依赖npm uninstall 包名npm un 包名# 卸载开发依赖npm un 包名 -D# 卸载全局包npm un -g 包名
+
+4. 更新依赖# 更新单个包到最新版本npm update 包名# 更新所有包npm update# 全局更新npm update -g 包名
+
+5. 运行 package.json scripts 脚本package.json 配置示例：
+&quot;scripts&quot;: &#123;  &quot;dev&quot;: &quot;nodemon index.js&quot;,  &quot;build&quot;: &quot;vite build&quot;,  &quot;start&quot;: &quot;node index.js&quot;&#125;
+
+执行命令：
+npm run devnpm run buildnpm start # start 可省略 runnpm test  # test 可省略 run
+
+6. 查看包信息# 查看本地安装包版本npm listnpm ls# 只看顶层依赖npm ls --depth=0# 查看全局安装的包npm ls -g --depth=0# 查看远程包详情、版本npm info 包名npm view 包名
+
+7. 缓存清理# 清理 npm 缓存npm cache clean --force# 校验缓存是否损坏npm cache verify
+
+8. registry 镜像源配置（搭配你之前学的 nrm）# 查看当前镜像源npm config get registry# 手动切换淘宝源npm config set registry https://registry.npmmirror.com/# 恢复官方源npm config set registry https://registry.npmjs.org/
+
+9. 安装 &#x2F; 删除 package-lock.jsonlock 文件锁定版本，不要手动删，如需重装依赖：
+rm -rf node_modules package-lock.jsonnpm i
+
+10. 发布私有 &#x2F; 公共包（开发 npm 包用）# 登录 npm 账号npm login# 发布包npm publish# 撤销发布（24小时内）npm unpublish 包名 --force
+
+四、npx 临时运行命令（无需全局安装）不用全局装包，临时调用工具，用完不占空间：
+# 临时创建 vite 项目npx create-vite@latest# 临时运行 eslint 检查文件npx eslint ./src# 临时启动 http 静态服务npx serve# 临时查看包版本npx node -v
+
+五、使用 node 发布自己的包​	在 Node.js 语言中，包和模块并没有本质的不同，包是在模块的基础上更深一步的抽象，包将某个独立的功能封装起来，用于发布、更新、依赖管理和进行版本控制。Node.js 根据 CommonJS 规范实现了包机制，开发了 npm 来解决包的发布和获取需求。
+1、注册自己的 npm 账号
+访问 npm 网站，点击 sign up 按钮，进入注册用户界面
+
+填写账号相关的信息：Full Name、Public Email、Username、Password
+
+点击 Create an Account 按钮，注册账号
+
+登录邮箱，点击验证链接，进行账号的验证
+
+
+2、登录 npm 账号
+npm 账号注册完成后，可以在终端中执行 npm login 命令 (或者 npm adduser 命令)，依次输入用户名、密码、邮箱后，即可登录成功
+注意：在运行 npm login 命令之前，必须先把下包的服务器地址切换为 npm 的官方服务器。否则会导致发布包失败！(终端执行 nrm use npm)
+
+nrm use npm
+
+3、把包发布到 npm 上
+将终端切换到包的根目录之后，运行 npm publish 命令，即可将包发布到 npm 上（注意：包名不能雷同，包名只能是小写字母 + 数字 + 中划线)
+
+利用终端查看包名是否重名，npm view 包名 (或者 npm view 包名 version)
+
+
+4、删除已发布的包
+运行 npm unpublish 包名 --force 命令，即可从 npm 删除已发布的包
+
+注意事项：
+
+npm unpublish 命令只能删除 72 小时以内发布的包
+npm unpublish 删除的包，在 24 小时内不允许重复发布
+
+5、更新包
+修改代码，保存。
+更新版本号。可直接在 package.json 中修改：只能改大，不能改小。
+重新 publish
+
+]]></content>
+      <tags>
+        <tag>包管理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【前端面试】一、前端基础</title>
+    <url>/posts/323548653/</url>
+    <content><![CDATA[一、HTML1、常见题1. HTML5 新特性的分类H5 新增了语义化标签（header、footer、section、article、aside）、多媒体（video/audio）、绘画（Canvas、SVG）、本地存储（localStorage、IndexDb）、增强性表单（type=email/date/number）、拖拽、多线程WebWorker、全双工通信WebSockets、地理定位API等能力。
+2. H5语义化H5语义化是指使用合适的HTML标签来描述页面内容的结构和语义，而不是仅仅为了视觉效果而滥用 &lt;div&gt; 和 &lt;span&gt;。
+
+可访问性（无障碍）：屏幕阅读器能理解页面结构，视障用户能更好地导航。
+SEO：搜索引擎能更准确理解内容结构和重要性。
+可维护性：代码可读性强，团队协作和后期维护更容易。
+设备兼容：利于阅读模式、爬虫、浏览器插件等正确解析。
+
+3. DOCTYPE 的作用DOCTYPE声明文档类型用来告知浏览器文档类型，开启标准模式；标准模式按W3C规范渲染，混杂模式为兼容旧浏览器按浏览器自有怪异规则渲染。
+标准模式（Standards Mode）
+
+有正确 &lt;!DOCTYPE&gt;，严格遵循 W3C 规范渲染
+盒模型：width/height 只代表内容区，padding、border 向外叠加（content-box）MDN Web Do…
+行内元素（span）设置宽高无效
+父元素没固定高度时，子元素百分比 height 不生效
+margin:0 auto 可以正常实现块级水平居中
+图片按基线对齐，图片底部会出现默认间隙
+overflow 溢出内容默认裁剪
+
+混杂模式 &#x2F; 怪异模式（Quirks Mode）
+
+缺少或写错 DOCTYPE，模拟 IE5.5 旧浏览器渲染，兼容古老页面MDN Web Do…
+盒模型：width/height 包含 content + padding + border（border-box）MDN Web Do…
+行内元素可以设置宽高
+父元素无高度，子元素百分比 height 可能生效
+margin:0 auto 居中失效，一般靠 text-align:center
+图片对齐到盒子底边，底部没有基线间隙
+table 字体样式不继承父级；溢出时盒子会撑开包住内容
+
+4. 元素分类块元素独占一行、可设置宽高；行内元素同行排列、宽高由内容决定，不能直接设置宽高。
+5. src 与 hrefsrc 用于替换元素（img/script/iframe/video），资源的加载会阻塞该元素的解析与渲染，因此它是“内容来源”；href 建立引用关系（a/link），浏览器并行处理，link 加载样式会阻塞渲染但不阻塞 HTML 解析。追问：script 的 src 是解析阻塞的，除非加 defer/async。
+6. defer 与 async两者都只对外部脚本生效、都不阻塞 HTML 解析。defer 推迟到解析完成、DOMContentLoaded 之前，按文档顺序执行；async 下载完成即执行，顺序不确定。选择依据是依赖关系：需要访问 DOM 或脚本之间有依赖用 defer；互不依赖的统计、监控脚本用 async，避免拖慢关键路径。追问：内联脚本加这两个属性无效；两者同时存在时 async 优先。
+7. meta 的常用配置&lt;meta&gt;是HTML文档&lt;head&gt;中的元数据标签，用于向浏览器、搜索引擎和其他Web提供关于页面的信息，它不显示在页面上，但对页面的渲染、SEO、社交分析和安全性有重要影响。charset=&quot;utf-8&quot; 声明文档字符集，应放在 &lt;head&gt; 最前面（前 1024 字节内），避免乱码；viewport 的 width=device-width, initial-scale=1 决定移动端的 CSS 像素映射，加上 viewport-fit=cover 才能使用安全区变量；description 影响搜索结果摘要；Open Graph（og:title/og:image）决定社交平台分享卡片的呈现；http-equiv 可做兼容性设置与自动刷新（后者在业务页面应避免）。
+
+meta 是元数据：不渲染给用户，但影响浏览器解析、搜索引擎抓取和社交平台展示。
+charset 和 viewport 是必配项，分别解决编码和移动端适配。
+**SEO 核心是 description 和 robots**；分享展示靠 Open Graph &#x2F; Twitter Card。
+部分 http-equiv 功能已被 HTTP 头取代（如 CSP、缓存控制），现代开发优先用响应头。
+meta 标签对页面内容无直接影响，但间接影响可发现性、可访问性和用户体验。
+
+**8. 前端 SEO **SEO（搜索引擎优化）的核心，是让网站更容易被搜索引擎理解和收录，从而在用户搜索时获得更多免费、相关的流量。它不是一个一次性的技术操作，而是一套需要持续维护的体系。
+基础项：唯一且准确的 title 与 description、语义化结构、合理的 URL 层级与内链；技术项：canonical 去重、robots.txt 与 sitemap.xml、JSON-LD 结构化数据、首屏内容可被抓取（SSR、预渲染或至少首屏直出）、避免关键内容完全依赖 JS 异步渲染；体验项：移动端友好、体积与 LCP 达标（页面体验也是排名因素）。追问：纯前端 SPA 为什么不利于 SEO，答案要落到“抓取时可能拿不到渲染后的内容”。
+纯前端 SPA（单页应用）做 SEO 的核心矛盾在于：搜索引擎爬虫看到的初始 HTML 往往是一个空壳，真实内容需要执行 JavaScript 后才能生成。
+
+用 History API 路由，不要用 hash 片段
+正确处理 404 与错误页面
+提交包含所有重要路由的 sitemap
+确保内部链接是真正的 &lt;a&gt; 标签
+
+9. disabled、readonly、hiddendisabled：不可交互、不可聚焦、不参与表单提交，form 提交时被忽略；readonly：不可编辑但可聚焦、可选中、会提交，适用于文本类输入与 textarea（对 select/checkbox 无效）；hidden：仅不渲染，值照常提交。业务上“提交前暂时锁住但仍需要值”应该用 readonly 而非 disabled，这是实际踩坑点。
+10. data-\* 与 datasetdata-* 是 HTML5 引入的自定义数据属性，允许你在标准 HTML 元素上附加任意自定义数据，而不需要非标准的属性或额外的 DOM 操作。dataset 是 DOM 元素上的一个只读属性，返回一个 DOMStringMap 对象，用于以 JavaScript 友好的方式读写该元素上所有 data-* 属性。
+data-user-id 在 dataset 中映射为 userId（连字符转驼峰，且只对 ASCII 小写有效），值永远是字符串，取数字要转类型；写 dataset 会同步回 attribute。适合承载小的业务标识（行 id、状态），不适合放大段 JSON（可读性差、每次序列化有开销，且会被暴露在 HTML 中）。追问：React 中 data-* 直接写属性即可，dataset 操作会绕过框架的更新机制。
+11. alt 的三类写法
+内容图：描述图片传达的信息，而不是“一张图片”；
+装饰图：alt=&quot;&quot;，让辅助技术直接跳过；
+功能图：写功能或动作（如“搜索”“返回”），而不是外观。
+
+区分“缺失 alt”与“alt=&quot;&quot;”是关键：前者会让阅读器朗读文件名，后者表示有意忽略。追问：img 必须配 alt 属性（哪怕为空），这是 WCAG 的硬性要求
+14. label 的作用&lt;label&gt; 是 HTML 中用于为表单控件（input、select、textarea、button、meter、progress、output 等）定义标注&#x2F;说明文字的元素。它的核心价值在于建立“文字说明”与“控件”之间的程序化关联，让用户和辅助技术都能明确知道某个控件是做什么的。
+
+扩大点击区域（提升可用性）：点击 &lt;label&gt; 的文字，会自动聚焦或激活与之关联的控件。对复选框和单选按钮尤其明显——用户不需要精准点中小小的方框，点文字即可切换选中状态。
+无障碍访问（a11y）的关键：屏幕阅读器会读取 label 的文本来描述控件。没有 label 的输入框，读屏用户只能听到“编辑框”，不知道要填什么。这是 WCAG 的明确要求，也是很多国家无障碍法规的合规项。
+语义化与 SEO&#x2F;表单体验：&lt;label&gt; 明确表达“这段文字是某控件的说明”，比用 &lt;span&gt; 或 &lt;div&gt; 更语义化。浏览器自动补全、表单验证提示等也能更好地关联。
+
+
+label使用for属性 + 表单使用id属性进行关联
+label包裹文字和控件
+
+14. contenteditable 的坑contenteditable 是一个全局 HTML 属性，它能让页面上的任意元素（如 &lt;div&gt;、&lt;span&gt;）瞬间变成一个可编辑区域，就像输入框一样接受用户输入。
+缺点：浏览器会生成不可控的 HTML（不同浏览器插入的标签、换行方式都不同）、粘贴会带内联样式与脚本、光标与选区需要用 Range/Selection 手工管理、输入法组合期（compositionstart 到 compositionend）处理不当会丢字或重复、撤销栈不可控。工程做法是用成熟编辑器内核（自研成本极高），并在输入时做 HTML 白名单净化。
+16、WCAGWCAG（Web Content Accessibility Guidelines，网页内容无障碍指南）是由 W3C 制定的国际通用技术标准，旨在让网页内容对残障人士（包括视觉、听觉、肢体、认知等障碍）以及老年用户更加可访问、可理解、可操作。
+2、难题1. attribute 与 property 的差异
+attribute 是 HTML 里写的字符串，property 是 DOM 对象上的实时值。绝大多数会双向映射，但表单状态类属性有“脏值标志”：用户交互改变 value/checked/selected 后，attribute 停在初始值，getAttribute(&#39;value&#39;) 返回的仍是原来的字符串，而 .value 返回当前值。
+因此读表单状态一律用 property；setAttribute(&#39;value&#39;, x) 只能改默认值，改不了用户已输入的内容（除非用 .value）。另外 class 对应 className、style 是解析后的 CSSStyleDeclaration、href 的 property 是绝对 URL 而 attribute 是原始字符串。追问：这也是 React 受控组件要求“值从 state 来”的底层原因。
+2. 为什么写 width&#x2F;height 能减小 CLS（累积布局偏移）
+图片未加载时浏览器不知道尺寸，只能按 0 高度排版，图片到达后把下方内容全部推开，产生布局偏移。写上 width 与 height 属性后，浏览器据此算出内在宽高比，在下载前就预留正确比例的空间；配合 CSS 的 max-width: 100% 与 height: auto（或 aspect-ratio），缩放时仍按比例，于是预留尺寸与实际尺寸一致，偏移消失。追问：aspect-ratio 适合容器自适应场景，但它要求比例写对，否则预留与实际不符反而更糟。
+3. srcset&#x2F;sizes 的匹配算法
+srcset 和 sizes 是 HTML 中用于实现响应式图片的核心属性组合。它们让浏览器根据当前设备的屏幕宽度、像素密度等条件，自动从提供的图片列表中，选择最合适（通常是体积最小且清晰度足够）的那一张来加载，从而避免在手机上浪费流量下载桌面端的大图。
+srcset 的 x 描述符直接表达 DPR（logo@2x.png 2x）；w 描述符表达资源像素宽度，此时必须配 sizes，浏览器先按 sizes 计算该图在布局中的 CSS 宽度，乘以当前 DPR 得到“需要的像素数”，再从候选里选不小于该值的最近资源。
+写错 sizes 是最常见的错误（例如布局实际 480px 宽却写 sizes=&quot;100vw&quot;），会导致高分屏取到过大的图、低带宽取到过大的体积。追问：还需要配合 loading=&quot;lazy&quot; 与首屏图的 fetchpriority=&quot;high&quot; 才能兼顾首屏体验。
+4. iframe 的代价与隔离
+代价：独立渲染进程或上下文、额外的内存与网络开销、受限于同源策略无法读取内容、会推迟父页面的 load 事件；多个 iframe 会显著拖慢首屏。
+隔离：sandbox 属性默认禁用一切（脚本、表单、同源），需要按需放开 allow-scripts/allow-forms/allow-popups，注意同时放开 allow-scripts 与 allow-same-origin 等于让内嵌页面获得与父页面同源的脚本能力，沙箱形同虚设；allow（权限策略）限制摄像头、麦克风、定位；referrerpolicy 控制来源泄露；防点击劫持用 X-Frame-Options 或 CSP 的 frame-ancestors。
+跨域通信只能 postMessage，接收端必须校验 event.origin 且不信任消息内容。追问：微前端用 iframe 做隔离的代价就是这些通信与体验（弹层、路由、焦点）问题。
+5. Web Components 的生命周期
+Web Components 是一套由浏览器原生支持的 Web 平台标准，允许你创建可重用、封装良好且与框架无关的自定义 HTML 元素。它的核心目标是解决传统前端开发中组件难以跨项目、跨框架复用的问题，让你像使用 &lt;div&gt; 或 &lt;input&gt; 一样使用自定义组件。
+constructor 只做初始化，不要访问属性或子节点（此时还没有）；
+connectedCallback 在插入文档时调用，适合绑定事件与启动逻辑；
+attributeChangedCallback 只在 observedAttributes 中声明的属性变化时触发；
+disconnectedCallback 必须清理定时器、监听与请求，否则会泄漏；
+adoptedCallback 在跨文档移动时触发。Shadow DOM 用 attachShadow(&#123;mode:&#39;open&#39;&#125;) 创建，&lt;slot&gt; 承载外部传入的内容，样式默认隔离；SSR 可用声明式 Shadow DOM（&lt;template shadowrootmode=&quot;open&quot;&gt;）直出，但需要浏览器支持与降级方案。追问：mode: &#39;closed&#39; 时外部无法访问内部节点，调试与测试会变难。
+6. 编码嗅探与 document.write
+编码嗅探是浏览器在正式解析 HTML 之前，试图确定文档字符编码的一套算法。它的核心目标是：在读到足够多的字节以确认编码之前，尽可能早地做出判断，避免解码错误。
+编码判定顺序大致为：BOM、HTTP 响应头 Content-Type、&lt;meta charset&gt;、父文档继承、浏览器猜测。因此 meta charset 必须出现在文档前 1024 字节内，否则浏览器已按错误编码开始解析，后面再声明也来不及，表现为中文乱码。document.write 在解析阶段会把内容插入当前位置并阻塞解析；在异步脚本、defer 脚本或文档已关闭后调用会触发隐式 document.open()，清空整个文档，这就是老广告 SDK 导致整页白屏的机制。追问：现代替代方案是 DOM API 插入节点或 insertAdjacentHTML。
+二、CSS1、常见题1. 标准盒模型和 IE 盒模型有什么区别？box-sizing 干什么用？标准盒模型 width 只含内容区，占位 &#x3D; width + padding + border + margin；IE 盒模型 width 已含 padding 与 border。box-sizing: border-box 让宽度包含内边距与边框，是组件开发默认；注意它是可继承属性，全局设置后老组件可能变形，需要局部还原。
+2. 水平垂直居中至少说四种方式。Flex：父级 display:flex; justify-content:center; align-items:center；
+Grid：父级 display:grid; place-items:center；
+绝对定位 + transform: translate(-50%,-50%)（不需要知道尺寸）；
+绝对定位 + inset: 0; margin: auto（需固定宽高）；追问：元素有固定宽高时负 margin 更稳，无宽高时只能靠 transform。
+3. BFC 是什么，怎么触发，解决什么问题？块级格式化上下文，是css中一块独立渲染区域。触发：根元素、float 非 none、position 为 absolute&#x2F;fixed、display 为 inline-block&#x2F;table-cell&#x2F;flow-root&#x2F;flex 或 grid 子项、overflow 非 visible。
+作用：父元素高度包含内部浮动、阻止父子外边距合并、避免被浮动元素覆盖（自适应两栏）、隔离内外布局。
+4. 清除浮动有哪几种方式？clear: both（在浮动后加元素）、父级触发 BFC（flow-root&#x2F;overflow:hidden）、伪元素 ::after&#123;content:&#39;&#39;;display:table;clear:both&#125;、现代方案直接改用 Flex&#x2F;Grid（浮动不再参与布局）。追问：为什么要清浮动——浮动元素脱离常规流，父容器高度计算忽略它们，导致高度塌陷。
+5. 什么是外边距合并（margin 塌陷）？怎么解决？相邻兄弟、父子（父无 border&#x2F;padding 且非 BFC）、空块自身三种情形下，相邻外边距合并为较大者（负值时取更负）。解决：父级触发 BFC、加 padding 或 border、改用 gap 或 Flex 布局。浮动与绝对定位元素不参与合并。
+6. 层叠与优先级怎么算？CSS选择器：ID、类&#x2F;属性&#x2F;伪类、元素&#x2F;伪元素、通用选择器、兄弟选择器、后代选择器、集合选择器。
+CSS来源：内联样式、内部样式表、外部样式表
+优先级：!important &gt; 内联样式&gt;CSS选择器&gt;继承样式。优先级相同后定义的高于先定义的，集合选择器权重累加计算。
+7. z-index 设很大却不生效，为什么？因为它只在同一层叠上下文内比较。父级若创建了层叠上下文（position + 非 auto 的 z-index、transform、filter、opacity&lt;1、will-change、isolation:isolate、contain、Flex&#x2F;Grid 子项带 z-index），子元素就被锁在该上下文内，无法越过外部兄弟。排查方式是沿祖先链找谁创建了上下文，而不是继续加大数字。
+8. 说一下层叠上下文与绘制顺序。上下文内从下到上：上下文背景与边框 → 负 z-index 子上下文 → 块级盒子 → 浮动 → 行内 → z-index 为 0&#x2F;auto 的定位元素 → 正 z-index 子上下文。这就是“某些浮层总被盖住”的原因。
+9. Flex 里 flex: 1 和 flex: auto 有什么区别？flex 是 grow&#x2F;shrink&#x2F;basis 的简写：flex:1 &#x3D; 1 1 0%，基准为 0，各项等分剩余空间；flex:auto &#x3D; 1 1 auto，先保留内容宽度再分剩余，结果不等分；flex:none &#x3D; 0 0 auto。追问：flex 子项 min-width 默认 auto，长文本不收缩，要显式 min-width: 0。
+10. justify-content 和 align-items 分别作用在哪条轴？主轴由 flex-direction 决定：justify-content 控主轴分布，align-items 控交叉轴对齐；align-content 只在多行（flex-wrap: wrap）时生效，这是最常见的混淆点。
+11. Flex 和 Grid 怎么选？Grid 是二维（行列同时控制），适合整体布局、卡片自适应（repeat(auto-fill, minmax(220px,1fr))）；Flex 是一维，适合线性排列与不确定项数。auto-fill 保留空轨道（少项时左对齐），auto-fit 折叠空轨道（少项时铺满），这是常见考点。
+12. 实现左右固定、中间自适应。Flex：两侧 flex: 0 0 200px，中间 flex: 1 1 0%; min-width: 0；Grid：grid-template-columns: 200px 1fr 200px；绝对定位：中间左右留空；浮动 + BFC：中间触发 BFC 自动避让。经典圣杯&#x2F;双飞翼用负 margin 加 padding 实现，现在只需会说原理。
+13. 移动端适配有哪些方案？vw 方案（postcss-px-to-viewport 把 px 转 vw，等比缩放、无运行时开销，主流）；
+rem 方案（早期 flexible 动态根字号，现已不推荐），现在多用固定根字号加少量 rem；
+媒体查询按断点切布局；容器查询 @container 做组件级自适应。限制：大屏需 max-width 兜底，字体是否缩放按产品要求定。
+14. 移动端 1px 变粗怎么解决？原因：设计稿的 1px 是物理像素，DPR&#x3D;2&#x2F;3 时 CSS 1px 会渲染成 2~3 个物理像素。方案：伪元素 + transform: scaleY(0.5)（兼容最好）、box-shadow 内阴影、直接写 0.5px（部分安卓不支持）、border-image 渐变。工程上用构建插件按 DPR 自动处理。
+15. 重排和重绘的区别，怎么减少？重排是几何属性变化导致布局重算（宽高、位置、字体、增删节点），必然伴随重绘；重绘只重画外观（颜色、背景、阴影）。减少手段：批量改样式（切 class）、离线操作（先 display:none）、动画用 transform&#x2F;opacity 走合成层、读写分离避免强制同步布局、用 requestAnimationFrame 合并帧内更新。
+16. display:none、visibility:hidden、opacity:0 有什么区别？display:none 不进渲染树、不占位、不参与布局，无法过渡动画；visibility:hidden 保留占位、不可交互、可被子元素 visible 覆盖、可过渡；opacity:0 保留占位、仍可点击（需配 pointer-events:none）、可过渡、可能创建层叠上下文。
+17. position 五个值分别什么含义？static 默认、不参与定位；relative 相对自身原位置偏移、保留占位、可作为定位参照；absolute 相对最近的非 static 祖先（否则初始包含块）定位、脱离文档流；fixed 相对视口（祖先有 transform&#x2F;filter 时改为相对该祖先）；sticky 在滚动到阈值前表现为 relative、之后吸附，需设置 top/bottom 才有意义。
+18. 伪类和伪元素有什么区别？伪类描述状态或结构（:hover、:focus、:nth-child、:has），伪元素创建文档中不存在的元素（::before、::after、::placeholder）。遵守单冒号&#x2F;双冒号区分；::before/::after 必须写 content 才生效，且不能承载可交互内容（无障碍不可见）。
+19. link 引入和 @import 有什么区别？link 是 HTML 标签、并行加载、可被 JS 动态控制、无兼容问题；@import 是 CSS 语法、串行加载（前一个样式表解析到该行才发起请求）、必须写在文件顶部、无法被条件加载。工程上一律用 link 或构建工具注入。
+20. px、em、rem、%、vw 有什么不同？px 是 CSS 逻辑像素（受 DPR 影响）；em 相对当前元素字号（用于 font-size 时相对父级，容易层层放大）；rem 相对根字号，最稳定；% 的参照随属性变化——宽、padding、margin 都参照包含块宽度，height 参照包含块高度（父高 auto 时失效）；vw/vh 相对视口。
+21. 手写：一个三角形怎么做？宽高为 0，用边框构造：border-left/right: 50px solid transparent; border-bottom: 100px solid #000。原理是相邻边框以 45° 斜接，把其他三边设为透明就只剩一个三角。追问：如何做右指三角形——调换透明与非透明边的位置即可。
+22. 手写：单行与多行文本溢出省略。单行三件套：overflow:hidden; text-overflow:ellipsis; white-space:nowrap。
+多行用 -webkit-line-clamp：display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden（非标准但有广泛支持），或 CSS 新属性 line-clamp 配合 block-ellipsis（支持度有限）。
+2、难题1. min-width:auto 为什么让 Flex 收缩失效？Flex 子项的最小尺寸默认取 auto，语义是“不小于内容的最小尺寸”，因此长单词或无断点文本会阻止收缩，表现为“设了 flex:1 仍溢出”。解法是显式 min-width:0（或 overflow:hidden），并在文本上配 overflow-wrap:anywhere。这是可把容器自适应与文本换行两个知识点串起来的题。
+2. position: sticky 失效的常见原因？四条：一是没有一个方向的偏移值（top/left 等未设）；二是最近的滚动祖先的 overflow 不是 visible（会改变粘附容器，常见于 overflow:hidden 的父级）；三是父级高度不足，元素没有滚动空间可“粘”；四是祖先有 transform/filter/perspective 时会创建新包含块，粘附参照被改。排查方式是逐级检查祖先的 overflow 与 transform。
+3. fr 与百分比混用为什么会溢出？fr 分配的是扣除固定轨道与 gap 之后的剩余空间，而百分比按容器总宽度计算；两者混用会导致总额超过 100%。正解是用 minmax(0, 1fr) 明确最小值为 0（默认的最小值 auto 也可能让内容撑破轨道），这同时解决“Grid 中长文本撑破列”的问题。
+**4. will-change 与合成层的代价是什么？
+will-change: transform 会提前把元素提升为独立合成层，动画时跳过布局与绘制，代价是显存占用与纹理上传；层数过多会造成内存暴涨与合成开销上升。正确用法是动画开始前设置、结束后移除，或用 transform 的 translateZ(0) 同理但同样要节制。
+5. margin 的百分比为什么按宽度算，垂直方向也是？CSS 规范中 margin/padding 的百分比一律参照包含块的内联尺寸（宽度），垂直方向同样如此，以保证块级布局的“宽度循环”不被打破。这带来一个实用技巧：padding-top: 66.67% 可以做 16:9 等比容器，但更推荐用 aspect-ratio。
+6. CSS 变量与预处理器变量有什么区别？CSS 变量是运行时值，参与继承、可被 JS 读写、支持动态主题切换，但无法做颜色函数运算（可配合 color-mix）；Less&#x2F;Sass 变量在编译期替换成字面量，可做运算与混入，但换主题需要重新构建。进阶点是 @property：声明变量的类型、初始值与继承性后，可让变量参与过渡与动画（否则 transition 对变量无效）。
+7. 移动端为什么 100vh 会有问题？浏览器工具栏收放会改变可视高度，vh 按“最大视口”计算，导致底部内容被遮挡。解法是用新单位 dvh（动态视口）、svh（最小）、lvh（最大），或用 calc(var(--vh, 1vh) * 100) 配合 resize 监听兜底；配合 env(safe-area-inset-bottom) 处理刘海屏与底部横条。
+三、JS1、常见题1. JS 有哪些数据类型，怎么判断？基础类型七种：undefined、null、boolean、number、string、symbol、bigint；
+引用类型为 object（含数组、函数、日期、正则、Map、Set）。
+判断方式：typeof 能安全处理未声明变量，但把 null、数组、日期都判成 object；instanceof 依赖原型链、跨 Realm 失效；Object.prototype.toString.call() 最通用；数组用 Array.isArray；判断 NaN 用 Number.isNaN（Object.is 更严格）。
+2. var、let、const 有什么区别？var 函数作用域、声明提升且初始化为 undefined、可重复声明、会成为全局对象属性；let/const 块级作用域、存在暂时性死区（声明前访问抛 ReferenceError）、不可重复声明；const 只保证绑定不可重新赋值，对象内部仍可变。循环中用 let 每次迭代创建新绑定，是闭包经典题的解法。
+3. 什么是闭包，有什么用，会内存泄漏吗？闭包是指一个函数能够访问外部函数作用域中变量的能力，即使外部函数已经执行完毕。
+用途：私有变量、函数工厂、缓存（记忆化）、防抖节流、模块模式、Hooks 中跨渲染保存状态。
+闭包本身不造成泄漏，只有当长生命周期的引用（全局事件、定时器、未取消的订阅）持有闭包、闭包又持有大对象时才表现为泄漏；解绑、清理定时器即可回收。
+4. 说说原型链，instanceof 怎么实现？每个构造函数都有一个 prototype属性，该属性指向一个对象（原型对象），构造函数生成的实例对象有一个 __proto__ 属性也指向该对象。当访问对象的某个属性的时候，如果对象上没有该属性，则会通过__proto__访问其原型对象，知道找到该属性或找到Object.prototype为止。整个查找过程所形成的链式结构，就是原型链。原型链是js实现继承的核心机制。
+5. 继承有哪几种实现？原型链继承（子类protoType指向父类实例，有副作用）→ 构造函数继承（子类中使用父类构造函数，无法继承原型方法）→ 组合继承（调用两次构造函数）→ 寄生组合继承（Object.create 复制原型，只调一次）→ class。class 是语法糖，但不会被提升、必须用 new、方法不可枚举且默认严格模式。
+6. this 的绑定规则有哪些？优先级：new 绑定 this指向新的实例对象&gt; 显式绑定（call/apply/bind）&gt; 隐式绑定（作为对象方法调用，this指向该对象）&gt; 默认绑定（函数&#x2F;回调函数调用，严格模式 undefined，非严格模式全局对象）。隐式绑定丢失的三种场景：方法赋给变量、作为回调传入、放进 setTimeout。箭头函数没有自己的 this，取定义时外层作用域的this，无法被 call 改变。
+7. new 操作符做了什么？四步：创建空对象 → 把它的原型指向构造函数的 prototype → 以它为 this 执行构造函数 → 构造函数返回对象则用该对象，否则返回第一步创建的对象（非对象返回值被忽略）。
+8. call、apply、bind 有什么区别？call 与 apply 立即执行，区别只在参数形式（逐个 vs 数组）；bind 返回绑定了 this 与部分参数的新函数，不立即执行，且用 new 调用时绑定的 this 会被忽略（需要手写兼容）。
+9. 讲一下事件循环。js是单线程语言，通过事件循环机制实现异步任务执行。任务分宏任务（整体脚本、setTimeout、setInterval、MessageChannel、I&#x2F;O 回调）与微任务（Promise.then、queueMicrotask、MutationObserver、await 之后的续体）。
+同步代码先执行，然后每轮事件循环清空所有微任务，再取一个宏任务执行，如此循环。关键规则是：微任务优先级永远高于宏任务，且微任务队列会在每个宏任务之后被彻底清空。
+11. Promise 的状态与 then 返回值规则？promise是一个处理异步操作的对象，是一个状态不可逆的异步结果容器，拥有三个状态（pending → fulfilled&#x2F;rejected）。then 总返回新 Promise：回调返回普通值则兑现、返回 Promise 则等待其敲定、抛出异常则拒绝；未传拒绝处理时，拒绝会沿链传递（错误穿透）。构造阶段的同步异常会让 Promise 直接拒绝而非抛出。
+12. all、allSettled、any、race 有什么区别？all 全部成功才成功，任一失败立即失败（快速失败），结果顺序与输入顺序一致；allSettled 等全部敲定，返回 &#123;status, value|reason&#125; 数组，适合批量任务互不影响；any 首个成功即成功，全失败抛 AggregateError；race 取首个敲定（成功或失败均可）。
+13. async/await 的原理是什么？async 函数返回 Promise对象，await 把后续代码注册为该 Promise 的回调，内部基于 Generator 加自动执行器实现，恢复执行属于微任务。await 非 Promise 值也会让出一次执行权。异常用 try/catch 捕获被等待 Promise 的拒绝原因。
+14. 串行与并发怎么写？for 循环里逐个 await 是串行（总耗时累加）；先 map 出 Promise 数组再 Promise.all 是并发（取决于最慢的一个）。限流用并发池，容错用 allSettled 或逐个 try/catch，取消用 AbortController。
+15. 实现深拷贝要考虑哪些边界？循环引用（WeakMap）、Symbol 键、不可枚举属性、Date/RegExp/Map/Set/TypedArray、函数、原型链、getter/setter。structuredClone 是原生方案，支持循环引用与多数内置类型，但不支持函数、DOM 节点与原型；手写用 Object.prototype.toString 判类型 + 递归 + WeakMap。
+16. 防抖和节流有什么区别，怎么实现？防抖把多次触发合并为最后一次（或首次立即执行后冷却），节流保证单位时间内最多执行一次。实现要点是保存定时器或上次时间戳，并提供 cancel&#x2F;flush，组件卸载时必须取消，否则会内存泄漏或更新已销毁组件。场景：搜索联想用防抖，滚动加载、拖拽用节流。
+17. 数组常用方法哪些会改变原数组？会改：push/pop/shift/unshift/splice/sort/reverse/fill/copyWithin；不改：map/filter/reduce/concat/slice/join/flat/flatMap/find/findIndex/some/every/includes。两个细节：sort 默认按字符串比较（数字排序必须传比较函数），reduce 不传初始值时以第一项为初始累积值。
+18. 事件委托的原理与限制？利用事件冒泡机制把子元素事件处理函数统一绑在父容器上，用 event.target 判断事件来源（常配 closest）。
+优点：减少监听数量、动态节点自动生效、省内存。
+限制：不冒泡的事件（focus、blur、mouseenter）无法委托；stopPropagation 会中断；深层节点需要精确匹配；高频事件要注意性能。
+19. ESM 与 CommonJS 有什么区别？ESM 编译期静态解析（可 tree-shaking）、导出是活绑定（值引用）、顶层 this 为 undefined、默认严格模式、支持顶层 await 与 import()；CJS 运行时 require、导出是值拷贝、循环依赖拿到未执行完的快照、this 指向 module.exports。import 会提升到模块顶部，require 按代码顺序执行。
+20. 垃圾回收机制是什么，哪些情况会泄漏？垃圾回收（Garbage Collection，GC）是编程语言运行时自动管理内存的一种机制：它负责找出程序中不再使用的内存，并自动释放，让开发者不必手动 free 或 delete 内存，从而避免内存泄漏和悬空指针等问题。
+常见的垃圾回收机制：标记清除法（从根遍历标记存活对象，再扫一遍堆把没标记的清掉；它能正确处理循环引用、实现简单，但会留下内存碎片且可能造成停顿）、引用计数法（通过记录对象被引用的次数，归零即回收。实现简单、回收及时，但无法处理循环引用）
+V8 分代回收：新生代用复制算法（Scavenge），老生代用标记清除与标记整理，配合增量&#x2F;并发标记减少停顿；可达性从根（全局、调用栈、活跃闭包）出发。
+泄漏场景：意外全局变量、闭包长期持有大对象、未清除的定时器与动画帧、未解绑的事件监听、游离 DOM、无上限缓存、组件卸载未清理的订阅与请求。
+21. 为什么 0.1 + 0.2 !== 0.3？IEEE 754 双精度下 0.1 与 0.2 是无限循环二进制小数，存储时已舍入，相加产生误差。处理：金额用整数（分为单位）计算、最终统一舍入（toFixed 边缘值并非严格四舍五入）、或用 decimal.js 等高精度库。
+22. 箭头函数和普通函数有什么区别？箭头函数无自己的 this、arguments、prototype，不能被 new、不能作为 Generator、不能用 yield，this 取外层且 call/apply 无效。因此不适合做构造函数、需要动态 this 的方法、以及需要 arguments 的场景。
+2、难题1. 微任务为什么会“饿死”渲染？微任务在每轮宏任务后会被彻底清空，包括清空过程中新产生的微任务。若一个微任务持续注册新的微任务（例如长 Promise 链或递归 queueMicrotask），事件循环会一直停在清微任务阶段，无法进入渲染，表现为页面卡住、交互无响应。所以重计算应切片并用宏任务（setTimeout、MessageChannel、scheduler.postTask）让出主线程。
+2. resolve 一个 thenable 为什么要多一个 tick？resolve 收到对象时会读取其 then 属性，若为函数则进入“Promise 决议过程”，需要把 then 的调用排入微任务队列，因此状态敲定被推迟一个周期。这解释了输出题里“为什么 resolve(new Promise(...)) 的结果比预期晚一轮”。
+3. 循环变量闭包的三种写法为什么只有 let 有效？var 在函数作用域只有一个绑定，循环结束后所有回调读到同一个最终值；let 在每次迭代创建新绑定，各回调各持一份；不用 let 时可以用 IIFE 捕获当次值，或用 bind&#x2F;额外参数把值传进去。这是“绑定作用域 vs 值捕获”的经典考点。
+4. for...in、for...of、Object.keys 有什么区别？for...in 遍历可枚举属性名，会沿原型链向上（需配 hasOwnProperty 过滤），不适合数组（会把自定义属性也遍历）；for...of 遍历可迭代对象的值（数组、字符串、Map、Set、Generator），可被 break 中断；Object.keys 只返回自身可枚举字符串键。属性顺序规则：整数键按数值升序，字符串键按插入顺序，Symbol 需要 Reflect.ownKeys 才拿得到。
+5. ESM 的循环依赖为什么能工作，CJS 为什么容易出错？ESM 的导入导出是活绑定，模块在解析阶段就建立引用关系，执行时先提升函数声明，未初始化的变量为 undefined（TDZ 之外的引用可能拿到 undefined 但绑定有效），因此只要不在初始化阶段立即使用就能正常工作。CJS 在运行时同步执行，循环依赖时后执行的模块拿到的是前一个模块尚未赋值完成的 exports 快照，容易拿到空对象。
+6. Proxy 相比 Object.defineProperty 强在哪？Proxy 能拦截新增与删除属性、in&#x2F;has、ownKeys、数组索引与 length、以及 Map/Set 的方法调用；defineProperty 只能拦截已存在的属性，必须初始化时递归遍历（Vue 2 的成本来源）。Proxy 不能代理原始值、对内置集合的内部槽位要绑定 this、且性能低于直接访问；代价是无法 polyfill，所以 Vue 3 不支持 IE。
+7. 手写 bind 要注意什么？四个要点：返回新函数而非立即执行、支持分两次传参（bind 时传一部分、调用时再传一部分）、保留原函数的 this 语义（new 调用时绑定的 this 应被忽略）、保留原型链（new 出的实例应继承原函数的 prototype）。实现上用一个中间函数 fNOP 承接原型，再用 instanceof 或 this instanceof 判断是否被 new 调用。
+8. WeakMap、WeakRef、FinalizationRegistry 分别解决什么？WeakMap/WeakSet 的键是弱引用，给对象附加数据但不阻止其被回收，适合缓存、私有数据、DOM 与实例的关联（这也是 Vue 3 依赖表用 WeakMap 的原因）。WeakRef 允许弱持有对象并可能取不到，适合做可回收的缓存。FinalizationRegistry 在对象被回收后回调，但时机不确定，不能用来替代显式清理（例如必须主动 clearTimeout）。
+四、Less1、常见题1. Less 是什么，和 Sass&#x2F;SCSS、Stylus 有什么区别？Less 是 CSS 预处理器，用变量、嵌套、混入、运算、函数把 CSS 变成可组织、可复用的代码，编译后输出普通 CSS。与 SCSS 的差别主要在语法与能力：Less 用 @ 定义变量（SCSS 用 $），没有 @if/@each 这类控制指令，靠守卫（when）+ 递归实现条件与循环；没有 @use/@forward 那样的模块系统；因为编译者是 JS（less.js），可以在浏览器里直接编译运行，这是它早期在 Node 工具链里普及的原因。项目里选谁通常取决于团队既有栈与生态（组件库主题定制、构建插件支持）。
+2. Less 变量与 CSS 变量有什么区别？Less 变量 @primary: #1890ff 在编译期被替换成字面量，产物里不存在变量，因此不能运行时修改、不能做动态换肤；CSS 变量 --primary: #1890ff 是运行时值，可被 JS 读写、参与继承、支持切换主题与过渡。实践组合是“Less 变量管理尺寸与间距这类编译期常量，CSS 变量承载颜色主题”，编译期用 Less 变量生成 CSS 变量声明。
+3. Less 变量的求值顺序和覆盖规则是什么？Less 变量是惰性求值，不要求先声明后使用，同一个作用域内后定义的生效，查找时从当前作用域逐级向上。这带来两个实际后果：一是可以在文件末尾集中定义变量覆盖前面所有引用（主题覆盖就是这么做的）；二是容易“改了没效果”——若在使用处之后还有一处同名赋值，最终取后者。排查方式是全局搜索同名变量并确认作用域层级。
+4. Less 的 &amp; 有哪几种用法？&amp; 表示父选择器。常见四种：:hover 等伪类（&amp;:hover）、拼接后缀（&amp;-primary 生成 .btn-primary）、反向嵌套（.parent &amp; 表示“我被 .parent 包含”）、重复父级（&amp;&amp;）。BEM 写法 &amp;__elem、&amp;--mod 都靠它实现。注意：&amp; 拼出来的是新选择器，权重与父级一致，嵌套层级不会额外加权，但嵌套过深仍会让选择器变长。
+5. Mixin 怎么定义和调用，带不带括号有什么区别？定义 .clearfix() &#123; ... &#125;（带括号）是纯混入，本身不输出 CSS；.clearfix &#123; ... &#125;（不带括号）既是类也会输出。调用 .clearfix(); 或 .clearfix; 均可。带参数版本 .btn(@color; @padding: 8px 12px) &#123; ... &#125;，参数分隔符建议用分号（逗号在 box-shadow 这类值里会歧义）；@arguments 表示全部实参，@rest... 收集剩余参数。
+6. Mixin 与 :extend 有什么区别？Mixin 是复制声明到当前选择器，产物里出现多份相同声明；:extend 是合并选择器，把当前选择器追加到被继承规则的选择器列表上，产物只有一份声明。因此大量重复样式用 :extend 体积更小，但要注意它会改变选择器结构、且无法继承带参数的混入。:extend(.b all) 会把 .b 的所有嵌套变体一并继承。判断标准：需要参数或需要独立作用域用 mixin，纯复用声明用 extend。
+7. Less 的运算怎么用，除法为什么要注意？支持 + - * / 与括号，单位会参与计算（10px + 5px 得 15px，单位不一致时以第一个为准）。重点：Less 4 默认数学模式为 parens-division，即不带括号的 / 被视为 CSS 分隔符（例如 font: 16px/1.5 不再做除法），要做除法必须写成 (width / 2) 或用 ./。老项目从 Less 3 升级时“数值算错”基本都是这个原因。
+8. ~&quot;...&quot; 转义是干什么的？把引号里的内容原样输出，不让 Less 解析。三类场景：calc()（width: ~&quot;calc(100% - 20px)&quot;）、url() 中含特殊字符、被 Less 误判为运算或函数的 CSS 值（如 filter、grid-template-areas、旧式 alpha(opacity=50)）。另一种等价写法是 e(&quot;...&quot;)。反过来，若希望 calc 里参与变量计算，就不要转义，让 Less 先把变量替换掉再交给 CSS。
+9. Less 有哪些常用内置函数？颜色：lighten/darken、saturate/desaturate、fadein/fadeout/fade、spin、mix/tint/shade。数值：percentage、round/ceil/floor、unit、min/max。字符串与列表：escape、e、length、extract、range、each。判断类：iscolor、isnumber、isruleset（配合守卫）。做主题色板时最常用 lighten/darken/mix 批量生成梯度。
+10. @import 有哪些选项，和 CSS 的 @import 有什么区别？Less 的 @import 在编译期内联文件内容，可选 (reference) 只引入不输出（配合 :extend 按需取样式）、(inline) 原样嵌入不处理、(css) 保留为 CSS 原生导入、(optional) 文件缺失不报错、(once) 默认只导入一次、(multiple) 允许重复导入。CSS 的 @import 是运行时请求、串行加载、性能差，工程上应避免。
+11. 条件与循环怎么写？条件用守卫：.mixin(@x) when (@x &gt; 0) &#123; ... &#125;，支持 and、or、not，以及 iscolor() 这类类型判断；搭配 default() 处理兜底分支。循环用递归 + 守卫实现：
+.generate(@n) when (@n &gt; 0) &#123;  .col-@&#123;n&#125; &#123; width: (@n / 12 * 100%); &#125;  .generate(@n - 1);&#125;.generate(12);
+
+Less 3.7+ 也可以用 each(@list, .mixin) 遍历列表，可读性更好。
+12. 命名空间怎么用？把一组混入装在 #ns() 里（带括号就不会输出），通过 #ns &gt; .mixin() 或 #ns.mixin() 调用；也可以写成 #ns &#123; .mixin() &#123;&#125; &#125; 但会被输出。命名空间的价值是把“工具方法”与“实际样式”隔开，避免工具类污染产物，也便于按模块组织。
+13. 注释有什么区别？// 单行注释在编译后被删除，适合写给人看的说明；/* */ 块注释保留在产物中，只在压缩模式下被移除，适合需要保留版权声明或给调试用的标记。团队规范一般要求业务注释用 //，版权与许可证用 /* */。
+14. 在 Vite 里怎么配置 Less，怎么注入全局变量？安装 less 后，在 vite.config 的 css.preprocessorOptions.less 里配置：additionalData 用来自动注入变量文件（@import &quot;@/styles/variables.less&quot;;），javascriptEnabled: true 支持内联 JS（组件库主题包常用），modifyVars 用于编译期换主题（配合 Ant Design 这类库）。Webpack 侧对应 less-loader 的 additionalData 与 globalVars，globalVars 的值可以是 JS 字符串，便于读取环境变量做主题。
+15. 用 Less 做换肤有哪几种方式？两种：编译期（modifyVars 或变量覆盖，产出一套新 CSS，切换要重新加载样式文件，适合多套固定主题）、运行时（Less 变量生成 CSS 变量，切换时只改 document.documentElement 上的 CSS 变量，零重新编译，适合深色模式与实时预览）。工程上常用“Less 管编译期常量 + CSS 变量管主题色”的混合方案。
+16. Less 的常见坑有哪些？嵌套过深导致选择器过长、权重过高、后续只能靠 !important 覆盖；混入滥用导致产物重复声明、体积膨胀；变量后定义覆盖前面（以为没生效）；Less 4 的除法需括号；calc 未转义被 Less 提前计算成固定值；@import 顺序影响变量最终取值；把 Less 变量误当 CSS 变量写进 var()（var(--x) 里不能放 Less 变量）。
+2、难题1. 为什么“在文件末尾覆盖变量”能改掉前面所有用法？因为 Less 变量是惰性求值且在作用域内后定义优先：解析时先收集所有声明，再在使用点所在的“最终作用域状态”上求值，而不是按书写顺序即时求值。所以把主题变量集中在文件末尾（或单独文件并在最后 @import），就能一处覆盖全量引用。反过来这也是坑：组件内部若在文件末尾重复赋值同名变量，会意外影响该文件内所有引用。
+2. @import (reference) 配合 :extend 是怎么省体积的？(reference) 让被导入文件“只解析不输出”，里面的规则不会出现在产物中；当你在自己的选择器里 :extend(.their-rule) 时，Less 会把你的选择器合并到那条原本不输出的规则上，从而只输出真正用到的那部分样式。适合引入大型组件库或公共样式后按需取用，代价是产物结构不够直观、调试时不容易对应源码。
+3. :extend 的 all 关键字会带来什么问题？:extend(.btn all) 会把 .btn 及其所有嵌套变体（.btn:hover、.btn.active、.wrapper .btn）一并继承，覆盖更全但选择器数量会成倍增长，产物可能比 mixin 更大，且容易出现意料之外的样式串味。使用时应对准具体规则，而不是对大块组件做 all。
+4. 守卫（when）递归与 each 循环怎么选？守卫递归兼容性最好、可表达“递减到 0”这类条件终止，但每个循环项都会产生一次编译调用，数量大（如生成 100 档间距）时编译耗时明显；each 遍历列表语义更清晰、性能更好，但需要 Less 3.7 以上。实践建议：工具类生成控制规模（几十档以内）、优先 each，并避免在循环里做复杂颜色函数运算。
+5. 为什么 width: calc(100% - @gap) 有时算错？Less 会在编译期尝试对 calc 内的表达式求值，把 @gap 替换后若整个表达式可算（如 100% - 20px 单位混合），可能被简化为一个值或产生不合法的 CSS。正确做法是 width: calc(100% - @gap) 保留变量替换但让 CSS 负责运算（多数版本可正确输出），或在需要完全原样输出时用 ~&quot;calc(100% - 20px)&quot;；反过来若想用 Less 算好再输出，就写成 width: (100% - @gap)（不带 calc）。判断标准是“这个运算该由编译器做还是浏览器做”。
+6. 深层嵌套为什么会拖慢编译并让样式难以维护？每个嵌套层级都会展开成一条更长的选择器，嵌套 n 层且每层多个选择器时，产物的规则数近似指数增长；同时选择器变长会增加匹配成本，权重升高后覆写只能加 !important。更隐蔽的问题是“样式串味”——上层模块改变结构后，深层嵌套的样式会意外命中其他节点。规范做法是嵌套不超过两层、用 &amp; 明确关系、跨模块的样式不用后代选择器。
+7. Less 与 CSS Modules 一起用要注意什么？Less 负责能力（变量、混入、运算），CSS Modules 负责作用域（类名哈希）。要点：只对局部类做哈希，公共类用 :global(.ant-btn)；composes 只能引用同文件或导入的类，不能引用动态值；:extend 在 CSS Modules 下行为受限（跨文件继承不生效）；主题变量通过 :export 或 CSS 变量导出给 JS 使用；命名保持 camelCase 以免 styles[&#39;kebab-case&#39;] 写法踩坑。
+五、TS1、常见题1. TypeScript 的类型系统有什么特点？三点：一是结构类型，只看形状是否匹配、不看声明来源（同形状的对象可互相赋值），与 Java 的标称类型不同；二是编译期检查 + 类型擦除，类型在产物中不存在，运行时没有任何类型信息，因此“运行时校验”必须另做（如 zod）；三是渐进式，any 与 // @ts-expect-error 可以把检查降到局部，便于老项目迁移。
+2. interface 和 type 有什么区别，怎么选？interface 描述对象形状、支持声明合并（同名自动合并，适合扩展第三方库类型）与 extends；type 可为任意类型起别名，支持联合、交叉、条件类型、映射类型与元组，但不能重复声明。约定：对象结构用 interface，需要联合&#x2F;条件&#x2F;映射运算时用 type。
+3. any、unknown、never、void 有什么区别？any 关闭检查、可读写任意属性、会污染下游推断；unknown 是安全版 any，任何值都可赋给它，但使用前必须收窄，适合 catch 的 error 与外部输入；never 表示空集（不可能出现的值、永不返回的函数），可用于穷尽性检查；void 表示函数没有返回值（实际返回 undefined），常用于“返回值不被使用”的回调签名。
+4. 泛型是什么，为什么要用它？让类型随输入推导，而不是靠断言或 any。三个要素：约束 T extends Shape、默认值 T = string、以及推导来源（参数、返回值、构造器）。判断“用得好不好”的标准是调用处能否不写类型参数就得到正确类型；如果函数内部需要访问属性却没有约束，就是没设计好。
+5. 常用工具类型有哪些？Partial/Required/Readonly（改修饰符）、Pick/Omit（取&#x2F;去键）、Record（构造索引签名）、Exclude/Extract/NonNullable（过滤联合）、ReturnType/Parameters（提函数签名）、InstanceType、Awaited（递归展开 Promise）、ConstructorParameters。它们几乎都是映射类型与条件类型的组合，能手写就是理解到位的证据。
+6. keyof、typeof、索引访问类型分别干什么？keyof T 取键的联合（&#39;a&#39; | &#39;b&#39;）；typeof x 取变量或值的类型（常配合 as const 从常量推导字面量）；T[&#39;a&#39;] 或 T[keyof T] 取属性类型。三者常组合成“从已有对象推导配置类型”的写法，避免重复定义。
+7. 条件类型和 infer 怎么用？T extends U ? X : Y 表达类型层分支，infer 只在 extends 子句中声明待推断变量。典型：type RT&lt;T&gt; = T extends (...a: any[]) =&gt; infer R ? R : never（取返回值）、type Aw&lt;T&gt; = T extends Promise&lt;infer V&gt; ? Aw&lt;V&gt; : T（递归展开）。注意 infer 出现在参数位置（逆变位）时，推断结果是交叉而非联合。
+8. 映射类型是什么？&#123; [K in keyof T]: F&lt;T[K]&gt; &#125; 遍历键生成新类型，可在 in 后用 as 重映射键名、用 +?&#x2F;-? 与 +readonly&#x2F;-readonly 增删修饰符。它是 Partial、Readonly、Pick 的实现基础，也是“批量改造对象类型”的主力工具。
+9. 联合类型与交叉类型的实际差异？联合 A | B 表示“或”，只能访问两者共有的属性；交叉 A &amp; B 表示“并”，可访问全部属性。基本类型交叉会得到 never（如 string &amp; number），对象交叉是属性合并（同键类型冲突时也变 never）。常见用法：Props &amp; &#123; children?: ReactNode &#125; 做类型叠加。
+10. 类型收窄有哪些手段？typeof（基础类型）、instanceof（类实例）、in（属性存在）、字面量判别字段（可辨识联合，推荐建模方式）、真值判断与相等判断。自定义守卫：function isX(v: unknown): v is X；断言函数：function assertX(v: unknown): asserts v is X（失败时抛错）。守卫只影响编译期，运行时安全性取决于实现是否正确。
+11. ?.、??、! 分别是什么？?. 可选链（中间为 null/undefined 时短路返回 undefined）；?? 空值合并（只在 null/undefined 时取右侧，不像 || 会被 0、&#39;&#39; 误判）；! 非空断言（告诉编译器“一定存在”，不做运行时检查，滥用会掩盖真实空值 bug）。三者常一起出现在接口数据处理里。
+12. as、as const、satisfies 有什么区别？as 是类型断言，强行告诉编译器“当成这个类型”（不校验、可能掩盖错误）；as const 让字面量保持最窄类型并加 readonly（用于常量表、路由表）；satisfies 是校验同时保留推断，既能对配置对象做形状检查，又不放宽键的精确类型。
+13. 函数重载怎么写，注意什么？写多个重载签名（只有声明）加一个实现签名。要点：实现签名对调用方不可见，重载签名必须覆盖所有调用形态；重载过多时可用条件类型或联合参数替代（更易维护）。适合“入参类型不同、返回类型随之不同”的工具函数，不适合堆砌不同业务逻辑。
+14. 声明文件与模块增强怎么写？为无类型库补声明：建 d.ts 并在 include 中纳入，用 declare module &#39;pkg&#39; 声明形状；扩展已有模块：declare module &#39;pkg&#39; &#123; interface X &#123; extra: string &#125; &#125;；全局注入：declare global &#123; interface Window &#123; __CONFIG: Config &#125; &#125;。要求是声明与实现同步，最好加类型测试（tsd&#x2F;expect-type）防漂移。
+15. tsconfig 里 strict 包含哪些？noImplicitAny、strictNullChecks、strictFunctionTypes、strictBindCallApply、strictPropertyInitialization、alwaysStrict、useUnknownInCatchVariables、noImplicitThis。其中工作量最大的是 strictNullChecks（可选值与返回值都要显式处理），其次是 strictFunctionTypes（影响回调参数的赋值检查）。另有 noUncheckedIndexedAccess 不在 strict 内，但强烈建议对数据边界敏感的项目开启。
+16. 类型擦除有什么实际后果？类型、接口、类型断言在编译后全部消失，所以不能用类型做运行时判断（typeof 只能判基础类型，不能判 interface）；as 不会转换数据；泛型不能用于 new 之外的运行时逻辑；instanceof 只能对真实存在（有运行时值）的类使用。
+17. 枚举（enum）有什么问题，替代方案是什么？数字枚举会产生反向映射、字符串枚举无反向映射；const enum 会被内联，但在 isolatedModules（Babel&#x2F;esbuild 场景）下不能跨模块使用，容易“本地编译通过、构建失败”。现代实践多用“字面量联合 + as const 对象”替代：
+const Status = &#123; Idle: &#x27;idle&#x27;, Loading: &#x27;loading&#x27; &#125; as const;type Status = typeof Status[keyof typeof Status];
+
+18. Vue 3 项目里 TS 有哪些关键写法？defineProps&lt;Props&gt;() 与 defineEmits&lt;&#123; change: [id: number] &#125;&gt;() 的类型推导；模板引用 ref&lt;HTMLInputElement | null&gt;(null)；provide/inject 用 InjectionKey&lt;T&gt; 保证类型；全局属性用模块增强；defineModel&lt;T&gt;() 声明双向绑定类型。要点是“props 用泛型而不是运行时的对象声明”，否则拿不到类型。
+19. React 项目里 TS 的关键写法？事件类型用内置泛型（ChangeEvent&lt;HTMLInputElement&gt;、MouseEvent），避免手写 any；useState 初始为 null 时显式声明联合类型；children 用 ReactNode；泛型组件写成 function List&lt;T&gt;(props: Props&lt;T&gt;)；useRef&lt;HTMLDivElement&gt;(null)。常见坑是用 forwardRef 时忘了传泛型导致 ref 类型丢失。
+20. 怎么给一个值加上“不可能为 null”的类型保障？不要用 !，而是用控制流收窄：if (x == null) return; 之后编译器自动排除 null；或写断言函数 assertDefined&lt;T&gt;(v: T | null | undefined): asserts v is T，在入口统一校验。前者是纯类型层面的安全，后者带运行时检查，二者比非空断言可靠得多。
+2、难题1. 什么是分布式条件类型，怎么阻止它分发？当条件类型作用于裸类型参数且传入联合时，会按成员逐个求值再合并结果（type E&lt;T&gt; = T extends string ? 1 : 2，传入 &#39;a&#39; | 1 得 1 | 2）。阻止分发用元组包裹：[T] extends [U] ? ...，此时整体比较、不再拆成员。Exclude、NonNullable 都依赖分发特性，而“判断两个联合是否完全相同”必须阻止分发。
+2. infer 在参数位置为什么得到交叉类型？infer 处于逆变位置（函数参数）时，多个候选类型会被推断为交叉，这正是 UnionToIntersection 的实现原理：
+type U2I&lt;T&gt; = (T extends any ? (x: T) =&gt; void : never) extends (x: infer I) =&gt; void ? I : never;
+
+而处于协变位置（返回值、属性）时得到联合。理解这一点能解释很多“类型体操结果与直觉不符”的问题。
+3. 协变、逆变与 strictFunctionTypes 有什么关系？对象属性与返回值是协变（子类型可赋给父类型），函数参数是逆变（参数类型更宽的函数才能赋值给参数更窄的位置）。开启 strictFunctionTypes 后，函数类型属性按逆变检查；但方法的参数仍保持双变（bivariant），这是为兼容历史行为留的口子。实践含义：把回调声明为属性签名（onChange: (v: string) =&gt; void）比声明为方法签名检查更严格。
+4. 手写 DeepPartial 需要注意什么？要限定递归边界，否则对含循环引用的类型会“类型实例化过深”：
+type DeepPartial&lt;T&gt; = T extends object  ? &#123; [K in keyof T]?: DeepPartial&lt;T[K]&gt; &#125;  : T;
+
+要点：extends object 排除基础类型；遇到数组、函数、Date 等内置类型要单独分支（否则会把 Date 也变成可选属性的对象）；递归深度超过编译器限制（约 50 层）会报错，需要用“分层递归”或显式深度参数控制。
+5. satisfies 解决了 as 与类型注解都解决不了的问题？类型注解会把对象放宽成声明类型，丢失具体键的窄类型（键名补全、字面量类型都没了）；as 只断言不校验。satisfies 二者兼得：既做形状校验（拼错键会报错），又保留推断结果（obj.home 仍是 &#39;/&#39; 字面量类型）。典型场景：路由表、主题 token、i18n 字典。
+6. TS 5 的标准装饰器与 experimentalDecorators 有什么区别？标准装饰器（Stage 3）签名是 (value, context)，context 提供 kind、name、addInitializer，可用于类、方法、字段、访问器与 accessor 关键字；experimentalDecorators 是旧的 (target, key, descriptor) 风格，需要配合 emitDecoratorMetadata 才能做依赖注入（NestJS、Angular 依赖这套）。两者不能混用，experimentalDecorators: true 时标准装饰器不生效。
+7. 对象字面量的“多余属性检查”为什么能绕过？TS 对新鲜（fresh）对象字面量做多余属性检查：直接赋给带类型的变量或传参时报错；但若先赋给一个中间变量（类型被拓宽为字面量的形状），再传给目标类型，检查就失效，因为此时不再是“新鲜字面量”。这是“为什么 const a = &#123;x:1, y:2&#125;; const b: A = a; 不报错”的原因。工程含义：不要用中间变量绕过检查，那会掩盖真实的结构不匹配。
+8. 类型安全与运行时校验怎么配合才不白做？TS 只能保证“代码内部的类型自洽”，无法保证外部数据（接口响应、localStorage、URL 参数）符合声明。可靠做法是在边界处做运行时校验：接口层用 zod&#x2F;valibot 定义 schema 并推导类型（z.infer），校验失败走统一错误处理；这样声明类型与运行时校验来自同一份定义，避免“两套定义漂移”。只用 as ApiResponse 断言是典型的假安全。
+]]></content>
+      <tags>
+        <tag>前端面试</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【前端面试】七、病毒与防范</title>
     <url>/posts/323548659/</url>
     <content><![CDATA[一、常见题1. XSS 有哪几类，防御的核心思路是什么？存储型（恶意内容入库，他人访问时执行）、反射型（随请求参数回显）、DOM 型（前端把不可信数据写入危险位置，如 innerHTML、location、document.write、eval）。防御核心是按输出上下文做转义：HTML 文本转实体、属性值加引号并转义、URL 做协议白名单（禁 javascript:）、JS 上下文用序列化而非拼接；富文本必须走 DOM 树白名单净化（如 DOMPurify）；再叠加 CSP 与 HttpOnly Cookie 作为兜底。
@@ -1495,261 +1737,14 @@ deploy:  type: git  repo: https://github.com/yourname/yourname.github.io.git  br
       </tags>
   </entry>
   <entry>
-    <title>【前端面试】一、前端基础</title>
-    <url>/posts/323548653/</url>
-    <content><![CDATA[一、HTML1、常见题答案1. HTML5 新特性的分类答案H5 新增了语义化标签、多媒体（video/audio）、Canvas、SVG、本地存储、表单增强（type=email/date/number）、拖拽、WebWorker、WebSockets、地理定位等能力，丰富网页表现与交互。
-2. H5语义化HTML语义化是指根据内容的含义（语义）来选择合适的HTML标签，而不是仅仅为了视觉效果而滥用 &lt;div&gt; 和 &lt;span&gt;。
-
-可访问性（无障碍）：屏幕阅读器能理解页面结构，视障用户能更好地导航。
-SEO：搜索引擎能更准确理解内容结构和重要性。
-可维护性：代码可读性强，团队协作和后期维护更容易。
-设备兼容：利于阅读模式、爬虫、浏览器插件等正确解析。
-
-3. DOCTYPE 的作用DOCTYPE声明文档类型用来告知浏览器文档类型，开启标准模式；标准模式按W3C规范渲染，混杂模式为兼容旧浏览器按浏览器自有怪异规则渲染。
-标准模式（Standards Mode）
-
-有正确 &lt;!DOCTYPE&gt;，严格遵循 W3C 规范渲染
-盒模型：width/height 只代表内容区，padding、border 向外叠加（content-box）MDN Web Do…
-行内元素（span）设置宽高无效
-父元素没固定高度时，子元素百分比 height 不生效
-margin:0 auto 可以正常实现块级水平居中
-图片按基线对齐，图片底部会出现默认间隙
-overflow 溢出内容默认裁剪
-
-混杂模式 &#x2F; 怪异模式（Quirks Mode）
-
-缺少或写错 DOCTYPE，模拟 IE5.5 旧浏览器渲染，兼容古老页面MDN Web Do…
-盒模型：width/height 包含 content + padding + border（border-box）MDN Web Do…
-行内元素可以设置宽高
-父元素无高度，子元素百分比 height 可能生效
-margin:0 auto 居中失效，一般靠 text-align:center
-图片对齐到盒子底边，底部没有基线间隙
-table 字体样式不继承父级；溢出时盒子会撑开包住内容
-
-4. 元素分类块元素独占一行、可设置宽高；行内元素同行排列、宽高由内容决定，不能直接设置宽高。
-5. src 与 hrefsrc 用于替换元素（img/script/iframe/video），资源的加载会阻塞该元素的解析与渲染，因此它是“内容来源”；href 建立引用关系（a/link），浏览器并行处理，link 加载样式会阻塞渲染但不阻塞 HTML 解析。追问：script 的 src 是解析阻塞的，除非加 defer/async。
-6. defer 与 async两者都只对外部脚本生效、都不阻塞 HTML 解析。defer 推迟到解析完成、DOMContentLoaded 之前，按文档顺序执行；async 下载完成即执行，顺序不确定。选择依据是依赖关系：需要访问 DOM 或脚本之间有依赖用 defer；互不依赖的统计、监控脚本用 async，避免拖慢关键路径。追问：内联脚本加这两个属性无效；两者同时存在时 async 优先。
-7. meta 的常用配置charset=&quot;utf-8&quot; 必须放在 head 最前面，否则编码嗅探可能已按错误编码开始解析；viewport 的 width=device-width, initial-scale=1 决定移动端的 CSS 像素映射，加上 viewport-fit=cover 才能使用安全区变量；description 影响搜索结果摘要；Open Graph（og:title/og:image）决定社交平台分享卡片的呈现；http-equiv 可做兼容性设置与自动刷新（后者在业务页面应避免）。
-8. 前端 SEO 的清单基础项：唯一且准确的 title 与 description、语义化结构、合理的 URL 层级与内链；技术项：canonical 去重、robots.txt 与 sitemap.xml、JSON-LD 结构化数据、首屏内容可被抓取（SSR、预渲染或至少首屏直出）、避免关键内容完全依赖 JS 异步渲染；体验项：移动端友好、体积与 LCP 达标（页面体验也是排名因素）。追问：纯前端 SPA 为什么不利于 SEO，答案要落到“抓取时可能拿不到渲染后的内容”。
-9. disabled、readonly、hiddendisabled：不可交互、不可聚焦、不参与表单提交，form 提交时被忽略；readonly：不可编辑但可聚焦、可选中、会提交，适用于文本类输入与 textarea（对 select/checkbox 无效）；hidden：仅不渲染，值照常提交。业务上“提交前暂时锁住但仍需要值”应该用 readonly 而非 disabled，这是实际踩坑点。
-10. data-\* 与 datasetdata-user-id 在 dataset 中映射为 userId（连字符转驼峰，且只对 ASCII 小写有效），值永远是字符串，取数字要转类型；写 dataset 会同步回 attribute。适合承载小的业务标识（行 id、状态），不适合放大段 JSON（可读性差、每次序列化有开销，且会被暴露在 HTML 中）。追问：React 中 data-* 直接写属性即可，dataset 操作会绕过框架的更新机制。
-11. alt 的三类写法内容图：描述图片传达的信息，而不是“一张图片”；装饰图：alt=&quot;&quot;，让辅助技术直接跳过；功能图：写功能或动作（如“搜索”“返回”），而不是外观。区分“缺失 alt”与“alt=&quot;&quot;”是关键：前者会让阅读器朗读文件名，后者表示有意忽略。追问：img 必须配 alt 属性（哪怕为空），这是 WCAG 的硬性要求。
-12. 原生表单校验声明式约束：required、pattern、min/max/step、minlength/maxlength、type 自带格式校验。编程式：checkValidity() 返回布尔值且不弹提示，reportValidity() 会触发浏览器气泡，setCustomValidity(msg) 设置自定义错误（必须在下次校验前清空，否则会一直无效），validity 对象可细分 valueMissing、patternMismatch、typeMismatch 等。追问：样式上可用 :invalid、:user-invalid 控制提示时机，后者只在用户交互后才匹配，体验更好。
-13. label 的作用for 与控件的 id 绑定后，点击文字即可聚焦或切换控件，触屏上把可点击区域扩大；屏幕阅读器通过关联朗读说明；对 checkbox/radio 尤其重要，否则小圆点极难点中。追问：把控件包在 label 内也能关联，但一个 label 只能关联一个控件，多个控件会只认第一个。
-14. contenteditable 的坑浏览器会生成不可控的 HTML（不同浏览器插入的标签、换行方式都不同）、粘贴会带内联样式与脚本、光标与选区需要用 Range/Selection 手工管理、输入法组合期（compositionstart 到 compositionend）处理不当会丢字或重复、撤销栈不可控。工程做法是用成熟编辑器内核（自研成本极高），并在输入时做 HTML 白名单净化。
-2、难题答案1. 容错解析的具体例子
-HTML5 定义了完整的解析算法：分词阶段做字符到 token 的转换，树构建阶段按“插入模式（insertion mode）”决定 token 插到哪。表格有专门的插入模式，非表格内容会被移到表格之外；&lt;p&gt; 遇到块级开始标签会自动闭合（所以 p 不能套 div）；格式化标签（b/i/a）交错嵌套时触发“重新分配格式化元素”的算法，把树纠正成合法结构。结论：浏览器不会因为标签问题报错，而是按规范“猜测意图”，因此同一份错误 HTML 在不同引擎下结果一致，但开发者看到的 DOM 与源码可能完全不同。追问：这解释了为什么 XSS 过滤要基于解析后的 DOM 而不是正则匹配字符串。
-2. attribute 与 property 的差异
-attribute 是 HTML 里写的字符串，property 是 DOM 对象上的实时值。绝大多数会双向映射，但表单状态类属性有“脏值标志”：用户交互改变 value/checked/selected 后，attribute 停在初始值，getAttribute(&#39;value&#39;) 返回的仍是原来的字符串，而 .value 返回当前值。因此读表单状态一律用 property；setAttribute(&#39;value&#39;, x) 只能改默认值，改不了用户已输入的内容（除非用 .value）。另外 class 对应 className、style 是解析后的 CSSStyleDeclaration、href 的 property 是绝对 URL 而 attribute 是原始字符串。追问：这也是 React 受控组件要求“值从 state 来”的底层原因。
-3. 为什么写 width&#x2F;height 能减小 CLS（累积布局偏移）
-图片未加载时浏览器不知道尺寸，只能按 0 高度排版，图片到达后把下方内容全部推开，产生布局偏移。写上 width 与 height 属性后，浏览器据此算出内在宽高比，在下载前就预留正确比例的空间；配合 CSS 的 max-width: 100% 与 height: auto（或 aspect-ratio），缩放时仍按比例，于是预留尺寸与实际尺寸一致，偏移消失。追问：aspect-ratio 适合容器自适应场景，但它要求比例写对，否则预留与实际不符反而更糟。
-4. srcset&#x2F;sizes 的匹配算法
-srcset 的 x 描述符直接表达 DPR（logo@2x.png 2x）；w 描述符表达资源像素宽度，此时必须配 sizes，浏览器先按 sizes 计算该图在布局中的 CSS 宽度，乘以当前 DPR 得到“需要的像素数”，再从候选里选不小于该值的最近资源。写错 sizes 是最常见的错误（例如布局实际 480px 宽却写 sizes=&quot;100vw&quot;），会导致高分屏取到过大的图、低带宽取到过大的体积。追问：还需要配合 loading=&quot;lazy&quot; 与首屏图的 fetchpriority=&quot;high&quot; 才能兼顾首屏体验。
-5. iframe 的代价与隔离
-代价：独立渲染进程或上下文、额外的内存与网络开销、受限于同源策略无法读取内容、会推迟父页面的 load 事件；多个 iframe 会显著拖慢首屏。隔离：sandbox 属性默认禁用一切（脚本、表单、同源），需要按需放开 allow-scripts/allow-forms/allow-popups，注意同时放开 allow-scripts 与 allow-same-origin 等于让内嵌页面获得与父页面同源的脚本能力，沙箱形同虚设；allow（权限策略）限制摄像头、麦克风、定位；referrerpolicy 控制来源泄露；防点击劫持用 X-Frame-Options 或 CSP 的 frame-ancestors。跨域通信只能 postMessage，接收端必须校验 event.origin 且不信任消息内容。追问：微前端用 iframe 做隔离的代价就是这些通信与体验（弹层、路由、焦点）问题。
-6. &lt;template&gt;、inert、content-visibility 的分工
-&lt;template&gt; 的内容是“惰性的”：不在文档树中渲染、内部资源不加载、脚本不执行，直到被 JS 克隆插入，因此是框架与 Web Components 的标准容器。inert 让整棵子树不可聚焦、不可点击、不可被查找、对辅助技术隐藏，是弹窗打开时处理背景的最正确做法（比遮罩加逐个禁用可靠）。content-visibility: auto 让视口外的子树跳过样式与布局计算，必须配 contain-intrinsic-size 给出预估高度，否则滚动条长度会跳动。追问：三者都不改变 DOM 结构，区别在“何时渲染、是否可交互”。
-7. Web Components 的生命周期
-constructor 只做初始化，不要访问属性或子节点（此时还没有）；connectedCallback 在插入文档时调用，适合绑定事件与启动逻辑；attributeChangedCallback 只在 observedAttributes 中声明的属性变化时触发；disconnectedCallback 必须清理定时器、监听与请求，否则会泄漏；adoptedCallback 在跨文档移动时触发。Shadow DOM 用 attachShadow(&#123;mode:&#39;open&#39;&#125;) 创建，&lt;slot&gt; 承载外部传入的内容，样式默认隔离；SSR 可用声明式 Shadow DOM（&lt;template shadowrootmode=&quot;open&quot;&gt;）直出，但需要浏览器支持与降级方案。追问：mode: &#39;closed&#39; 时外部无法访问内部节点，调试与测试会变难。
-8. 编码嗅探与 document.write
-编码判定顺序大致为：BOM、HTTP 响应头 Content-Type、&lt;meta charset&gt;、父文档继承、浏览器猜测。因此 meta charset 必须出现在文档前 1024 字节内，否则浏览器已按错误编码开始解析，后面再声明也来不及，表现为中文乱码。document.write 在解析阶段会把内容插入当前位置并阻塞解析；在异步脚本、defer 脚本或文档已关闭后调用会触发隐式 document.open()，清空整个文档，这就是老广告 SDK 导致整页白屏的机制。追问：现代替代方案是 DOM API 插入节点或 insertAdjacentHTML。
-二、CSS2、常见题1. 标准盒模型和 IE 盒模型有什么区别？box-sizing 干什么用？标准盒模型 width 只含内容区，占位 &#x3D; width + padding + border + margin；IE 盒模型 width 已含 padding 与 border。box-sizing: border-box 让宽度包含内边距与边框，是组件开发默认；注意它是可继承属性，全局设置后老组件可能变形，需要局部还原。
-2. 水平垂直居中至少说四种方式。Flex：父级 display:flex; justify-content:center; align-items:center；Grid：父级 display:grid; place-items:center；绝对定位 + transform: translate(-50%,-50%)（不需要知道尺寸）；绝对定位 + inset: 0; margin: auto（需固定宽高）；老方案 table-cell + vertical-align。追问：元素有固定宽高时负 margin 更稳，无宽高时只能靠 transform。
-3. BFC 是什么，怎么触发，解决什么问题？块级格式化上下文，一块独立渲染区域。触发：根元素、float 非 none、position 为 absolute&#x2F;fixed、display 为 inline-block&#x2F;table-cell&#x2F;flow-root&#x2F;flex 或 grid 子项、overflow 非 visible。四项作用：包含内部浮动、阻止父子外边距合并、避免被浮动元素覆盖（自适应两栏）、隔离内外布局。最轻量写法 display: flow-root，避免 overflow 的裁剪副作用。
-4. 清除浮动有哪几种方式？clear: both（在浮动后加元素）、父级触发 BFC（flow-root&#x2F;overflow:hidden）、伪元素 ::after&#123;content:&#39;&#39;;display:table;clear:both&#125;、现代方案直接改用 Flex&#x2F;Grid（浮动不再参与布局）。追问：为什么要清浮动——浮动元素脱离常规流，父容器高度计算忽略它们，导致高度塌陷。
-5. 什么是外边距合并（margin 塌陷）？怎么解决？相邻兄弟、父子（父无 border&#x2F;padding 且非 BFC）、空块自身三种情形下，相邻外边距合并为较大者（负值时取更负）。解决：父级触发 BFC、加 padding 或 border、改用 gap 或 Flex 布局。浮动与绝对定位元素不参与合并。
-6. 层叠与优先级怎么算？顺序是：来源与重要性（用户代理&#x2F;作者&#x2F;用户，!important 反转）→ 权重 → 声明先后。权重写成四元组（行内, ID, 类&#x2F;属性&#x2F;伪类, 元素&#x2F;伪元素），逐位比较不做进位，所以 11 个类也压不过 1 个 ID。!important 高于普通声明，但用户样式的 !important 仍高于作者样式。
-7. z-index 设很大却不生效，为什么？因为它只在同一层叠上下文内比较。父级若创建了层叠上下文（position + 非 auto 的 z-index、transform、filter、opacity&lt;1、will-change、isolation:isolate、contain、Flex&#x2F;Grid 子项带 z-index），子元素就被锁在该上下文内，无法越过外部兄弟。排查方式是沿祖先链找谁创建了上下文，而不是继续加大数字。
-8. 说一下层叠上下文与绘制顺序。上下文内从下到上：上下文背景与边框 → 负 z-index 子上下文 → 块级盒子 → 浮动 → 行内 → z-index 为 0&#x2F;auto 的定位元素 → 正 z-index 子上下文。这就是“某些浮层总被盖住”的原因。
-9. Flex 里 flex: 1 和 flex: auto 有什么区别？flex 是 grow&#x2F;shrink&#x2F;basis 的简写：flex:1 &#x3D; 1 1 0%，基准为 0，各项等分剩余空间；flex:auto &#x3D; 1 1 auto，先保留内容宽度再分剩余，结果不等分；flex:none &#x3D; 0 0 auto。追问：flex 子项 min-width 默认 auto，长文本不收缩，要显式 min-width: 0。
-10. justify-content 和 align-items 分别作用在哪条轴？主轴由 flex-direction 决定：justify-content 控主轴分布，align-items 控交叉轴对齐；align-content 只在多行（flex-wrap: wrap）时生效，这是最常见的混淆点。
-11. Flex 和 Grid 怎么选？Grid 是二维（行列同时控制），适合整体布局、卡片自适应（repeat(auto-fill, minmax(220px,1fr))）；Flex 是一维，适合线性排列与不确定项数。auto-fill 保留空轨道（少项时左对齐），auto-fit 折叠空轨道（少项时铺满），这是常见考点。
-12. 实现左右固定、中间自适应。Flex：两侧 flex: 0 0 200px，中间 flex: 1 1 0%; min-width: 0；Grid：grid-template-columns: 200px 1fr 200px；绝对定位：中间左右留空；浮动 + BFC：中间触发 BFC 自动避让。经典圣杯&#x2F;双飞翼用负 margin 加 padding 实现，现在只需会说原理。
-13. 移动端适配有哪些方案？vw 方案（postcss-px-to-viewport 把 px 转 vw，等比缩放、无运行时开销，主流）；rem 方案（早期 flexible 动态根字号，现已不推荐），现在多用固定根字号加少量 rem；媒体查询按断点切布局；容器查询 @container 做组件级自适应。限制：大屏需 max-width 兜底，字体是否缩放按产品要求定。
-14. 移动端 1px 变粗怎么解决？原因：设计稿的 1px 是物理像素，DPR&#x3D;2&#x2F;3 时 CSS 1px 会渲染成 2~3 个物理像素。方案：伪元素 + transform: scaleY(0.5)（兼容最好）、box-shadow 内阴影、直接写 0.5px（部分安卓不支持）、border-image 渐变。工程上用构建插件按 DPR 自动处理。
-15. 重排和重绘的区别，怎么减少？重排是几何属性变化导致布局重算（宽高、位置、字体、增删节点），必然伴随重绘；重绘只重画外观（颜色、背景、阴影）。减少手段：批量改样式（切 class）、离线操作（先 display:none）、动画用 transform&#x2F;opacity 走合成层、读写分离避免强制同步布局、用 requestAnimationFrame 合并帧内更新。
-16. display:none、visibility:hidden、opacity:0 有什么区别？display:none 不进渲染树、不占位、不参与布局，无法过渡动画；visibility:hidden 保留占位、不可交互、可被子元素 visible 覆盖、可过渡；opacity:0 保留占位、仍可点击（需配 pointer-events:none）、可过渡、可能创建层叠上下文。
-17. position 五个值分别什么含义？static 默认、不参与定位；relative 相对自身原位置偏移、保留占位、可作为定位参照；absolute 相对最近的非 static 祖先（否则初始包含块）定位、脱离文档流；fixed 相对视口（祖先有 transform&#x2F;filter 时改为相对该祖先）；sticky 在滚动到阈值前表现为 relative、之后吸附，需设置 top/bottom 才有意义。
-18. 伪类和伪元素有什么区别？伪类描述状态或结构（:hover、:focus、:nth-child、:has），伪元素创建文档中不存在的元素（::before、::after、::placeholder）。遵守单冒号&#x2F;双冒号区分；::before/::after 必须写 content 才生效，且不能承载可交互内容（无障碍不可见）。
-19. link 引入和 @import 有什么区别？link 是 HTML 标签、并行加载、可被 JS 动态控制、无兼容问题；@import 是 CSS 语法、串行加载（前一个样式表解析到该行才发起请求）、必须写在文件顶部、无法被条件加载。工程上一律用 link 或构建工具注入。
-20. px、em、rem、%、vw 有什么不同？px 是 CSS 逻辑像素（受 DPR 影响）；em 相对当前元素字号（用于 font-size 时相对父级，容易层层放大）；rem 相对根字号，最稳定；% 的参照随属性变化——宽、padding、margin 都参照包含块宽度，height 参照包含块高度（父高 auto 时失效）；vw/vh 相对视口。
-21. 手写：一个三角形怎么做？宽高为 0，用边框构造：border-left/right: 50px solid transparent; border-bottom: 100px solid #000。原理是相邻边框以 45° 斜接，把其他三边设为透明就只剩一个三角。追问：如何做右指三角形——调换透明与非透明边的位置即可。
-22. 手写：单行与多行文本溢出省略。单行三件套：overflow:hidden; text-overflow:ellipsis; white-space:nowrap。多行用 -webkit-line-clamp：display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden（非标准但有广泛支持），或 CSS 新属性 line-clamp 配合 block-ellipsis（支持度有限）。
-2、难题1. min-width:auto 为什么让 Flex 收缩失效？Flex 子项的最小尺寸默认取 auto，语义是“不小于内容的最小尺寸”，因此长单词或无断点文本会阻止收缩，表现为“设了 flex:1 仍溢出”。解法是显式 min-width:0（或 overflow:hidden），并在文本上配 overflow-wrap:anywhere。这是可把容器自适应与文本换行两个知识点串起来的题。
-2. position: sticky 失效的常见原因？四条：一是没有一个方向的偏移值（top/left 等未设）；二是最近的滚动祖先的 overflow 不是 visible（会改变粘附容器，常见于 overflow:hidden 的父级）；三是父级高度不足，元素没有滚动空间可“粘”；四是祖先有 transform/filter/perspective 时会创建新包含块，粘附参照被改。排查方式是逐级检查祖先的 overflow 与 transform。
-3. fr 与百分比混用为什么会溢出？fr 分配的是扣除固定轨道与 gap 之后的剩余空间，而百分比按容器总宽度计算；两者混用会导致总额超过 100%。正解是用 minmax(0, 1fr) 明确最小值为 0（默认的最小值 auto 也可能让内容撑破轨道），这同时解决“Grid 中长文本撑破列”的问题。
-**4. will-change 与合成层的代价是什么？
-will-change: transform 会提前把元素提升为独立合成层，动画时跳过布局与绘制，代价是显存占用与纹理上传；层数过多会造成内存暴涨与合成开销上升。正确用法是动画开始前设置、结束后移除，或用 transform 的 translateZ(0) 同理但同样要节制。
-5. margin 的百分比为什么按宽度算，垂直方向也是？CSS 规范中 margin/padding 的百分比一律参照包含块的内联尺寸（宽度），垂直方向同样如此，以保证块级布局的“宽度循环”不被打破。这带来一个实用技巧：padding-top: 66.67% 可以做 16:9 等比容器，但更推荐用 aspect-ratio。
-6. CSS 变量与预处理器变量有什么区别？CSS 变量是运行时值，参与继承、可被 JS 读写、支持动态主题切换，但无法做颜色函数运算（可配合 color-mix）；Less&#x2F;Sass 变量在编译期替换成字面量，可做运算与混入，但换主题需要重新构建。进阶点是 @property：声明变量的类型、初始值与继承性后，可让变量参与过渡与动画（否则 transition 对变量无效）。
-7. 层叠层 @layer 改变了什么？它提供了比“权重”更直接的顺序控制：未分层样式的优先级高于分层样式，层内按声明顺序，层的顺序由首次声明决定。价值是引入第三方样式后仍能稳定覆写，不必靠 !important 堆权重；代价是团队要约定层顺序，否则调试时不容易判断优先级来源。
-8. 移动端为什么 100vh 会有问题？浏览器工具栏收放会改变可视高度，vh 按“最大视口”计算，导致底部内容被遮挡。解法是用新单位 dvh（动态视口）、svh（最小）、lvh（最大），或用 calc(var(--vh, 1vh) * 100) 配合 resize 监听兜底；配合 env(safe-area-inset-bottom) 处理刘海屏与底部横条。
-三、JS1、常见题1. JS 有哪些数据类型，怎么判断？基础类型七种：undefined、null、boolean、number、string、symbol、bigint；引用类型为 object（含数组、函数、日期、正则、Map、Set）。判断方式：typeof 能安全处理未声明变量，但把 null、数组、日期都判成 object；instanceof 依赖原型链、跨 Realm 失效；Object.prototype.toString.call() 最通用；数组用 Array.isArray；判断 NaN 用 Number.isNaN（Object.is 更严格）。
-2. var、let、const 有什么区别？var 函数作用域、声明提升且初始化为 undefined、可重复声明、会成为全局对象属性；let/const 块级作用域、存在暂时性死区（声明前访问抛 ReferenceError）、不可重复声明；const 只保证绑定不可重新赋值，对象内部仍可变。循环中用 let 每次迭代创建新绑定，是闭包经典题的解法。
-3. 什么是闭包，有什么用，会内存泄漏吗？函数与其定义时词法环境的组合。用途：私有变量、函数工厂、缓存（记忆化）、防抖节流、模块模式、Hooks 中跨渲染保存状态。闭包本身不造成泄漏，只有当长生命周期的引用（全局事件、定时器、未取消的订阅）持有闭包、闭包又持有大对象时才表现为泄漏；解绑、清理定时器即可回收。
-4. 说说原型链，instanceof 怎么实现？函数有 prototype，实例的 __proto__ 指向它，逐级向上到 Object.prototype 再到 null；属性查找沿链进行。instanceof 取右侧的 prototype，沿左侧对象的原型链逐级比对，命中返回 true；局限是跨 iframe&#x2F;Realm 误判、基础类型返回 false。
-5. 继承有哪几种实现？原型链继承（共享引用类型，有副作用）→ 构造函数继承（无法继承原型方法）→ 组合继承（调用两次构造函数）→ 寄生组合继承（Object.create 复制原型，只调一次）→ class。class 是语法糖，但不会被提升、必须用 new、方法不可枚举且默认严格模式。
-6. this 的绑定规则有哪些？优先级：new 绑定 &gt; 显式绑定（call/apply/bind）&gt; 隐式绑定（obj.fn()）&gt; 默认绑定（严格模式 undefined，非严格模式全局对象）。隐式绑定丢失的三种场景：方法赋给变量、作为回调传入、放进 setTimeout。箭头函数没有自己的 this，取定义时外层值，无法被 call 改变。
-7. new 操作符做了什么？四步：创建空对象 → 把它的原型指向构造函数的 prototype → 以它为 this 执行构造函数 → 构造函数返回对象则用该对象，否则返回第一步创建的对象（非对象返回值被忽略）。
-8. call、apply、bind 有什么区别？call 与 apply 立即执行，区别只在参数形式（逐个 vs 数组）；bind 返回绑定了 this 与部分参数的新函数，不立即执行，且用 new 调用时绑定的 this 会被忽略（需要手写兼容）。
-9. 讲一下事件循环。任务分宏任务（整体脚本、setTimeout、setInterval、MessageChannel、I&#x2F;O 回调）与微任务（Promise.then、queueMicrotask、MutationObserver、await 之后的续体）。每轮取一个宏任务执行，执行完清空整个微任务队列（清空过程中新产生的也一并执行），然后判断是否需要渲染（requestAnimationFrame 回调、样式计算、布局、绘制、合成），再进入下一轮。结论：微任务会阻塞渲染；setTimeout 有最小延迟，嵌套超过五层后不低于 4ms。
-10. 输出题怎么分析（同步 + Promise + setTimeout 混排）？三步：标出同步代码 → 把回调按宏&#x2F;微排队 → 按“同步跑完、清空微任务、取下一个宏任务、再清空微任务”的顺序推演。要点是 await 之后的代码等价于 then 回调（进微任务），resolve 一个 thenable 会多消耗一个微任务周期，then 里 return 的值决定下一个链的状态。
-11. Promise 的状态与 then 返回值规则？三态且不可逆（pending → fulfilled&#x2F;rejected）。then 总返回新 Promise：回调返回普通值则兑现、返回 Promise 则等待其敲定、抛出异常则拒绝；未传拒绝处理时，拒绝会沿链传递（错误穿透）。构造阶段的同步异常会让 Promise 直接拒绝而非抛出。
-12. all、allSettled、any、race 有什么区别？all 全部成功才成功，任一失败立即失败（快速失败），结果顺序与输入顺序一致；allSettled 等全部敲定，返回 &#123;status, value|reason&#125; 数组，适合批量任务互不影响；any 首个成功即成功，全失败抛 AggregateError；race 取首个敲定（成功或失败均可）。
-13. async/await 的原理是什么？async 函数返回 Promise，内部基于 Generator 加自动执行器，await 把后续代码注册为该 Promise 的回调，恢复执行属于微任务。await 非 Promise 值也会让出一次执行权。异常用 try/catch 捕获被等待 Promise 的拒绝原因。
-14. 串行与并发怎么写？for 循环里逐个 await 是串行（总耗时累加）；先 map 出 Promise 数组再 Promise.all 是并发（取决于最慢的一个）。限流用并发池，容错用 allSettled 或逐个 try/catch，取消用 AbortController。
-15. 实现深拷贝要考虑哪些边界？循环引用（WeakMap）、Symbol 键、不可枚举属性、Date/RegExp/Map/Set/TypedArray、函数、原型链、getter/setter。structuredClone 是原生方案，支持循环引用与多数内置类型，但不支持函数、DOM 节点与原型；手写用 Object.prototype.toString 判类型 + 递归 + WeakMap。
-16. 防抖和节流有什么区别，怎么实现？防抖把多次触发合并为最后一次（或首次立即执行后冷却），节流保证单位时间内最多执行一次。实现要点是保存定时器或上次时间戳，并提供 cancel&#x2F;flush，组件卸载时必须取消，否则会内存泄漏或更新已销毁组件。场景：搜索联想用防抖，滚动加载、拖拽用节流。
-17. 数组常用方法哪些会改变原数组？会改：push/pop/shift/unshift/splice/sort/reverse/fill/copyWithin；不改：map/filter/reduce/concat/slice/join/flat/flatMap/find/findIndex/some/every/includes。两个细节：sort 默认按字符串比较（数字排序必须传比较函数），reduce 不传初始值时以第一项为初始累积值。
-18. 事件委托的原理与限制？利用冒泡把子元素事件统一绑在父容器上，用 event.target 判断来源（常配 closest）。优点：减少监听数量、动态节点自动生效、省内存。限制：不冒泡的事件（focus、blur、mouseenter）无法委托；stopPropagation 会中断；深层节点需要精确匹配；高频事件要注意性能。
-19. ESM 与 CommonJS 有什么区别？ESM 编译期静态解析（可 tree-shaking）、导出是活绑定（值引用）、顶层 this 为 undefined、默认严格模式、支持顶层 await 与 import()；CJS 运行时 require、导出是值拷贝、循环依赖拿到未执行完的快照、this 指向 module.exports。import 会提升到模块顶部，require 按代码顺序执行。
-20. 垃圾回收机制是什么，哪些情况会泄漏？V8 分代回收：新生代用复制算法（Scavenge），老生代用标记清除与标记整理，配合增量&#x2F;并发标记减少停顿；可达性从根（全局、调用栈、活跃闭包）出发。泄漏场景：意外全局变量、闭包长期持有大对象、未清除的定时器与动画帧、未解绑的事件监听、游离 DOM、无上限缓存、组件卸载未清理的订阅与请求。
-21. 为什么 0.1 + 0.2 !== 0.3？IEEE 754 双精度下 0.1 与 0.2 是无限循环二进制小数，存储时已舍入，相加产生误差。处理：金额用整数（分为单位）计算、最终统一舍入（toFixed 边缘值并非严格四舍五入）、或用 decimal.js 等高精度库。
-22. 箭头函数和普通函数有什么区别？箭头函数无自己的 this、arguments、prototype，不能被 new、不能作为 Generator、不能用 yield，this 取外层且 call/apply 无效。因此不适合做构造函数、需要动态 this 的方法、以及需要 arguments 的场景。
-2、难题1. 微任务为什么会“饿死”渲染？微任务在每轮宏任务后会被彻底清空，包括清空过程中新产生的微任务。若一个微任务持续注册新的微任务（例如长 Promise 链或递归 queueMicrotask），事件循环会一直停在清微任务阶段，无法进入渲染，表现为页面卡住、交互无响应。所以重计算应切片并用宏任务（setTimeout、MessageChannel、scheduler.postTask）让出主线程。
-2. resolve 一个 thenable 为什么要多一个 tick？resolve 收到对象时会读取其 then 属性，若为函数则进入“Promise 决议过程”，需要把 then 的调用排入微任务队列，因此状态敲定被推迟一个周期。这解释了输出题里“为什么 resolve(new Promise(...)) 的结果比预期晚一轮”。
-3. 循环变量闭包的三种写法为什么只有 let 有效？var 在函数作用域只有一个绑定，循环结束后所有回调读到同一个最终值；let 在每次迭代创建新绑定，各回调各持一份；不用 let 时可以用 IIFE 捕获当次值，或用 bind&#x2F;额外参数把值传进去。这是“绑定作用域 vs 值捕获”的经典考点。
-4. for...in、for...of、Object.keys 有什么区别？for...in 遍历可枚举属性名，会沿原型链向上（需配 hasOwnProperty 过滤），不适合数组（会把自定义属性也遍历）；for...of 遍历可迭代对象的值（数组、字符串、Map、Set、Generator），可被 break 中断；Object.keys 只返回自身可枚举字符串键。属性顺序规则：整数键按数值升序，字符串键按插入顺序，Symbol 需要 Reflect.ownKeys 才拿得到。
-5. ESM 的循环依赖为什么能工作，CJS 为什么容易出错？ESM 的导入导出是活绑定，模块在解析阶段就建立引用关系，执行时先提升函数声明，未初始化的变量为 undefined（TDZ 之外的引用可能拿到 undefined 但绑定有效），因此只要不在初始化阶段立即使用就能正常工作。CJS 在运行时同步执行，循环依赖时后执行的模块拿到的是前一个模块尚未赋值完成的 exports 快照，容易拿到空对象。
-6. Proxy 相比 Object.defineProperty 强在哪？Proxy 能拦截新增与删除属性、in&#x2F;has、ownKeys、数组索引与 length、以及 Map/Set 的方法调用；defineProperty 只能拦截已存在的属性，必须初始化时递归遍历（Vue 2 的成本来源）。Proxy 不能代理原始值、对内置集合的内部槽位要绑定 this、且性能低于直接访问；代价是无法 polyfill，所以 Vue 3 不支持 IE。
-7. 手写 bind 要注意什么？四个要点：返回新函数而非立即执行、支持分两次传参（bind 时传一部分、调用时再传一部分）、保留原函数的 this 语义（new 调用时绑定的 this 应被忽略）、保留原型链（new 出的实例应继承原函数的 prototype）。实现上用一个中间函数 fNOP 承接原型，再用 instanceof 或 this instanceof 判断是否被 new 调用。
-8. WeakMap、WeakRef、FinalizationRegistry 分别解决什么？WeakMap/WeakSet 的键是弱引用，给对象附加数据但不阻止其被回收，适合缓存、私有数据、DOM 与实例的关联（这也是 Vue 3 依赖表用 WeakMap 的原因）。WeakRef 允许弱持有对象并可能取不到，适合做可回收的缓存。FinalizationRegistry 在对象被回收后回调，但时机不确定，不能用来替代显式清理（例如必须主动 clearTimeout）。
-四、Less1、常见题1. Less 是什么，和 Sass&#x2F;SCSS、Stylus 有什么区别？Less 是 CSS 预处理器，用变量、嵌套、混入、运算、函数把 CSS 变成可组织、可复用的代码，编译后输出普通 CSS。与 SCSS 的差别主要在语法与能力：Less 用 @ 定义变量（SCSS 用 $），没有 @if/@each 这类控制指令，靠守卫（when）+ 递归实现条件与循环；没有 @use/@forward 那样的模块系统；因为编译者是 JS（less.js），可以在浏览器里直接编译运行，这是它早期在 Node 工具链里普及的原因。项目里选谁通常取决于团队既有栈与生态（组件库主题定制、构建插件支持）。
-2. Less 变量与 CSS 变量有什么区别？Less 变量 @primary: #1890ff 在编译期被替换成字面量，产物里不存在变量，因此不能运行时修改、不能做动态换肤；CSS 变量 --primary: #1890ff 是运行时值，可被 JS 读写、参与继承、支持切换主题与过渡。实践组合是“Less 变量管理尺寸与间距这类编译期常量，CSS 变量承载颜色主题”，编译期用 Less 变量生成 CSS 变量声明。
-3. Less 变量的求值顺序和覆盖规则是什么？Less 变量是惰性求值，不要求先声明后使用，同一个作用域内后定义的生效，查找时从当前作用域逐级向上。这带来两个实际后果：一是可以在文件末尾集中定义变量覆盖前面所有引用（主题覆盖就是这么做的）；二是容易“改了没效果”——若在使用处之后还有一处同名赋值，最终取后者。排查方式是全局搜索同名变量并确认作用域层级。
-4. Less 的 &amp; 有哪几种用法？&amp; 表示父选择器。常见四种：:hover 等伪类（&amp;:hover）、拼接后缀（&amp;-primary 生成 .btn-primary）、反向嵌套（.parent &amp; 表示“我被 .parent 包含”）、重复父级（&amp;&amp;）。BEM 写法 &amp;__elem、&amp;--mod 都靠它实现。注意：&amp; 拼出来的是新选择器，权重与父级一致，嵌套层级不会额外加权，但嵌套过深仍会让选择器变长。
-5. Mixin 怎么定义和调用，带不带括号有什么区别？定义 .clearfix() &#123; ... &#125;（带括号）是纯混入，本身不输出 CSS；.clearfix &#123; ... &#125;（不带括号）既是类也会输出。调用 .clearfix(); 或 .clearfix; 均可。带参数版本 .btn(@color; @padding: 8px 12px) &#123; ... &#125;，参数分隔符建议用分号（逗号在 box-shadow 这类值里会歧义）；@arguments 表示全部实参，@rest... 收集剩余参数。
-6. Mixin 与 :extend 有什么区别？Mixin 是复制声明到当前选择器，产物里出现多份相同声明；:extend 是合并选择器，把当前选择器追加到被继承规则的选择器列表上，产物只有一份声明。因此大量重复样式用 :extend 体积更小，但要注意它会改变选择器结构、且无法继承带参数的混入。:extend(.b all) 会把 .b 的所有嵌套变体一并继承。判断标准：需要参数或需要独立作用域用 mixin，纯复用声明用 extend。
-7. Less 的运算怎么用，除法为什么要注意？支持 + - * / 与括号，单位会参与计算（10px + 5px 得 15px，单位不一致时以第一个为准）。重点：Less 4 默认数学模式为 parens-division，即不带括号的 / 被视为 CSS 分隔符（例如 font: 16px/1.5 不再做除法），要做除法必须写成 (width / 2) 或用 ./。老项目从 Less 3 升级时“数值算错”基本都是这个原因。
-8. ~&quot;...&quot; 转义是干什么的？把引号里的内容原样输出，不让 Less 解析。三类场景：calc()（width: ~&quot;calc(100% - 20px)&quot;）、url() 中含特殊字符、被 Less 误判为运算或函数的 CSS 值（如 filter、grid-template-areas、旧式 alpha(opacity=50)）。另一种等价写法是 e(&quot;...&quot;)。反过来，若希望 calc 里参与变量计算，就不要转义，让 Less 先把变量替换掉再交给 CSS。
-9. Less 有哪些常用内置函数？颜色：lighten/darken、saturate/desaturate、fadein/fadeout/fade、spin、mix/tint/shade。数值：percentage、round/ceil/floor、unit、min/max。字符串与列表：escape、e、length、extract、range、each。判断类：iscolor、isnumber、isruleset（配合守卫）。做主题色板时最常用 lighten/darken/mix 批量生成梯度。
-10. @import 有哪些选项，和 CSS 的 @import 有什么区别？Less 的 @import 在编译期内联文件内容，可选 (reference) 只引入不输出（配合 :extend 按需取样式）、(inline) 原样嵌入不处理、(css) 保留为 CSS 原生导入、(optional) 文件缺失不报错、(once) 默认只导入一次、(multiple) 允许重复导入。CSS 的 @import 是运行时请求、串行加载、性能差，工程上应避免。
-11. 条件与循环怎么写？条件用守卫：.mixin(@x) when (@x &gt; 0) &#123; ... &#125;，支持 and、or、not，以及 iscolor() 这类类型判断；搭配 default() 处理兜底分支。循环用递归 + 守卫实现：
-.generate(@n) when (@n &gt; 0) &#123;  .col-@&#123;n&#125; &#123; width: (@n / 12 * 100%); &#125;  .generate(@n - 1);&#125;.generate(12);
-
-Less 3.7+ 也可以用 each(@list, .mixin) 遍历列表，可读性更好。
-12. 命名空间怎么用？把一组混入装在 #ns() 里（带括号就不会输出），通过 #ns &gt; .mixin() 或 #ns.mixin() 调用；也可以写成 #ns &#123; .mixin() &#123;&#125; &#125; 但会被输出。命名空间的价值是把“工具方法”与“实际样式”隔开，避免工具类污染产物，也便于按模块组织。
-13. 注释有什么区别？// 单行注释在编译后被删除，适合写给人看的说明；/* */ 块注释保留在产物中，只在压缩模式下被移除，适合需要保留版权声明或给调试用的标记。团队规范一般要求业务注释用 //，版权与许可证用 /* */。
-14. 在 Vite 里怎么配置 Less，怎么注入全局变量？安装 less 后，在 vite.config 的 css.preprocessorOptions.less 里配置：additionalData 用来自动注入变量文件（@import &quot;@/styles/variables.less&quot;;），javascriptEnabled: true 支持内联 JS（组件库主题包常用），modifyVars 用于编译期换主题（配合 Ant Design 这类库）。Webpack 侧对应 less-loader 的 additionalData 与 globalVars，globalVars 的值可以是 JS 字符串，便于读取环境变量做主题。
-15. 用 Less 做换肤有哪几种方式？两种：编译期（modifyVars 或变量覆盖，产出一套新 CSS，切换要重新加载样式文件，适合多套固定主题）、运行时（Less 变量生成 CSS 变量，切换时只改 document.documentElement 上的 CSS 变量，零重新编译，适合深色模式与实时预览）。工程上常用“Less 管编译期常量 + CSS 变量管主题色”的混合方案。
-16. Less 的常见坑有哪些？嵌套过深导致选择器过长、权重过高、后续只能靠 !important 覆盖；混入滥用导致产物重复声明、体积膨胀；变量后定义覆盖前面（以为没生效）；Less 4 的除法需括号；calc 未转义被 Less 提前计算成固定值；@import 顺序影响变量最终取值；把 Less 变量误当 CSS 变量写进 var()（var(--x) 里不能放 Less 变量）。
-2、难题1. 为什么“在文件末尾覆盖变量”能改掉前面所有用法？因为 Less 变量是惰性求值且在作用域内后定义优先：解析时先收集所有声明，再在使用点所在的“最终作用域状态”上求值，而不是按书写顺序即时求值。所以把主题变量集中在文件末尾（或单独文件并在最后 @import），就能一处覆盖全量引用。反过来这也是坑：组件内部若在文件末尾重复赋值同名变量，会意外影响该文件内所有引用。
-2. @import (reference) 配合 :extend 是怎么省体积的？(reference) 让被导入文件“只解析不输出”，里面的规则不会出现在产物中；当你在自己的选择器里 :extend(.their-rule) 时，Less 会把你的选择器合并到那条原本不输出的规则上，从而只输出真正用到的那部分样式。适合引入大型组件库或公共样式后按需取用，代价是产物结构不够直观、调试时不容易对应源码。
-3. :extend 的 all 关键字会带来什么问题？:extend(.btn all) 会把 .btn 及其所有嵌套变体（.btn:hover、.btn.active、.wrapper .btn）一并继承，覆盖更全但选择器数量会成倍增长，产物可能比 mixin 更大，且容易出现意料之外的样式串味。使用时应对准具体规则，而不是对大块组件做 all。
-4. 守卫（when）递归与 each 循环怎么选？守卫递归兼容性最好、可表达“递减到 0”这类条件终止，但每个循环项都会产生一次编译调用，数量大（如生成 100 档间距）时编译耗时明显；each 遍历列表语义更清晰、性能更好，但需要 Less 3.7 以上。实践建议：工具类生成控制规模（几十档以内）、优先 each，并避免在循环里做复杂颜色函数运算。
-5. 为什么 width: calc(100% - @gap) 有时算错？Less 会在编译期尝试对 calc 内的表达式求值，把 @gap 替换后若整个表达式可算（如 100% - 20px 单位混合），可能被简化为一个值或产生不合法的 CSS。正确做法是 width: calc(100% - @gap) 保留变量替换但让 CSS 负责运算（多数版本可正确输出），或在需要完全原样输出时用 ~&quot;calc(100% - 20px)&quot;；反过来若想用 Less 算好再输出，就写成 width: (100% - @gap)（不带 calc）。判断标准是“这个运算该由编译器做还是浏览器做”。
-6. 深层嵌套为什么会拖慢编译并让样式难以维护？每个嵌套层级都会展开成一条更长的选择器，嵌套 n 层且每层多个选择器时，产物的规则数近似指数增长；同时选择器变长会增加匹配成本，权重升高后覆写只能加 !important。更隐蔽的问题是“样式串味”——上层模块改变结构后，深层嵌套的样式会意外命中其他节点。规范做法是嵌套不超过两层、用 &amp; 明确关系、跨模块的样式不用后代选择器。
-7. Less 与 CSS Modules 一起用要注意什么？Less 负责能力（变量、混入、运算），CSS Modules 负责作用域（类名哈希）。要点：只对局部类做哈希，公共类用 :global(.ant-btn)；composes 只能引用同文件或导入的类，不能引用动态值；:extend 在 CSS Modules 下行为受限（跨文件继承不生效）；主题变量通过 :export 或 CSS 变量导出给 JS 使用；命名保持 camelCase 以免 styles[&#39;kebab-case&#39;] 写法踩坑。
-五、TS1、常见题1. TypeScript 的类型系统有什么特点？三点：一是结构类型，只看形状是否匹配、不看声明来源（同形状的对象可互相赋值），与 Java 的标称类型不同；二是编译期检查 + 类型擦除，类型在产物中不存在，运行时没有任何类型信息，因此“运行时校验”必须另做（如 zod）；三是渐进式，any 与 // @ts-expect-error 可以把检查降到局部，便于老项目迁移。
-2. interface 和 type 有什么区别，怎么选？interface 描述对象形状、支持声明合并（同名自动合并，适合扩展第三方库类型）与 extends；type 可为任意类型起别名，支持联合、交叉、条件类型、映射类型与元组，但不能重复声明。约定：对象结构用 interface，需要联合&#x2F;条件&#x2F;映射运算时用 type。
-3. any、unknown、never、void 有什么区别？any 关闭检查、可读写任意属性、会污染下游推断；unknown 是安全版 any，任何值都可赋给它，但使用前必须收窄，适合 catch 的 error 与外部输入；never 表示空集（不可能出现的值、永不返回的函数），可用于穷尽性检查；void 表示函数没有返回值（实际返回 undefined），常用于“返回值不被使用”的回调签名。
-4. 泛型是什么，为什么要用它？让类型随输入推导，而不是靠断言或 any。三个要素：约束 T extends Shape、默认值 T = string、以及推导来源（参数、返回值、构造器）。判断“用得好不好”的标准是调用处能否不写类型参数就得到正确类型；如果函数内部需要访问属性却没有约束，就是没设计好。
-5. 常用工具类型有哪些？Partial/Required/Readonly（改修饰符）、Pick/Omit（取&#x2F;去键）、Record（构造索引签名）、Exclude/Extract/NonNullable（过滤联合）、ReturnType/Parameters（提函数签名）、InstanceType、Awaited（递归展开 Promise）、ConstructorParameters。它们几乎都是映射类型与条件类型的组合，能手写就是理解到位的证据。
-6. keyof、typeof、索引访问类型分别干什么？keyof T 取键的联合（&#39;a&#39; | &#39;b&#39;）；typeof x 取变量或值的类型（常配合 as const 从常量推导字面量）；T[&#39;a&#39;] 或 T[keyof T] 取属性类型。三者常组合成“从已有对象推导配置类型”的写法，避免重复定义。
-7. 条件类型和 infer 怎么用？T extends U ? X : Y 表达类型层分支，infer 只在 extends 子句中声明待推断变量。典型：type RT&lt;T&gt; = T extends (...a: any[]) =&gt; infer R ? R : never（取返回值）、type Aw&lt;T&gt; = T extends Promise&lt;infer V&gt; ? Aw&lt;V&gt; : T（递归展开）。注意 infer 出现在参数位置（逆变位）时，推断结果是交叉而非联合。
-8. 映射类型是什么？&#123; [K in keyof T]: F&lt;T[K]&gt; &#125; 遍历键生成新类型，可在 in 后用 as 重映射键名、用 +?&#x2F;-? 与 +readonly&#x2F;-readonly 增删修饰符。它是 Partial、Readonly、Pick 的实现基础，也是“批量改造对象类型”的主力工具。
-9. 联合类型与交叉类型的实际差异？联合 A | B 表示“或”，只能访问两者共有的属性；交叉 A &amp; B 表示“并”，可访问全部属性。基本类型交叉会得到 never（如 string &amp; number），对象交叉是属性合并（同键类型冲突时也变 never）。常见用法：Props &amp; &#123; children?: ReactNode &#125; 做类型叠加。
-10. 类型收窄有哪些手段？typeof（基础类型）、instanceof（类实例）、in（属性存在）、字面量判别字段（可辨识联合，推荐建模方式）、真值判断与相等判断。自定义守卫：function isX(v: unknown): v is X；断言函数：function assertX(v: unknown): asserts v is X（失败时抛错）。守卫只影响编译期，运行时安全性取决于实现是否正确。
-11. ?.、??、! 分别是什么？?. 可选链（中间为 null/undefined 时短路返回 undefined）；?? 空值合并（只在 null/undefined 时取右侧，不像 || 会被 0、&#39;&#39; 误判）；! 非空断言（告诉编译器“一定存在”，不做运行时检查，滥用会掩盖真实空值 bug）。三者常一起出现在接口数据处理里。
-12. as、as const、satisfies 有什么区别？as 是类型断言，强行告诉编译器“当成这个类型”（不校验、可能掩盖错误）；as const 让字面量保持最窄类型并加 readonly（用于常量表、路由表）；satisfies 是校验同时保留推断，既能对配置对象做形状检查，又不放宽键的精确类型。
-13. 函数重载怎么写，注意什么？写多个重载签名（只有声明）加一个实现签名。要点：实现签名对调用方不可见，重载签名必须覆盖所有调用形态；重载过多时可用条件类型或联合参数替代（更易维护）。适合“入参类型不同、返回类型随之不同”的工具函数，不适合堆砌不同业务逻辑。
-14. 声明文件与模块增强怎么写？为无类型库补声明：建 d.ts 并在 include 中纳入，用 declare module &#39;pkg&#39; 声明形状；扩展已有模块：declare module &#39;pkg&#39; &#123; interface X &#123; extra: string &#125; &#125;；全局注入：declare global &#123; interface Window &#123; __CONFIG: Config &#125; &#125;。要求是声明与实现同步，最好加类型测试（tsd&#x2F;expect-type）防漂移。
-15. tsconfig 里 strict 包含哪些？noImplicitAny、strictNullChecks、strictFunctionTypes、strictBindCallApply、strictPropertyInitialization、alwaysStrict、useUnknownInCatchVariables、noImplicitThis。其中工作量最大的是 strictNullChecks（可选值与返回值都要显式处理），其次是 strictFunctionTypes（影响回调参数的赋值检查）。另有 noUncheckedIndexedAccess 不在 strict 内，但强烈建议对数据边界敏感的项目开启。
-16. 类型擦除有什么实际后果？类型、接口、类型断言在编译后全部消失，所以不能用类型做运行时判断（typeof 只能判基础类型，不能判 interface）；as 不会转换数据；泛型不能用于 new 之外的运行时逻辑；instanceof 只能对真实存在（有运行时值）的类使用。
-17. 枚举（enum）有什么问题，替代方案是什么？数字枚举会产生反向映射、字符串枚举无反向映射；const enum 会被内联，但在 isolatedModules（Babel&#x2F;esbuild 场景）下不能跨模块使用，容易“本地编译通过、构建失败”。现代实践多用“字面量联合 + as const 对象”替代：
-const Status = &#123; Idle: &#x27;idle&#x27;, Loading: &#x27;loading&#x27; &#125; as const;type Status = typeof Status[keyof typeof Status];
-
-18. Vue 3 项目里 TS 有哪些关键写法？defineProps&lt;Props&gt;() 与 defineEmits&lt;&#123; change: [id: number] &#125;&gt;() 的类型推导；模板引用 ref&lt;HTMLInputElement | null&gt;(null)；provide/inject 用 InjectionKey&lt;T&gt; 保证类型；全局属性用模块增强；defineModel&lt;T&gt;() 声明双向绑定类型。要点是“props 用泛型而不是运行时的对象声明”，否则拿不到类型。
-19. React 项目里 TS 的关键写法？事件类型用内置泛型（ChangeEvent&lt;HTMLInputElement&gt;、MouseEvent），避免手写 any；useState 初始为 null 时显式声明联合类型；children 用 ReactNode；泛型组件写成 function List&lt;T&gt;(props: Props&lt;T&gt;)；useRef&lt;HTMLDivElement&gt;(null)。常见坑是用 forwardRef 时忘了传泛型导致 ref 类型丢失。
-20. 怎么给一个值加上“不可能为 null”的类型保障？不要用 !，而是用控制流收窄：if (x == null) return; 之后编译器自动排除 null；或写断言函数 assertDefined&lt;T&gt;(v: T | null | undefined): asserts v is T，在入口统一校验。前者是纯类型层面的安全，后者带运行时检查，二者比非空断言可靠得多。
-2、难题1. 什么是分布式条件类型，怎么阻止它分发？当条件类型作用于裸类型参数且传入联合时，会按成员逐个求值再合并结果（type E&lt;T&gt; = T extends string ? 1 : 2，传入 &#39;a&#39; | 1 得 1 | 2）。阻止分发用元组包裹：[T] extends [U] ? ...，此时整体比较、不再拆成员。Exclude、NonNullable 都依赖分发特性，而“判断两个联合是否完全相同”必须阻止分发。
-2. infer 在参数位置为什么得到交叉类型？infer 处于逆变位置（函数参数）时，多个候选类型会被推断为交叉，这正是 UnionToIntersection 的实现原理：
-type U2I&lt;T&gt; = (T extends any ? (x: T) =&gt; void : never) extends (x: infer I) =&gt; void ? I : never;
-
-而处于协变位置（返回值、属性）时得到联合。理解这一点能解释很多“类型体操结果与直觉不符”的问题。
-3. 协变、逆变与 strictFunctionTypes 有什么关系？对象属性与返回值是协变（子类型可赋给父类型），函数参数是逆变（参数类型更宽的函数才能赋值给参数更窄的位置）。开启 strictFunctionTypes 后，函数类型属性按逆变检查；但方法的参数仍保持双变（bivariant），这是为兼容历史行为留的口子。实践含义：把回调声明为属性签名（onChange: (v: string) =&gt; void）比声明为方法签名检查更严格。
-4. 手写 DeepPartial 需要注意什么？要限定递归边界，否则对含循环引用的类型会“类型实例化过深”：
-type DeepPartial&lt;T&gt; = T extends object  ? &#123; [K in keyof T]?: DeepPartial&lt;T[K]&gt; &#125;  : T;
-
-要点：extends object 排除基础类型；遇到数组、函数、Date 等内置类型要单独分支（否则会把 Date 也变成可选属性的对象）；递归深度超过编译器限制（约 50 层）会报错，需要用“分层递归”或显式深度参数控制。
-5. satisfies 解决了 as 与类型注解都解决不了的问题？类型注解会把对象放宽成声明类型，丢失具体键的窄类型（键名补全、字面量类型都没了）；as 只断言不校验。satisfies 二者兼得：既做形状校验（拼错键会报错），又保留推断结果（obj.home 仍是 &#39;/&#39; 字面量类型）。典型场景：路由表、主题 token、i18n 字典。
-6. TS 5 的标准装饰器与 experimentalDecorators 有什么区别？标准装饰器（Stage 3）签名是 (value, context)，context 提供 kind、name、addInitializer，可用于类、方法、字段、访问器与 accessor 关键字；experimentalDecorators 是旧的 (target, key, descriptor) 风格，需要配合 emitDecoratorMetadata 才能做依赖注入（NestJS、Angular 依赖这套）。两者不能混用，experimentalDecorators: true 时标准装饰器不生效。
-7. 对象字面量的“多余属性检查”为什么能绕过？TS 对新鲜（fresh）对象字面量做多余属性检查：直接赋给带类型的变量或传参时报错；但若先赋给一个中间变量（类型被拓宽为字面量的形状），再传给目标类型，检查就失效，因为此时不再是“新鲜字面量”。这是“为什么 const a = &#123;x:1, y:2&#125;; const b: A = a; 不报错”的原因。工程含义：不要用中间变量绕过检查，那会掩盖真实的结构不匹配。
-8. 类型安全与运行时校验怎么配合才不白做？TS 只能保证“代码内部的类型自洽”，无法保证外部数据（接口响应、localStorage、URL 参数）符合声明。可靠做法是在边界处做运行时校验：接口层用 zod&#x2F;valibot 定义 schema 并推导类型（z.infer），校验失败走统一错误处理；这样声明类型与运行时校验来自同一份定义，避免“两套定义漂移”。只用 as ApiResponse 断言是典型的假安全。
-]]></content>
-      <tags>
-        <tag>前端面试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【前端面试】九、部署和代理</title>
-    <url>/posts/323548661/</url>
-    <content><![CDATA[一、部署1、常见题1. 前端部署的完整流程是什么？分为五步：拉取代码 → 安装依赖（依据 lockfile 保证可复现）→ 构建（注入环境变量、生成带 hash 的产物）→ 把产物分发到目标（Nginx、对象存储或 CDN，或构建镜像）→ 刷新缓存并验证。关键原则是「构建一次，多环境复用同一制品」，即同一份产物依次经过测试、预发、生产，避免“每个环境各构建一次”导致行为漂移。验证包括健康检查、版本号核对与冒烟测试。
-2. 前端静态资源一般怎么托管？常见三种：Nginx 自建（可控、成本低，适合内网与中小项目）、对象存储加 CDN（主流方案，天然抗量、就近分发、支持大文件与图片处理）、容器化（打成 Nginx 镜像由 K8s 调度）。选型看流量规模、是否需要灰度、以及运维成本；大流量静态站点基本都会用 CDN，Nginx 只作为回源或兜底。
-3. SPA 为什么需要路由回退（history fallback）？history 模式下，/user/123 这类路径并不是真实文件，服务端直接请求会 404。因此需要把所有未命中静态文件的请求回退到 index.html，由前端路由接管。Nginx 写法是 try_files $uri $uri/ /index.html;。注意接口路径必须排除在外，否则会把 API 请求也返回成 HTML。
-4. Nginx 常用配置要会哪些？root 与 alias 的区别（alias 是替换匹配部分、root 是拼接）、location 匹配优先级（= 精确 &gt; ^~ 前缀且停止正则 &gt; ~&#x2F;~* 正则 &gt; 普通前缀最长匹配）、try_files、proxy_pass（反向代理）、gzip&#x2F;gzip_static、缓存头（expires&#x2F;add_header Cache-Control）、rewrite 与 return 301、limit_req 限流。配置错误最常见的原因就是 location 优先级理解错与 proxy_pass 尾斜杠。
-5. 发布时怎么处理缓存？index.html 必须 no-cache 或 max-age=0, must-revalidate（每次校验，保证发版即时生效）；带内容 hash 的静态资源用 max-age=31536000, immutable（一年有效，内容变了文件名就变，不存在脏缓存）。绝不能给 index.html 配长缓存，否则用户会长期停留在旧版本。CDN 层同理：HTML 不缓存、资源长缓存，必要时对 HTML 做主动刷新。
-6. 多环境怎么管理配置？分三层：代码里的 .env（本地开发）、CI 的变量（构建时注入 VITE_ 前缀变量或 DefinePlugin）、运行时的配置（容器启动注入，适合需要同一镜像跑多环境）。原则是密钥不进代码仓库、不被打进产物，敏感配置放服务端或运行时注入；环境差异尽量收敛到少数变量（接口地址、埋点开关、功能开关）。
-7. 用 Docker 部署前端怎么做？多阶段构建：第一阶段用 node 镜像装依赖并构建，第二阶段用 nginx:alpine 只拷贝 dist 与自定义 nginx.conf，最终镜像只有几十 MB。要点：.dockerignore 排除 node_modules 与产物、构建参数用 ARG/ENV 传入、镜像 tag 用 git sha 或语义版本（便于回滚），不要用 latest。
-8. 一条完整的 CI&#x2F;CD 流水线包含什么？触发（push&#x2F;merge request&#x2F;tag）→ 环境准备（固定 Node 版本、缓存依赖）→ 质量门禁（lint、类型检查、单测、构建）→ 产出制品（dist 或镜像，并记录版本号与 commit）→ 部署（到测试或预发环境）→ 自动化验证（健康检查、冒烟用例）→ 人工审批（生产）→ 发布并通知（IM、变更记录）。核心是“任何一步失败都阻断后续”，且每一步可追溯。
-9. 灰度发布、蓝绿部署、金丝雀有什么区别？蓝绿部署：维护两套完整环境，新版本部署到空闲的一套，验证通过后切换流量入口，回滚只需切回（秒级）。金丝雀（灰度）：先把一小部分流量导到新版本（按比例、按用户、按地域），观察错误率与指标正常后逐步放量。灰度更关注“风险可控的渐近放量”，蓝绿更关注“切换与回滚速度”，两者常组合使用。
-10. 回滚怎么做才快？三种机制：版本目录加软链（每次发布新建带版本号的目录，用 ln -sfn 原子切换软链，回滚就是切回旧软链，秒级且无需重新构建）；镜像 tag 回退（K8s 改回旧 tag，配合 rollout undo）；制品仓库保留 N 个版本（配合配置中心切版本号）。前提是数据库变更与代码变更要能分离或向后兼容，否则回滚代码会撞上已执行的新表结构。
-11. HTTPS 与证书怎么配？申请证书（企业证书或 Let’s Encrypt 免费证书）→ Nginx 配 ssl_certificate 与 ssl_certificate_key → 配 TLS 版本与套件（只留 1.2&#x2F;1.3）→ 把 HTTP 301 到 HTTPS → 开启 HSTS（Strict-Transport-Security）。自动化靠 certbot 定时续期（证书 90 天有效期，过期即全站不可访问，必须监控到期时间）。
-12. 生产环境的跨域怎么解决？最稳的是“同源部署”：接口与页面同一个域名，由 Nginx 按路径反代到后端（/api → 后端服务），前端看起来没有跨域；其次是后端配 CORS（精确 Origin、带 Cookie 时不能为 *）；再次是网关（API Gateway）统一处理。开发环境的 proxy 只解决本地，不能当作生产方案。
-13. 前端监控要采集什么？错误（JS 异常、Promise 未捕获、资源加载失败）、性能（FP&#x2F;FCP&#x2F;LCP&#x2F;CLS&#x2F;TBT，用 PerformanceObserver）、行为与埋点（页面停留、点击、转化）、以及版本号与用户环境（用于归因）。工具可用 Sentry（异常加 sourcemap 还原）、自建上报端点加 Prometheus&#x2F;Grafana。要点是采样与限流（避免上报打爆自己）、上报用 sendBeacon、错误做聚合去重。
-14. 部署完成后如何验证？四件事：健康检查端点返回 200；访问页面并核对版本号（构建时注入 git sha 或时间戳，在控制台或 /version 可见）；抽查关键链路（登录、核心接口）；查看监控与错误率（发布后 5~10 分钟内的错误曲线是最有效的验证）。自动化可用冒烟脚本跑几条关键用例。
-15. K8s 部署前端要理解哪些概念？Deployment 管理副本与滚动更新（maxUnavailable、maxSurge 控制放量速度）；Service 提供集群内访问；Ingress 做域名与路径路由、TLS 终止；ConfigMap/Secret 注入配置；readinessProbe（就绪探针，不通过则不接流量）与 livenessProbe（存活探针，失败则重启）是灰度与稳定的关键。
-16. 静态资源该不该和应用同域？各有取舍：同域能共享 Cookie、无跨域问题、部署最简单；分域（独立 CDN 域名）能避免 Cookie 随资源请求发送、更利于缓存与并发（HTTP&#x2F;1.1 时代还能突破并发限制）。现代实践多为“页面与接口同域（便于鉴权与 Cookie）、静态资源走独立 CDN 域名”，并给 Cookie 设置合适的 Domain 与 SameSite。
-17. 大文件与图片资源怎么处理？图片走对象存储加 CDN，按需做多尺寸裁剪与 webp/avif 转换（通过 URL 参数或处理服务）；上传走前端压缩与分片；静态字体做子集化；视频走专门的媒体服务并支持 Range。原则是“构建产物只放代码与必要资源，媒体资源全部外置”。
-18. 上线出事故怎么排查？按“变更相关性”排查：先确认是否刚发布（对比版本号与发布时间）、再区分“全量不可用”还是“部分用户不可用”（前者多为配置、证书、DNS、网关；后者多为缓存、灰度、地区网络）、看错误监控与后端日志的报错分布、必要时先回滚止血再排查根因。事后补一份时间线复盘，并把可自动化的检查项加进流水线。
-2、难题1. 为什么要“先上传静态资源，最后传 index.html”？因为 index.html 是唯一引用新资源版本的入口。若先替换 index.html，此刻新资源可能还没上传完，用户拿到的 HTML 会引用不存在的文件，直接白屏。正确顺序是：先把带新 hash 的资源全部上传并确认可访问（此时旧 index.html 仍指向旧资源，新旧共存互不干扰），最后原子替换 index.html。这就是“静态资源可多版本共存、入口只有一个”的发布模型。
-2. 原子发布与回滚具体怎么实现？每次发布生成 releases/&lt;版本号或时间戳&gt;/，把产物解压进去；用 current 软链指向它（ln -sfn releases/v2 current，切换是原子操作）；Nginx 的 root 指向 current，因此切换瞬间全量生效。回滚就是把软链指回旧目录，无需重新构建。配套保留最近 N 个版本（磁盘配额）、并保证资源路径与 HTML 的引用关系在版本内自洽（资源带 hash，旧版本资源不能立即删，需留一个窗口期）。
-3. Nginx 的 location 优先级与 proxy_pass 尾斜杠陷阱？优先级：= 精确匹配最高；其次是 ^~ 前缀（命中即不再尝试正则）；再是正则 ~&#x2F;~*（按书写顺序，第一个命中即用）；最后是普通前缀（取最长匹配）。proxy_pass 的陷阱是路径拼接：location /api/ &#123; proxy_pass http://backend/; &#125; 会把 /api/ 替换成 /（结果 /users），而 proxy_pass http://backend;（无尾斜杠）会保留完整 URI（结果 /api/users）。配错的表现是“接口全 404 但后端日志里路径不对”。
-4. Docker 多阶段构建如何把镜像压到最小？第一阶段装全部依赖并构建；第二阶段只拷贝 dist 与 nginx.conf，基础镜像用 nginx:alpine；用 .dockerignore 排除 node_modules、.git、测试文件；构建时用 npm ci --omit=dev（若构建产物不需要 dev 依赖，可进一步在生产阶段不安装依赖）；分层顺序也要注意——先 COPY package*.json 再装依赖、最后 COPY 源码，让依赖层可缓存复用。最终镜像通常在 20~50MB 量级。
-5. CI 里构建缓存怎么做，怎么保证可复现？缓存 key 要用 lockfile 的哈希（hashFiles(&#39;**/lockfile&#39;)），这样依赖变化才失效；缓存对象是包管理器的 store（pnpm 的 store、npm 的 cache）而不是直接缓存 node_modules（跨平台&#x2F;跨版本易出问题）。可复现性靠：固定 Node 版本（.nvmrc 或 packageManager 字段）、npm ci&#x2F;--frozen-lockfile、构建期禁用随机与时间戳（否则产物 hash 每次都变，缓存与灰度比对都失效）。
-6. Nginx 层怎么做按比例的灰度？用 split_clients 按客户端标识（如 $remote_addr 或 Cookie）的哈希分流： split_clients &quot;$&#123;remote_addr&#125;AAA&quot; $variant &#123; 10% new_version; * old_version; &#125;，再按 $variant 决定 upstream。 更常见的做法是：应用层用灰度规则（用户 id 取模、白名单、Header）下发配置或 feature flag，网关只负责路由。Nginx 方案的缺点是发布期间新旧两套资源必须同时在线（需要版本化目录并存），且规则变更要 reload。
-7. 前端错误上报如何做到“可信又不打扰用户”？要点有五条：window.onerror 与 unhandledrejection 全覆盖，资源错误用 addEventListener(&#39;error&#39;, ..., true) 捕获；上报用 sendBeacon（不阻塞卸载，注意体积上限）；采样与限流（同类错误按 hash 聚合、每会话限次），避免上报风暴；带上下文（版本号、页面路径、设备、trace id）并与后端日志串联；错误栈要能还原——生产用 hidden-source-map 并把 sourcemap 上传到监控平台（不公开暴露），发布时用版本号关联。
-8. K8s 滚动更新时前端为什么会短暂“版本混用”？滚动更新期间新旧 Pod 同时存在，若多个副本承载同一页面，用户在不同请求上可能拿到不同版本（表现为“刷新一次变一个版本”或资源 404）。原因是资源与 index.html 没有版本隔离。解决方式：把资源上传到带版本前缀的路径（/static/v1.2.3/...）并长缓存、index.html 由服务端按版本渲染或干脆走 CDN 原子切换；同时把 readinessProbe 配好（确保新 Pod 就绪后才接流量），并让旧版本资源在切换后保留一段时间。
-二、跨域与代理1、常见题1. 同源的定义是什么？有哪些容易误判的细节？同源要求协议、域名、端口三者完全一致。容易出错的地方包括：[http://a.com](http://a.com) 与 [http://a.com:80](http://a.com:80) 视为同源（默认端口等价），但 :8080 不同源；[https://a.com](https://a.com) 与 [http://a.com](http://a.com) 不同源（协议不同）；a.com 与 www.a.com 不同源（域名不同）；IP 与域名不同源；localhost 与 127.0.0.1 也不同源。
-2. 同源策略具体限制哪些操作，哪些不受限？受限：读取跨源请求的响应（fetch/XHR 需要 CORS）、读取跨源 iframe 的 DOM、访问跨源的 localStorage/IndexedDB、读取跨源图片的像素（canvas 被污染）、部分设备与存储 API。不受限：发出请求本身（表单提交、img/script/link 加载）、跳转链接、跨源 iframe 的嵌入（能不能嵌由 X-Frame-Options&#x2F;CSP 决定，不是同源策略）。理解这条边界是理解 CSRF 的前提。
-3. 为什么需要同源策略？它是一个读取隔离的安全模型：如果没有它，evil.com 打开的页面可以读取你在 bank.com 的响应内容、读取其 DOM 与存储，等同拿到你的数据。它的核心假设是“跨源资源可以加载，但不能读取其内容”，因此 script/img 这类嵌入仍是允许的（这也带来 JSONP 与 canvas 污染这类衍生问题）。
-4. 跨域有哪些解决方案？各自适合什么场景？服务端 CORS（首选，标准、支持任意方法与自定义头）；同源代理（Nginx 反代、开发服务器 proxy，把跨域变成同源）；postMessage（页面间通信，不是数据接口）；JSONP（仅 GET 的历史方案）；WebSocket（不受同源限制，需服务端校验 Origin）；document.domain（同主域降级，已废弃）。判断顺序：能改服务端就 CORS，改不了就用代理。
-5. 什么样的请求是“简单请求”？三个条件都满足：方法为 GET/HEAD/POST；头字段仅限 CORS 安全列表（Accept、Accept-Language、Content-Language、Content-Type 限定值、Range 限定值等）；Content-Type 只能是 application/x-www-form-urlencoded、multipart/form-data、text/plain。任何一条不满足（如 PUT、application/json、带 Authorization）都会触发预检。
-6. 预检请求（preflight）是怎么走的？浏览器先发 OPTIONS，带 Access-Control-Request-Method 与 Access-Control-Request-Headers（不是真正的请求头，只是“我想用什么”）。服务端需返回允许的 Origin、方法、头，可带 Access-Control-Max-Age 缓存该结果（浏览器有上限，Chrome 约 2 小时）。预检不通过，真实请求不会发出。注意预检失败通常是服务端没有处理 OPTIONS 或漏了某个头。
-7. CORS 的关键响应头都有什么含义？Access-Control-Allow-Origin（允许的源，* 或精确值）、Access-Control-Allow-Methods（预检用）、Access-Control-Allow-Headers（预检用）、Access-Control-Allow-Credentials（是否允许携带凭证，必须为 true 且 Origin 不能是 *）、Access-Control-Expose-Headers（让前端能读到非安全列表的响应头，如 X-Request-Id）、Access-Control-Max-Age（预检缓存时长）。
-8. 带 Cookie 的跨域请求要满足哪些条件？前端 fetch 要 credentials: &#39;include&#39;（axios 用 withCredentials: true）；服务端 Access-Control-Allow-Credentials: true；Access-Control-Allow-Origin 必须是精确源、不能用 *；Cookie 本身要满足 SameSite=None; Secure（否则跨站请求不会带上）。这四条缺一不可，缺哪条都表现为“请求发了但没带 Cookie”或直接被拦。
-9. 为什么 Access-Control-Allow-Origin: \* 不能与凭证共存？因为凭证意味着“以用户身份访问”，若允许任意源读取，任何站点都能读取用户在该服务的数据。因此规范强制要求：带凭证时服务端必须显式回显具体 Origin（并做白名单校验）。这也是“必须动态回显 Origin 而不是写死 *”的原因。
-10. 服务端怎么支持多个域名？不能返回多个 Allow-Origin（浏览器只接受一个）。做法是读请求的 Origin，在白名单里校验后原样回显，并加上 Vary: Origin（否则 CDN 或反向代理会把 A 站点的响应缓存给 B 站点，造成越权）。绝不建议“无脑回显任意 Origin + 允许凭证”，那等于关闭了同源保护。
-11. 为什么前端控制台只报一句 “CORS error”，看不到细节？出于安全，浏览器不会把跨源响应的状态码、响应体、具体失败原因暴露给 JS（否则可以用来探测内网）。排查要靠 Network 面板看预检与真实请求的状态、看响应头是否齐全、看服务端日志。这是“前端无法用 try&#x2F;catch 拿到 CORS 错误原因”的根本原因。
-12. JSONP 的原理和缺陷？利用 &lt;script&gt; 不受同源限制：前端动态插入 ?callback=fn 的脚本，服务端返回 fn(&#123;...&#125;) 的 JS 代码，从而把数据“当脚本执行”拿回来。缺陷很明显：只支持 GET、无法读状态码与响应头、出错无法感知（只能靠超时）、callback 名可控带来 XSS 风险、需要服务端专门适配。现代应全部用 CORS。
-13. 为什么开发环境的 proxy 能解决跨域？因为代理让请求由服务端发出：浏览器请求的是同源的 /api/xxx（dev server 的地址），dev server 在 Node 侧转发到真实后端并把响应回传。浏览器看到的是同源请求，不触发 CORS。注意它只是开发期的权宜方案，生产要靠网关&#x2F;Nginx 做同样的事。
-14. Nginx 反向代理怎么解决跨域？把页面与接口配到同一域名下：location /api/ &#123; proxy_pass http://backend; &#125;，浏览器视角同源，无 CORS。若必须跨域（页面与接口不同域），则在 Nginx 加 CORS 头并处理 OPTIONS（if ($request_method = OPTIONS) &#123; return 204; &#125;），同时注意 proxy_pass 的尾斜杠路径拼接问题。
-15. postMessage 怎么用才安全？发送：targetWindow.postMessage(data, targetOrigin)，targetOrigin 必须是具体源而不是 *（否则任何中间页面都能收到）。接收：监听 message 时**必须校验 event.origin**（白名单），必要时校验 event.source 是否为预期窗口；不要把收到的内容直接 innerHTML 或 eval。这是 iframe、弹窗、跨标签通信唯一可靠的官方通道。
-16. document.domain 为什么被废弃？它允许同主域的不同子域（a.example.com 与 b.example.com）通过把 document.domain 都设为 example.com 来互相访问 DOM。这直接破坏了“源”的隔离（一旦降级，同主域的所有页面都能互访），也成为绕过同源策略的攻击面。Chrome 112 起已弃用，替代方案是 postMessage + Origin 校验。
-17. 为什么 WebSocket 不受同源策略限制？WebSocket 有自己的协议（ws://&#x2F;wss://），握手是一次 HTTP Upgrade，但建连后浏览器不施加同源读取限制（否则无法跨域连服务）。安全责任转移到服务端：必须在握手时校验 Origin 头、校验 Token，否则任意站点都能用用户浏览器建立连接（类似 CSWSH 攻击）。Cookie 在握手请求中会自动携带，这一点也需要注意。
-18. 一个页面能不能被别的站点用 iframe 嵌入，谁决定？由被嵌入方决定：X-Frame-Options: DENY | SAMEORIGIN（老方案，粒度粗）、Content-Security-Policy: frame-ancestors &#39;self&#39; [https://a.com](https://a.com)（现代方案，可精确到源）。嵌入方可用 &lt;iframe sandbox=&quot;allow-scripts ...&quot;&gt; 限制被嵌页面的能力（注意同时给 allow-scripts 与 allow-same-origin 会大幅削弱沙箱）。这也是防点击劫持的核心手段。
-19. 跨站 Cookie 现在还能用吗？能，但条件更严：SameSite=None; Secure（必须 HTTPS），并且浏览器在逐步淘汰三方 Cookie（Chrome 的隐私沙盒、Safari 的 ITP 早就默认拦截）。替代方案：CHIPS（分区 Cookie，Partitioned 属性，让 Cookie 按“顶层站点”分区）、Storage Access API（请求存储访问权限）、或改成服务端跳转 + 短时票据（OAuth 授权码流程）。
-20. 哪些资源类型的跨域行为比较特殊？字体（@font-face）必须满足 CORS（否则加载失败，这是很多人第一次遇到“字体跨域”的原因）；图片可以跨域加载，但要在 canvas 里读像素就必须 crossOrigin=&quot;anonymous&quot; 且服务端允许；&lt;script&gt;&#x2F;&lt;link&gt; 可跨域加载但无法读取内容；fetch 加 mode: &#39;no-cors&#39; 只能拿到 opaque 响应（读不到内容）；&lt;video&gt; 跨域播放没问题，但要截帧同样受 canvas 污染限制。
-2、难题1. 预检请求能不能避免，代价是什么？可以，把请求“降级”成简单请求：只用 GET/POST、Content-Type 用 text/plain 或表单编码、去掉自定义头（Authorization、X-Token 都会触发预检）。但代价明显：不能用 application/json、不能带自定义鉴权头（只能靠 Cookie 或 query），语义不清晰。实际更常见的优化是缓存预检（调大 Max-Age）与减少跨域（走同源代理），而不是把接口改成畸形请求。
-2. 预检缓存有哪些容易踩的坑？一是浏览器对 Max-Age 有上限（Chrome 约 2 小时），服务端写一年也无效；二是缓存键包含 URL + Origin + 方法 + 请求头集合，请求头多一个少一个都会重新预检；三是 Access-Control-Allow-Headers 在带凭证时不能用 *（必须逐一列出），而很多框架默认返回 *，导致“不带 Cookie 正常、带了就失败”；四是 CDN 若没配 Vary: Origin，可能把某个 Origin 的预检结果缓存给其他源。
-3. 跨域请求遇到 302 重定向会怎样？预检请求不允许被重定向（浏览器会直接判定网络错误），所以登录跳转、网关鉴权跳转这类逻辑不能出现在预检路径上；真实请求的跨域重定向也要求最终响应带正确的 CORS 头，且 Allow-Origin 要与原始源匹配（不能是重定向后的源）。实践建议是让 CORS 请求直接命中最终地址，把鉴权跳转放在前端控制或改成 401 + 显式刷新。
-4. 缓存的 304 响应还需要带 CORS 头吗？需要。即使命中缓存返回 304，浏览器仍会校验 CORS 头是否允许当前源读取（缺头会判定失败），所以服务端在 304 分支也要输出 Access-Control-Allow-Origin、Vary: Origin 等。工程上常见的做法是在 Nginx 或框架层统一注入 CORS 头，而不是只写在业务响应里。
-5. 为什么说 CORS 不能防 CSRF？CORS 限制的是“读取跨源响应”，而 CSRF 只需要“发出请求”。表单提交、img 请求、&lt;script&gt; 加载都是跨源可发的（且表单的 POST 甚至不需要预检），服务端照样会执行并带上 Cookie。所以防 CSRF 要靠 SameSite Cookie、CSRF Token、Origin/Referer 校验这些服务端侧手段，CORS 只是阻断“攻击者读取结果”。
-6. crossOrigin=&quot;anonymous&quot; 到底做了什么？它让图片请求以 CORS 模式发出（带 Origin 头、要求服务端返回 Access-Control-Allow-Origin）。成功则图片可被 canvas 读取（getImageData 不会抛 SecurityError），失败则图片加载失败（而不是“污染 canvas”）。使用 use-credentials 时才会带上 Cookie。这正是“图表库截图&#x2F;图片裁剪&#x2F;水印导出”必须先处理跨域的原因。
-7. COOP、COEP、CORP 分别解决什么问题？三者共同服务于跨源隔离（crossOriginIsolated）：Cross-Origin-Opener-Policy 切断跨源窗口的 window.opener 引用（防 Spectre 类侧信道与弹窗劫持）；Cross-Origin-Embedder-Policy: require-corp 要求所有子资源显式声明可嵌入（否则不加载）；Cross-Origin-Resource-Policy 由资源方声明“谁能嵌入我”。三者配齐后浏览器才会放开 SharedArrayBuffer 与高精度计时器。代价是第三方资源必须逐个适配，破坏性较强。
-8. Private Network Access（PNA）是什么限制？浏览器开始限制“公网页面访问内网&#x2F;本地服务”（如 http://192.168.x.x、[http://localhost](http://localhost)）：跨源访问私有网络时，预检会附加 Access-Control-Request-Private-Network: true，服务端必须返回 Access-Control-Allow-Private-Network: true 才放行。它防的是“公网页面借用户浏览器扫描&#x2F;攻击内网设备”，对本地开发与内网 SaaS 场景影响最大，表现为“以前能调的本地服务突然被拦”。
-]]></content>
-      <tags>
-        <tag>前端面试</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【前端面试】二、框架学习</title>
     <url>/posts/323548654/</url>
     <content><![CDATA[一、React1、常见题1. React 的核心设计理念是什么？React 是 Meta 开发的、专注视图层的开源 JS 库，用来构建用户界面；核心理念：声明式渲染、组件化、单向数据流，配合虚拟 DOM 与 diff 算法，数据变化时最小化更新 DOM。
 2. JSX 的本质是什么？是 React.createElement(type, props, ...children)（或新 JSX runtime 下的 jsx/jsxs）的语法糖，产物是描述 UI 的普通对象（React Element），不是 HTML 字符串。所以 JSX 里写 class 要用 className，&#123;&#125; 里可以放表达式但不能放语句；正因为是对象，才能被 diff、被序列化到服务端（Server Components 的传输格式）。
 3. 类组件与函数组件有什么区别？类组件有实例与生命周期、this 上的 state；函数组件无实例、靠 Hooks 承载状态与副作用，逻辑可按“关注点”聚合而非按生命周期拆散。函数组件更易复用逻辑（自定义 Hook）、更易压缩与优化，官方主推。追问：不能用 Hook 的地方（错误边界）仍需要类组件，直到 React 19 提供对应 API。
-4. 类组件生命周期分几个阶段？挂载：constructor → getDerivedStateFromProps → render → componentDidMount；更新：getDerivedStateFromProps → shouldComponentUpdate → render → getSnapshotBeforeUpdate（DOM 更新前，可读滚动位置）→ componentDidUpdate；卸载：componentWillUnmount。已废弃 componentWillMount/WillReceiveProps/WillUpdate（为可中断渲染让路）。
+4. 类组件生命周期分几个阶段？挂载：constructor → getDerivedStateFromProps → render → componentDidMount；
+更新：getDerivedStateFromProps → shouldComponentUpdate → render → getSnapshotBeforeUpdate（DOM 更新前，可读滚动位置）→ componentDidUpdate；
+卸载：componentWillUnmount。已废弃 componentWillMount/WillReceiveProps/WillUpdate（为可中断渲染让路）。
 5. 函数组件里怎么对应生命周期？componentDidMount ≈ useEffect(..., [])；componentDidUpdate ≈ 带依赖的 useEffect；componentWillUnmount ≈ useEffect 的返回清理函数；shouldComponentUpdate ≈ React.memo + useMemo。注意语义差异：useEffect 在浏览器绘制之后执行，componentDidMount 在提交阶段同步执行。
 6. state 为什么必须不可变更新？React 用引用比较判断是否变化（Object.is），原地修改对象的引用不变，依赖 [obj] 的 effect 与 memo 都不会触发；同时不可变快照让时间旅行调试、并发渲染下的旧值复用成为可能。做法：对象用展开或 immer，数组用 map/filter/concat 而不是 push/splice。
 7. setState 是同步还是异步？在 React 管理的上下文（事件处理、生命周期、React 18 的 Promise&#x2F;setTimeout 回调）中会批处理，多次调用合并为一次渲染，因此读到的 state 是旧值；需要立刻读取用函数式更新 setCount(c =&gt; c + 1)，需要同步拿到结果用 flushSync 强制刷新（会破坏批处理，慎用）。React 18 的自动批处理扩展到所有场景，这是相对 17 的显著变化。
@@ -1761,28 +1756,32 @@ type DeepPartial&lt;T&gt; = T extends object  ? &#123; [K in keyof T]?: DeepPart
 13. Context 的性能问题怎么解决？Context 的 value 变化会让所有消费者重新渲染，与“用到了 value 的哪一部分”无关。解法：拆分多个 Context（按更新频率）、useMemo 稳定 value 引用、Provider 下沉到最小子树、或改用支持选择器的方案（use-context-selector、Zustand&#x2F;Jotai）。
 14. 受控组件和非受控组件有什么区别？受控：值由 state 驱动（value + onChange），单一数据源，可校验、可联动，但每次输入都会触发渲染；非受控：由 DOM 自己维护（defaultValue + ref 读取），适合简单表单、文件输入（file 无法受控）、以及需要与第三方 DOM 库集成。工程取舍：复杂表单用受控 + 表单库（React Hook Form 用非受控 + ref 性能更好）。
 15. key 有什么作用？在列表渲染的时候为同层 diff 的元素标识身份，帮助 React 复用实例与状态。没有 key 或 key 不稳定时，React 按位置匹配：插入、删除、排序会导致组件状态错位（输入框内容跟着位置走）。规则：key 在同一兄弟列表内唯一且稳定（用业务 id，只有静态列表才可用下标）。
-16. React 的 diff 策略是什么？三条假设：跨层级不比较（父节点类型变了就整棵重建）、同层按 key 与 type 匹配、列表用 key 提高匹配效率。type 不同直接卸载重建（所以“条件渲染时切换组件类型会丢状态”）；同类型则复用实例、只更新变化的 props。
-17. React 的事件机制有什么特点？使用合成事件（跨浏览器统一、包裹原生事件的 SyntheticEvent）；React 17 起事件绑定到根容器而非 document，使多版本 React 共存与嵌套挂载不再互相干扰；React 16 的事件池（pooling）异步拿 event 会失效，已在 17 移除，事件对象可异步访问。事件冒泡在 React 树内传播，与 Portal 的 DOM 位置无关。
+16. React 的 diff 策略是什么？三种策略：一只对同级节点进行比较；二不同元素类型生成不同渲染树；三使用key标识子元素。
+比较过程：对同级节点进行比较，类型不同则直接删除重新生成新的节点，类型相同则更新属性，然后递归比较子元素。
+17. React 的事件机制有什么特点？使用合成事件（跨浏览器统一、包裹原生事件的 SyntheticEvent）通过在根节点统一监听原生事件，再模拟出符合 React 组件树的冒泡与捕获流程，最终调用写在 JSX 上的回调函数；React 17 起事件绑定到根容器而非 document，使多版本 React 共存与嵌套挂载不再互相干扰；React 16 的事件池（pooling）异步拿 event 会失效，已在 17 移除，事件对象可异步访问。事件冒泡在 React 树内传播，与 Portal 的 DOM 位置无关。
 18. 错误边界能捕获什么？捕获子树在渲染、生命周期、构造函数中抛出的错误，显示降级 UI。捕获不到：事件处理函数、异步代码（setTimeout、Promise）、服务端渲染、错误边界自身抛出的错误。实现方式是类组件 getDerivedStateFromError + componentDidCatch（后者用于上报）。
 19. Portal 有什么用？createPortal(node, container) 把 DOM 渲染到父组件之外的容器（弹窗、抽屉、Tooltip 避免 overflow:hidden 与层叠上下文裁剪），但 React 事件冒泡与 Context 仍按组件树工作，因此逻辑与样式不会被割裂。
 20. 状态管理怎么选型？先区分两类状态：服务端状态（缓存、重试、失效）交给 React Query&#x2F;SWR；客户端状态按规模分层：组件内 useState → 跨组件低频用 Context → 高频、细粒度更新用 Zustand&#x2F;Jotai（订阅粒度小、无 Provider 嵌套）→ 复杂业务流、需要可追溯与规范约束用 Redux Toolkit（slice + immer + RTK Query）。避免“什么都往全局放”是主要判断标准。
-21. React Router 的现代用法？v6 起用嵌套路由 + &lt;Outlet&gt; 表达布局，路由即组件；useParams、useSearchParams、useNavigate 获取参数与跳转；data router 支持 loader（渲染前取数）、action（表单提交）、errorElement，把取数与组件解耦。v7 进一步与框架模式（服务端渲染、类型安全路由）合并。
-22. 性能优化有哪些手段？渲染层面：React.memo（浅比较 props）、useMemo/useCallback 稳定引用、稳定 key、拆分 Context、把状态下沉到真正需要的地方（避免父级状态导致整棵重渲染）。数据层面：useDeferredValue&#x2F;startTransition 让非紧急更新让路、分页与虚拟列表（react-window、react-virtuoso）。加载层面：React.lazy + Suspense 做代码分割、预取、图片懒加载。诊断靠 DevTools Profiler 看“谁在重渲染、为什么重渲染”，而不是盲目加 memo。
-2、难题1. Fiber 架构解决了什么问题？旧版递归调和（Stack Reconciler）一旦开始就无法中断，长任务阻塞主线程造成掉帧。Fiber 把渲染拆成可中断的工作单元链表（child/sibling/return 指针），配合“双缓存”（current 与 workInProgress 两棵树）实现：可暂停、可恢复、可按优先级丢弃重做，渲染分“调和（可中断）”与“提交（不可中断）”两阶段。这正是并发特性（startTransition、Suspense）的基础。追问：为什么提交阶段必须同步——DOM 变更不能分批暴露给用户，否则会看到中间态。
+21. 性能优化有哪些手段？渲染层面：React.memo（浅比较 props）、useMemo/useCallback 稳定引用、稳定 key、拆分 Context、把状态下沉到真正需要的地方（避免父级状态导致整棵重渲染）。数据层面：useDeferredValue&#x2F;startTransition 让非紧急更新让路、分页与虚拟列表（react-window、react-virtuoso）。加载层面：React.lazy + Suspense 做代码分割、预取、图片懒加载。诊断靠 DevTools Profiler 看“谁在重渲染、为什么重渲染”，而不是盲目加 memo。
+2、难题1. Fiber 架构解决了什么问题？React Fiber 是 React 16 引入的新一代协调引擎，核心目标是把原来“一旦开始就无法中断”的同步渲染，改造成可中断、可恢复、可分优先级的异步渲染。旧版递归调用（Stack Reconciler）一旦开始就无法中断，长任务阻塞主线程造成掉帧。Fiber 把渲染拆成可中断的工作单元链表（child/sibling/return 指针），配合“双缓存”（current 与 workInProgress 两棵树）实现：可暂停、可恢复、可按优先级丢弃重做，渲染分“调和（可中断）”与“提交（不可中断）”两阶段。这正是并发特性（startTransition、Suspense）的基础。追问：为什么提交阶段必须同步——DOM 变更不能分批暴露给用户，否则会看到中间态。
 2. React 18 的并发特性具体带来什么？自动批处理（Promise、setTimeout 中也合并）、startTransition（把更新标记为可中断的低优先级，输入与渲染可并行）、useDeferredValue（让派生渲染滞后于紧急更新）、Suspense 支持数据获取（配合框架）、useId（解决 SSR 与客户端 id 一致）。核心收益是“紧急交互优先”，代价是低优先级渲染可能被反复丢弃，因此更新必须是纯的。
 3. Hooks 为什么不能写在条件或循环里？Hooks 的状态按调用顺序存放在 fiber 的 memoizedState 链表上，React 靠“第几次调用”来对应状态，没有名字。条件分支会让先后顺序错位，导致状态串位（读到别人的状态）。规则检查靠 ESLint 插件；这也是自定义 Hook 必须以 use 开头、且内部只能调用其他 Hook 的原因。追问：为什么 useState 返回的是数组——因为按位置取值，不需要命名。
 4. useEffect 的“过期闭包”怎么解决？现象：定时器或订阅回调里读到的 state 永远是首次渲染的值。三种解法：把依赖补全（让 effect 在值变化时重建）；用 useRef 保存最新值（ref.current = value 在每次渲染时更新，回调读 ref.current）；把逻辑改成函数式更新 setX(prev =&gt; ...)。选择依据是“这个值变化时是否真的需要重建副作用”——需要重建就补依赖，不希望重建就读 ref。
-5. React.memo 为什么经常失效？四类原因：父组件每次渲染都传入新对象&#x2F;数组&#x2F;函数（引用不等，需 useMemo/useCallback 或用状态提升）；children 每次是新元素（父的 render 产生新对象即不等）；组件内部消费了变化的 Context（memo 不阻止 Context 更新）；以及 memo 只做浅比较，嵌套对象深层变化察觉不到（需自定义 areEqual）。诊断方式是先确认“是不是真的需要 memo”，再用 Profiler 验证。
-6. Hydration mismatch 的成因有哪些？服务端与客户端首次渲染结果不一致：使用了 Date.now()、Math.random()、locale 相关格式化；依赖浏览器专有信息（window、屏幕宽度）；服务端与客户端数据结构或顺序不同（Map 迭代、sort 不稳定）；非法 HTML 嵌套被浏览器纠正（&lt;p&gt; 里放 &lt;div&gt;）。解法：把差异逻辑放到 useEffect 中（首帧一致）、suppressHydrationWarning 处理时间戳这类必然差异、或明确只在客户端渲染（dynamic(ssr:false)、ClientOnly）。
-7. React 19 有哪些值得关注的变化？ref 作为普通 prop（forwardRef 逐步退场）、use() 可在渲染中读取 Promise 与 Context、Actions（表单&#x2F;异步提交与 useActionState）、useOptimistic（乐观更新）、useFormStatus、以及对 Suspense&#x2F;错误边界的整合；编译期优化（React Compiler）自动插入 memo，减少手写 useMemo/useCallback。追问：编译器不等于可以乱写，仍需保证组件纯、依赖正确。
-8. 服务端组件（RSC）与客户端组件怎么划分？Server Components 在服务端执行、不进入客户端 bundle、可直接访问数据库与密钥、输出可序列化的 UI 描述；Client Components 用 &#39;use client&#39; 标记，承担交互与状态。划分原则：越靠叶子越用客户端（把 &#39;use client&#39; 下推到最小的交互组件），服务端负责数据获取与静态渲染。代价是 props 必须可序列化、不能用客户端 Hook、跨边界调试更复杂。
+5. React.memo 为什么经常失效？四类原因：
+父组件每次渲染都传入新对象&#x2F;数组&#x2F;函数（引用不等，需 useMemo/useCallback 或用状态提升）；
+children 每次是新元素（父的 render 产生新对象即不等）；
+组件内部消费了变化的 Context（memo 不阻止 Context 更新）；
+以及 memo 只做浅比较，嵌套对象深层变化察觉不到（需自定义 areEqual）。诊断方式是先确认“是不是真的需要 memo”，再用 Profiler 验证。
+8. React 19 有哪些值得关注的变化？ref 作为普通 prop（forwardRef 逐步退场）、use() 可在渲染中读取 Promise 与 Context、Actions（表单&#x2F;异步提交与 useActionState）、useOptimistic（乐观更新）、useFormStatus、以及对 Suspense&#x2F;错误边界的整合；编译期优化（React Compiler）自动插入 memo，减少手写 useMemo/useCallback。追问：编译器不等于可以乱写，仍需保证组件纯、依赖正确。
+9. 服务端组件（RSC）与客户端组件怎么划分？Server Components 在服务端执行、不进入客户端 bundle、可直接访问数据库与密钥、输出可序列化的 UI 描述；Client Components 用 &#39;use client&#39; 标记，承担交互与状态。划分原则：越靠叶子越用客户端（把 &#39;use client&#39; 下推到最小的交互组件），服务端负责数据获取与静态渲染。代价是 props 必须可序列化、不能用客户端 Hook、跨边界调试更复杂。
 二、Vue1、常见题1. Vue 的核心设计思想是什么？渐进式框架 + 响应式数据驱动视图 + 组件化。核心链条是：data 变化 → 触发依赖该数据的渲染副作用（effect）→ 重新执行组件渲染函数 → 生成新虚拟 DOM → 与旧树对比 → 最小化更新真实 DOM。所以「改数据不用碰 DOM」是它相对直接操作 DOM 的最大差别，而「响应式 + 虚拟 DOM + 模板编译优化」是它区别于 React 的三件套。
 2. Vue 2 和 Vue 3 的主要区别？响应式从 Object.defineProperty 换成 Proxy（可监听新增&#x2F;删除属性、数组索引与 length）；API 从 Options 换成 Composition API（逻辑聚合、类型推导更好、Tree-shaking 友好）；性能优化上引入编译期标记（静态提升、PatchFlag、Block Tree），diff 从全量对比变按需对比；新增 Fragment、Teleport、Suspense、多根节点；移除 $children、filters、EventBus 的官方推荐地位，v-model 默认改为 modelValue。
 3. Vue 3 的响应式原理是什么？reactive 用 Proxy 拦截 get/set/deleteProperty/has/ownKeys：get 时通过 track 把「当前正在执行的 effect」收集到 targetMap（WeakMap&lt;target, Map&lt;key, Set&lt;effect&gt;&gt;&gt;）里；set 时通过 trigger 取出该键对应的 effect 集合并调度执行。ref 用 getter/setter 包裹 .value。依赖是按属性粒度收集的，所以改 obj.a 不会触发只用到 obj.b 的组件更新。Vue 3.4 起对依赖追踪做了重构（减少重复收集与遍历），性能提升明显。
 4. ref 和 reactive 有什么区别，怎么选？reactive 只能代理对象&#x2F;数组，解构或整体替换会丢失响应性，且不能直接用于基本类型；ref 通过 .value 访问，任何类型都可用、可整体替换、可传参不丢响应性。实践：一组关联数据用 reactive，单值或需要跨函数传递&#x2F;整体替换的用 ref；从 reactive 解构出来的字段要用 toRef/toRefs 包一层。
 5. computed 和 watch 有什么区别？computed 是派生值，惰性求值（用到才计算）并按依赖缓存，依赖不变不重算，返回只读的 ref；watch 是副作用，依赖变化时执行回调，可选 immediate、deep、flush: &#39;pre&#39; | &#39;post&#39; | &#39;sync&#39;。判断标准是“要一个新值用 computed，要执行动作（请求、上报、联动）用 watch”。
 6. watch 和 watchEffect 有什么区别？watch 显式列出依赖源、能拿到新旧值、可配置 immediate/deep；watchEffect 自动收集回调中同步访问的依赖、没有旧值、立即执行一次。适合“依赖多且不确定”的场景；正因为自动收集，回调里的条件分支会导致依赖随执行路径变化，这是它不如 watch 稳定的地方。
-7. 模板编译做了什么优化？三个阶段：parse（模板 → AST）→ transform（处理指令与优化标记）→ generate（AST → 渲染函数代码）。三项关键优化：静态节点提升到渲染函数外（hoistStatic）避免重复创建；PatchFlag 标记动态节点的变化类型（如 1 文本、2 class、8 style），diff 时只比对应部分；Block Tree 把动态节点收集到数组，diff 时跳过静态子树。加上事件缓存（cacheHandlers）、v-once、v-memo 共同降低运行时开销。
+7. 模板编译做了什么优化？三个阶段：parse（模板 → AST）→ transform（处理指令与优化标记）→ generate（AST → 渲染函数代码）。
+三项关键优化：静态节点提升到渲染函数外（hoistStatic）避免重复创建；PatchFlag 标记动态节点的变化类型（如 1 文本、2 class、8 style），diff 时只比对应部分；Block Tree 把动态节点收集到数组，diff 时跳过静态子树。加上事件缓存（cacheHandlers）、v-once、v-memo 共同降低运行时开销。
 8. Vue 3 的 diff 算法有什么特点？同层比较、不复用跨层级节点；按 type 与 key 判断是否为同一节点，不同则卸载重建。子节点更新分五类场景，能复用的前提下用「最长递增子序列」找出不需要移动的节点集合，只移动其余节点，把 DOM 移动次数降到最小。相比 Vue 2 的双端比较（四个指针 + 两端交叉查找），Vue 3 结合 PatchFlag 可以只对比动态属性，整体更快。
 9. key 有什么用？标识节点身份。列表增删排序时，有正确 key 才能复用对应组件实例（保持内部状态与 DOM 关联）；缺省时按位置比对，表现为“输入框内容跟着位置跑”。key 必须在兄弟同级内唯一且稳定，用业务 id，不用随机数（每次渲染都重建）。
 10. 组件之间有哪些通信方式？父子：props 下行、emit 上行、v-model 双向；祖先与后代：provide/inject（用 InjectionKey 保类型）；透传：v-bind=&quot;$attrs&quot; 与 inheritAttrs；父调子方法：ref + defineExpose；任意组件：Pinia（推荐）、mitt 事件总线（小项目）；跨应用（微前端）：initGlobalState 或 postMessage。
@@ -1949,7 +1948,29 @@ type DeepPartial&lt;T&gt; = T extends object  ? &#123; [K in keyof T]?: DeepPart
     <content><![CDATA[一、Webpack1、常见题1. Webpack 的核心概念有哪些？entry（入口，起点模块）、output（产物路径与文件名）、loader（把非 JS 资源或新语法转换成模块）、plugin（在构建生命周期上挂载能力，如压缩、抽离 CSS、注入变量）、mode（development&#x2F;production，决定内置优化与 DefinePlugin 的默认值）、devtool（source map 策略）、resolve（模块解析规则）、optimization（分包与压缩）。
 2. loader 和 plugin 有什么区别？loader 是模块级转换函数：输入源码字符串或 AST，输出新内容，只在模块加载阶段工作（babel-loader、css-loader）。plugin 是构建过程级扩展：基于 Tapable 的事件钩子（compiler.hooks 编译级、compilation.hooks 单次构建级），能做产物改写、文件生成、注入变量等 loader 做不到的事（MiniCssExtractPlugin、HtmlWebpackPlugin、DefinePlugin）。
 3. loader 的执行顺序是怎样的？use 数组从右到左、从下到上执行（[&#39;style-loader&#39;,&#39;css-loader&#39;] 先 css 再 style）；enforce: &#39;pre&#39; | &#39;post&#39; 可插队到普通 loader 之前或之后；pitch 阶段则相反从左到右，且 pitch 有返回值时会跳过剩余 loader。inline loader（! 前缀）与 !&#x2F;-!&#x2F;!! 可控制是否叠加配置中的 loader。
-4. 说一下 Webpack 的构建流程。初始化（合并配置、创建 compiler、注册插件）→ run → compile → make（从 entry 递归解析依赖，每个模块经 loader 转换、经 acorn 解析出依赖）→ seal（把模块按规则组装成 chunk、执行优化：tree shaking、splitChunks、压缩）→ emit（写文件到 output）→ done。理解这条链就能定位“问题发生在哪个阶段”：模块解析错找 loader&#x2F;resolve，产物结构错找 optimization，文件没生成找 emit。
+4. 说一下 Webpack 的构建流程。Webpack 的构建流程本质上是一个串行的、基于事件驱动的过程。它从读取配置开始，通过 Compiler 和 Compilation 对象调度，递归地解析和转换模块，最终将结果组装成 Chunk 并写入文件系统。整个过程可以清晰地划分为初始化、编译构建、输出三大阶段。
+
+第一阶段：初始化
+
+​	这个阶段主要是在为后续的编译工作做准备，核心是创建全局唯一的 Compiler 实例。
+​	合并配置参数：从配置文件（如 webpack.config.js）和命令行 Shell 语句中读取参数，并将它们合并为最终的配置对象。
+​	实例化 Compiler：用上一步的参数初始化 Compiler 对象。Compiler 是 Webpack 的全局调度中心，它包含了完整的配置信息，并负责管理整个构建生命周期。
+​	加载插件：遍历配置中的 plugins 数组，依次调用每个插件的 apply 方法，并将 Compiler 实例传入。插件通过这种方式在 Webpack 的生命周期钩子（hooks）上注册监听，从而介入构建过程。
+​	准备环境：触发 environment、afterPlugins、afterResolvers 等钩子，完成文件系统适配、模块解析器（Resolver）初始化等预备工作。
+
+第二阶段：编译构建（核心）
+
+​	这是最复杂的一步。Webpack 会从入口文件出发，递归地找出所有依赖，并用 Loader 对每个模块进行转换。
+​	启动编译：调用 Compiler.run() 触发 run 钩子，随后创建 Compilation 对象。Compilation 是单次构建的执行者，负责管理本次构建的所有模块和资源。
+​	从 Entry 出发：根据配置的 entry，找到入口文件。Webpack 会为每个入口创建一个对应的 EntryPlugin，为递归解析做准备。
+​	递归编译模块（Make 阶段）：这是流程中最耗时的一环。
+
+第三阶段：输出
+
+​	这个阶段负责将内存中生成的 Chunk 转换成最终的文件，并写入磁盘。
+​	生成资源：根据 output 配置（如 filename、path），为每个 Chunk 生成对应的最终文件内容。此时会触发 emit 钩子，这是修改输出文件内容的最后机会。
+​	写入文件系统：将生成的文件内容实际写入到 output.path 指定的目录中。完成后触发 afterEmit 钩子。
+​	完成构建：整个流程结束，触发 done 钩子。如果在任何阶段发生错误，则会触发 failed 钩子并终止流程。
 5. 手写一个简单 loader 要注意什么？签名是 function (source) &#123; return transformed &#125;；需要异步或多次回调时用 this.async() 返回的 callback，或返回 Promise；用 this.query&#x2F;this.getOptions() 拿配置；this.resourcePath 判断目标文件；注意 loader 必须是无状态、可并行的纯转换，不要在里面做副作用。若要处理 source map，用 this.callback(null, code, map) 透传。
 6. 手写一个 plugin 的要点？一个类（或函数）带 apply(compiler)；在合适的钩子上 tap/tapAsync，同步钩子用 tap，异步用 tapAsync/tapPromise；compiler.hooks.emit 阶段可改 compilation.assets 新增文件；compilation.hooks.processAssets 是 webpack 5 推荐的改产物位置。plugin 的名字用于性能分析识别。
 7. HMR（热更新）的原理是什么？编辑文件 → webpack-dev-server 触发增量编译，生成 *.hot-update.js 与 *.hot-update.json → 通过 WebSocket 把新 hash 通知浏览器 → 浏览器的 HMR runtime 用 JSONP 拉取更新清单 → 对比 module.hot 的接受逻辑，逐模块替换（module.hot.accept），替换失败则向上冒泡到入口，最终整页 reload。框架靠 loader 自动注入 accept 逻辑（Vue 的 vue-loader、React 的 react-refresh），所以“改代码局部生效”不是 webpack 的默认行为，而是模块自己声明了可接受更新。
@@ -2002,6 +2023,68 @@ type DeepPartial&lt;T&gt; = T extends object  ? &#123; [K in keyof T]?: DeepPart
 6. 生产构建为什么 tree shaking 效果好？Rollup 在打包时对所有模块做一次整体分析，基于 ESM 的静态绑定精确判断“哪些导出真的被用到、哪些语句无副作用”，并能在产物层面删除；配合 sideEffects 与 /*#__PURE__*/ 注解更激进。Vite 在此之上还利用 esbuild&#x2F;terser 做二次压缩。前提仍是“全链路 ESM”，一旦有 CJS 介入，分析链条就断。
 7. 在 monorepo 里 Vite 为什么会报依赖问题？pnpm&#x2F;npm workspace 的本地包常以源码形式被引用（link: 或 workspace:），Vite 默认不把它们当依赖预构建，导致其内部的裸依赖被逐个请求、甚至出现重复实例（同一库被加载两份，React Hook 报“invalid hook call”）。处理：把本地包加入 optimizeDeps.include、必要时 resolve.dedupe 去重、preserveSymlinks 谨慎开启、server.fs.allow 放开工作区目录。
 8. Vite 上做 Module Federation 有什么限制？社区方案（@originjs/vite-plugin-federation）通过自定义运行时实现，限制较多：远程模块在 dev 下通常不可用（需要先 build 再 preview），远程方 HMR 不可靠；必须 build.target: &#39;esnext&#39; 并开启 topLevelAwait；shared 的版本协商不如 Webpack 完善，容易出现重复加载；类型无法跨应用传递。适合“少量、边界清晰、允许刷新”的微前端场景，大规模共享仍建议 Webpack 或构建级共享（如 monorepo 公共包 + 版本锁定）。
+]]></content>
+      <tags>
+        <tag>前端面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【前端面试】九、部署和代理</title>
+    <url>/posts/323548661/</url>
+    <content><![CDATA[一、部署1、常见题1. 前端部署的完整流程是什么？分为五步：拉取代码 → 安装依赖（依据 lockfile 保证可复现）→ 构建（注入环境变量、生成带 hash 的产物）→ 把产物分发到目标（Nginx、对象存储或 CDN，或构建镜像）→ 刷新缓存并验证。关键原则是「构建一次，多环境复用同一制品」，即同一份产物依次经过测试、预发、生产，避免“每个环境各构建一次”导致行为漂移。验证包括健康检查、版本号核对与冒烟测试。
+2. 前端静态资源一般怎么托管？常见三种：Nginx 自建（可控、成本低，适合内网与中小项目）、对象存储加 CDN（主流方案，天然抗量、就近分发、支持大文件与图片处理）、容器化（打成 Nginx 镜像由 K8s 调度）。选型看流量规模、是否需要灰度、以及运维成本；大流量静态站点基本都会用 CDN，Nginx 只作为回源或兜底。
+3. SPA 为什么需要路由回退（history fallback）？history 模式下，/user/123 这类路径并不是真实文件，服务端直接请求会 404。因此需要把所有未命中静态文件的请求回退到 index.html，由前端路由接管。Nginx 写法是 try_files $uri $uri/ /index.html;。注意接口路径必须排除在外，否则会把 API 请求也返回成 HTML。
+4. Nginx 常用配置要会哪些？root 与 alias 的区别（alias 是替换匹配部分、root 是拼接）、location 匹配优先级（= 精确 &gt; ^~ 前缀且停止正则 &gt; ~&#x2F;~* 正则 &gt; 普通前缀最长匹配）、try_files、proxy_pass（反向代理）、gzip&#x2F;gzip_static、缓存头（expires&#x2F;add_header Cache-Control）、rewrite 与 return 301、limit_req 限流。配置错误最常见的原因就是 location 优先级理解错与 proxy_pass 尾斜杠。
+5. 发布时怎么处理缓存？index.html 必须 no-cache 或 max-age=0, must-revalidate（每次校验，保证发版即时生效）；带内容 hash 的静态资源用 max-age=31536000, immutable（一年有效，内容变了文件名就变，不存在脏缓存）。绝不能给 index.html 配长缓存，否则用户会长期停留在旧版本。CDN 层同理：HTML 不缓存、资源长缓存，必要时对 HTML 做主动刷新。
+6. 多环境怎么管理配置？分三层：代码里的 .env（本地开发）、CI 的变量（构建时注入 VITE_ 前缀变量或 DefinePlugin）、运行时的配置（容器启动注入，适合需要同一镜像跑多环境）。原则是密钥不进代码仓库、不被打进产物，敏感配置放服务端或运行时注入；环境差异尽量收敛到少数变量（接口地址、埋点开关、功能开关）。
+7. 用 Docker 部署前端怎么做？多阶段构建：第一阶段用 node 镜像装依赖并构建，第二阶段用 nginx:alpine 只拷贝 dist 与自定义 nginx.conf，最终镜像只有几十 MB。要点：.dockerignore 排除 node_modules 与产物、构建参数用 ARG/ENV 传入、镜像 tag 用 git sha 或语义版本（便于回滚），不要用 latest。
+8. 一条完整的 CI&#x2F;CD 流水线包含什么？触发（push&#x2F;merge request&#x2F;tag）→ 环境准备（固定 Node 版本、缓存依赖）→ 质量门禁（lint、类型检查、单测、构建）→ 产出制品（dist 或镜像，并记录版本号与 commit）→ 部署（到测试或预发环境）→ 自动化验证（健康检查、冒烟用例）→ 人工审批（生产）→ 发布并通知（IM、变更记录）。核心是“任何一步失败都阻断后续”，且每一步可追溯。
+9. 灰度发布、蓝绿部署、金丝雀有什么区别？蓝绿部署：维护两套完整环境，新版本部署到空闲的一套，验证通过后切换流量入口，回滚只需切回（秒级）。金丝雀（灰度）：先把一小部分流量导到新版本（按比例、按用户、按地域），观察错误率与指标正常后逐步放量。灰度更关注“风险可控的渐近放量”，蓝绿更关注“切换与回滚速度”，两者常组合使用。
+10. 回滚怎么做才快？三种机制：版本目录加软链（每次发布新建带版本号的目录，用 ln -sfn 原子切换软链，回滚就是切回旧软链，秒级且无需重新构建）；镜像 tag 回退（K8s 改回旧 tag，配合 rollout undo）；制品仓库保留 N 个版本（配合配置中心切版本号）。前提是数据库变更与代码变更要能分离或向后兼容，否则回滚代码会撞上已执行的新表结构。
+11. HTTPS 与证书怎么配？申请证书（企业证书或 Let’s Encrypt 免费证书）→ Nginx 配 ssl_certificate 与 ssl_certificate_key → 配 TLS 版本与套件（只留 1.2&#x2F;1.3）→ 把 HTTP 301 到 HTTPS → 开启 HSTS（Strict-Transport-Security）。自动化靠 certbot 定时续期（证书 90 天有效期，过期即全站不可访问，必须监控到期时间）。
+12. 生产环境的跨域怎么解决？最稳的是“同源部署”：接口与页面同一个域名，由 Nginx 按路径反代到后端（/api → 后端服务），前端看起来没有跨域；其次是后端配 CORS（精确 Origin、带 Cookie 时不能为 *）；再次是网关（API Gateway）统一处理。开发环境的 proxy 只解决本地，不能当作生产方案。
+13. 前端监控要采集什么？错误（JS 异常、Promise 未捕获、资源加载失败）、性能（FP&#x2F;FCP&#x2F;LCP&#x2F;CLS&#x2F;TBT，用 PerformanceObserver）、行为与埋点（页面停留、点击、转化）、以及版本号与用户环境（用于归因）。工具可用 Sentry（异常加 sourcemap 还原）、自建上报端点加 Prometheus&#x2F;Grafana。要点是采样与限流（避免上报打爆自己）、上报用 sendBeacon、错误做聚合去重。
+14. 部署完成后如何验证？四件事：健康检查端点返回 200；访问页面并核对版本号（构建时注入 git sha 或时间戳，在控制台或 /version 可见）；抽查关键链路（登录、核心接口）；查看监控与错误率（发布后 5~10 分钟内的错误曲线是最有效的验证）。自动化可用冒烟脚本跑几条关键用例。
+15. K8s 部署前端要理解哪些概念？Deployment 管理副本与滚动更新（maxUnavailable、maxSurge 控制放量速度）；Service 提供集群内访问；Ingress 做域名与路径路由、TLS 终止；ConfigMap/Secret 注入配置；readinessProbe（就绪探针，不通过则不接流量）与 livenessProbe（存活探针，失败则重启）是灰度与稳定的关键。
+16. 静态资源该不该和应用同域？各有取舍：同域能共享 Cookie、无跨域问题、部署最简单；分域（独立 CDN 域名）能避免 Cookie 随资源请求发送、更利于缓存与并发（HTTP&#x2F;1.1 时代还能突破并发限制）。现代实践多为“页面与接口同域（便于鉴权与 Cookie）、静态资源走独立 CDN 域名”，并给 Cookie 设置合适的 Domain 与 SameSite。
+17. 大文件与图片资源怎么处理？图片走对象存储加 CDN，按需做多尺寸裁剪与 webp/avif 转换（通过 URL 参数或处理服务）；上传走前端压缩与分片；静态字体做子集化；视频走专门的媒体服务并支持 Range。原则是“构建产物只放代码与必要资源，媒体资源全部外置”。
+18. 上线出事故怎么排查？按“变更相关性”排查：先确认是否刚发布（对比版本号与发布时间）、再区分“全量不可用”还是“部分用户不可用”（前者多为配置、证书、DNS、网关；后者多为缓存、灰度、地区网络）、看错误监控与后端日志的报错分布、必要时先回滚止血再排查根因。事后补一份时间线复盘，并把可自动化的检查项加进流水线。
+2、难题1. 为什么要“先上传静态资源，最后传 index.html”？因为 index.html 是唯一引用新资源版本的入口。若先替换 index.html，此刻新资源可能还没上传完，用户拿到的 HTML 会引用不存在的文件，直接白屏。正确顺序是：先把带新 hash 的资源全部上传并确认可访问（此时旧 index.html 仍指向旧资源，新旧共存互不干扰），最后原子替换 index.html。这就是“静态资源可多版本共存、入口只有一个”的发布模型。
+2. 原子发布与回滚具体怎么实现？每次发布生成 releases/&lt;版本号或时间戳&gt;/，把产物解压进去；用 current 软链指向它（ln -sfn releases/v2 current，切换是原子操作）；Nginx 的 root 指向 current，因此切换瞬间全量生效。回滚就是把软链指回旧目录，无需重新构建。配套保留最近 N 个版本（磁盘配额）、并保证资源路径与 HTML 的引用关系在版本内自洽（资源带 hash，旧版本资源不能立即删，需留一个窗口期）。
+3. Nginx 的 location 优先级与 proxy_pass 尾斜杠陷阱？优先级：= 精确匹配最高；其次是 ^~ 前缀（命中即不再尝试正则）；再是正则 ~&#x2F;~*（按书写顺序，第一个命中即用）；最后是普通前缀（取最长匹配）。proxy_pass 的陷阱是路径拼接：location /api/ &#123; proxy_pass http://backend/; &#125; 会把 /api/ 替换成 /（结果 /users），而 proxy_pass http://backend;（无尾斜杠）会保留完整 URI（结果 /api/users）。配错的表现是“接口全 404 但后端日志里路径不对”。
+4. Docker 多阶段构建如何把镜像压到最小？第一阶段装全部依赖并构建；第二阶段只拷贝 dist 与 nginx.conf，基础镜像用 nginx:alpine；用 .dockerignore 排除 node_modules、.git、测试文件；构建时用 npm ci --omit=dev（若构建产物不需要 dev 依赖，可进一步在生产阶段不安装依赖）；分层顺序也要注意——先 COPY package*.json 再装依赖、最后 COPY 源码，让依赖层可缓存复用。最终镜像通常在 20~50MB 量级。
+5. CI 里构建缓存怎么做，怎么保证可复现？缓存 key 要用 lockfile 的哈希（hashFiles(&#39;**/lockfile&#39;)），这样依赖变化才失效；缓存对象是包管理器的 store（pnpm 的 store、npm 的 cache）而不是直接缓存 node_modules（跨平台&#x2F;跨版本易出问题）。可复现性靠：固定 Node 版本（.nvmrc 或 packageManager 字段）、npm ci&#x2F;--frozen-lockfile、构建期禁用随机与时间戳（否则产物 hash 每次都变，缓存与灰度比对都失效）。
+6. Nginx 层怎么做按比例的灰度？用 split_clients 按客户端标识（如 $remote_addr 或 Cookie）的哈希分流： split_clients &quot;$&#123;remote_addr&#125;AAA&quot; $variant &#123; 10% new_version; * old_version; &#125;，再按 $variant 决定 upstream。 更常见的做法是：应用层用灰度规则（用户 id 取模、白名单、Header）下发配置或 feature flag，网关只负责路由。Nginx 方案的缺点是发布期间新旧两套资源必须同时在线（需要版本化目录并存），且规则变更要 reload。
+7. 前端错误上报如何做到“可信又不打扰用户”？要点有五条：window.onerror 与 unhandledrejection 全覆盖，资源错误用 addEventListener(&#39;error&#39;, ..., true) 捕获；上报用 sendBeacon（不阻塞卸载，注意体积上限）；采样与限流（同类错误按 hash 聚合、每会话限次），避免上报风暴；带上下文（版本号、页面路径、设备、trace id）并与后端日志串联；错误栈要能还原——生产用 hidden-source-map 并把 sourcemap 上传到监控平台（不公开暴露），发布时用版本号关联。
+8. K8s 滚动更新时前端为什么会短暂“版本混用”？滚动更新期间新旧 Pod 同时存在，若多个副本承载同一页面，用户在不同请求上可能拿到不同版本（表现为“刷新一次变一个版本”或资源 404）。原因是资源与 index.html 没有版本隔离。解决方式：把资源上传到带版本前缀的路径（/static/v1.2.3/...）并长缓存、index.html 由服务端按版本渲染或干脆走 CDN 原子切换；同时把 readinessProbe 配好（确保新 Pod 就绪后才接流量），并让旧版本资源在切换后保留一段时间。
+二、跨域与代理1、常见题1. 同源的定义是什么？有哪些容易误判的细节？同源要求协议、域名、端口三者完全一致。容易出错的地方包括：[http://a.com](http://a.com) 与 [http://a.com:80](http://a.com:80) 视为同源（默认端口等价），但 :8080 不同源；[https://a.com](https://a.com) 与 [http://a.com](http://a.com) 不同源（协议不同）；a.com 与 www.a.com 不同源（域名不同）；IP 与域名不同源；localhost 与 127.0.0.1 也不同源。
+2. 同源策略具体限制哪些操作，哪些不受限？受限：读取跨源请求的响应（fetch/XHR 需要 CORS）、读取跨源 iframe 的 DOM、访问跨源的 localStorage/IndexedDB、读取跨源图片的像素（canvas 被污染）、部分设备与存储 API。不受限：发出请求本身（表单提交、img/script/link 加载）、跳转链接、跨源 iframe 的嵌入（能不能嵌由 X-Frame-Options&#x2F;CSP 决定，不是同源策略）。理解这条边界是理解 CSRF 的前提。
+3. 为什么需要同源策略？它是一个读取隔离的安全模型：如果没有它，evil.com 打开的页面可以读取你在 bank.com 的响应内容、读取其 DOM 与存储，等同拿到你的数据。它的核心假设是“跨源资源可以加载，但不能读取其内容”，因此 script/img 这类嵌入仍是允许的（这也带来 JSONP 与 canvas 污染这类衍生问题）。
+4. 跨域有哪些解决方案？各自适合什么场景？服务端 CORS（首选，标准、支持任意方法与自定义头）；同源代理（Nginx 反代、开发服务器 proxy，把跨域变成同源）；postMessage（页面间通信，不是数据接口）；JSONP（仅 GET 的历史方案）；WebSocket（不受同源限制，需服务端校验 Origin）；document.domain（同主域降级，已废弃）。判断顺序：能改服务端就 CORS，改不了就用代理。
+5. 什么样的请求是“简单请求”？三个条件都满足：方法为 GET/HEAD/POST；头字段仅限 CORS 安全列表（Accept、Accept-Language、Content-Language、Content-Type 限定值、Range 限定值等）；Content-Type 只能是 application/x-www-form-urlencoded、multipart/form-data、text/plain。任何一条不满足（如 PUT、application/json、带 Authorization）都会触发预检。
+6. 预检请求（preflight）是怎么走的？浏览器先发 OPTIONS，带 Access-Control-Request-Method 与 Access-Control-Request-Headers（不是真正的请求头，只是“我想用什么”）。服务端需返回允许的 Origin、方法、头，可带 Access-Control-Max-Age 缓存该结果（浏览器有上限，Chrome 约 2 小时）。预检不通过，真实请求不会发出。注意预检失败通常是服务端没有处理 OPTIONS 或漏了某个头。
+7. CORS 的关键响应头都有什么含义？Access-Control-Allow-Origin（允许的源，* 或精确值）、Access-Control-Allow-Methods（预检用）、Access-Control-Allow-Headers（预检用）、Access-Control-Allow-Credentials（是否允许携带凭证，必须为 true 且 Origin 不能是 *）、Access-Control-Expose-Headers（让前端能读到非安全列表的响应头，如 X-Request-Id）、Access-Control-Max-Age（预检缓存时长）。
+8. 带 Cookie 的跨域请求要满足哪些条件？前端 fetch 要 credentials: &#39;include&#39;（axios 用 withCredentials: true）；服务端 Access-Control-Allow-Credentials: true；Access-Control-Allow-Origin 必须是精确源、不能用 *；Cookie 本身要满足 SameSite=None; Secure（否则跨站请求不会带上）。这四条缺一不可，缺哪条都表现为“请求发了但没带 Cookie”或直接被拦。
+9. 为什么 Access-Control-Allow-Origin: \* 不能与凭证共存？因为凭证意味着“以用户身份访问”，若允许任意源读取，任何站点都能读取用户在该服务的数据。因此规范强制要求：带凭证时服务端必须显式回显具体 Origin（并做白名单校验）。这也是“必须动态回显 Origin 而不是写死 *”的原因。
+10. 服务端怎么支持多个域名？不能返回多个 Allow-Origin（浏览器只接受一个）。做法是读请求的 Origin，在白名单里校验后原样回显，并加上 Vary: Origin（否则 CDN 或反向代理会把 A 站点的响应缓存给 B 站点，造成越权）。绝不建议“无脑回显任意 Origin + 允许凭证”，那等于关闭了同源保护。
+11. 为什么前端控制台只报一句 “CORS error”，看不到细节？出于安全，浏览器不会把跨源响应的状态码、响应体、具体失败原因暴露给 JS（否则可以用来探测内网）。排查要靠 Network 面板看预检与真实请求的状态、看响应头是否齐全、看服务端日志。这是“前端无法用 try&#x2F;catch 拿到 CORS 错误原因”的根本原因。
+12. JSONP 的原理和缺陷？利用 &lt;script&gt; 不受同源限制：前端动态插入 ?callback=fn 的脚本，服务端返回 fn(&#123;...&#125;) 的 JS 代码，从而把数据“当脚本执行”拿回来。缺陷很明显：只支持 GET、无法读状态码与响应头、出错无法感知（只能靠超时）、callback 名可控带来 XSS 风险、需要服务端专门适配。现代应全部用 CORS。
+13. 为什么开发环境的 proxy 能解决跨域？因为代理让请求由服务端发出：浏览器请求的是同源的 /api/xxx（dev server 的地址），dev server 在 Node 侧转发到真实后端并把响应回传。浏览器看到的是同源请求，不触发 CORS。注意它只是开发期的权宜方案，生产要靠网关&#x2F;Nginx 做同样的事。
+14. Nginx 反向代理怎么解决跨域？把页面与接口配到同一域名下：location /api/ &#123; proxy_pass http://backend; &#125;，浏览器视角同源，无 CORS。若必须跨域（页面与接口不同域），则在 Nginx 加 CORS 头并处理 OPTIONS（if ($request_method = OPTIONS) &#123; return 204; &#125;），同时注意 proxy_pass 的尾斜杠路径拼接问题。
+15. postMessage 怎么用才安全？发送：targetWindow.postMessage(data, targetOrigin)，targetOrigin 必须是具体源而不是 *（否则任何中间页面都能收到）。接收：监听 message 时**必须校验 event.origin**（白名单），必要时校验 event.source 是否为预期窗口；不要把收到的内容直接 innerHTML 或 eval。这是 iframe、弹窗、跨标签通信唯一可靠的官方通道。
+16. document.domain 为什么被废弃？它允许同主域的不同子域（a.example.com 与 b.example.com）通过把 document.domain 都设为 example.com 来互相访问 DOM。这直接破坏了“源”的隔离（一旦降级，同主域的所有页面都能互访），也成为绕过同源策略的攻击面。Chrome 112 起已弃用，替代方案是 postMessage + Origin 校验。
+17. 为什么 WebSocket 不受同源策略限制？WebSocket 有自己的协议（ws://&#x2F;wss://），握手是一次 HTTP Upgrade，但建连后浏览器不施加同源读取限制（否则无法跨域连服务）。安全责任转移到服务端：必须在握手时校验 Origin 头、校验 Token，否则任意站点都能用用户浏览器建立连接（类似 CSWSH 攻击）。Cookie 在握手请求中会自动携带，这一点也需要注意。
+18. 一个页面能不能被别的站点用 iframe 嵌入，谁决定？由被嵌入方决定：X-Frame-Options: DENY | SAMEORIGIN（老方案，粒度粗）、Content-Security-Policy: frame-ancestors &#39;self&#39; [https://a.com](https://a.com)（现代方案，可精确到源）。嵌入方可用 &lt;iframe sandbox=&quot;allow-scripts ...&quot;&gt; 限制被嵌页面的能力（注意同时给 allow-scripts 与 allow-same-origin 会大幅削弱沙箱）。这也是防点击劫持的核心手段。
+19. 跨站 Cookie 现在还能用吗？能，但条件更严：SameSite=None; Secure（必须 HTTPS），并且浏览器在逐步淘汰三方 Cookie（Chrome 的隐私沙盒、Safari 的 ITP 早就默认拦截）。替代方案：CHIPS（分区 Cookie，Partitioned 属性，让 Cookie 按“顶层站点”分区）、Storage Access API（请求存储访问权限）、或改成服务端跳转 + 短时票据（OAuth 授权码流程）。
+20. 哪些资源类型的跨域行为比较特殊？字体（@font-face）必须满足 CORS（否则加载失败，这是很多人第一次遇到“字体跨域”的原因）；图片可以跨域加载，但要在 canvas 里读像素就必须 crossOrigin=&quot;anonymous&quot; 且服务端允许；&lt;script&gt;&#x2F;&lt;link&gt; 可跨域加载但无法读取内容；fetch 加 mode: &#39;no-cors&#39; 只能拿到 opaque 响应（读不到内容）；&lt;video&gt; 跨域播放没问题，但要截帧同样受 canvas 污染限制。
+2、难题1. 预检请求能不能避免，代价是什么？可以，把请求“降级”成简单请求：只用 GET/POST、Content-Type 用 text/plain 或表单编码、去掉自定义头（Authorization、X-Token 都会触发预检）。但代价明显：不能用 application/json、不能带自定义鉴权头（只能靠 Cookie 或 query），语义不清晰。实际更常见的优化是缓存预检（调大 Max-Age）与减少跨域（走同源代理），而不是把接口改成畸形请求。
+2. 预检缓存有哪些容易踩的坑？一是浏览器对 Max-Age 有上限（Chrome 约 2 小时），服务端写一年也无效；二是缓存键包含 URL + Origin + 方法 + 请求头集合，请求头多一个少一个都会重新预检；三是 Access-Control-Allow-Headers 在带凭证时不能用 *（必须逐一列出），而很多框架默认返回 *，导致“不带 Cookie 正常、带了就失败”；四是 CDN 若没配 Vary: Origin，可能把某个 Origin 的预检结果缓存给其他源。
+3. 跨域请求遇到 302 重定向会怎样？预检请求不允许被重定向（浏览器会直接判定网络错误），所以登录跳转、网关鉴权跳转这类逻辑不能出现在预检路径上；真实请求的跨域重定向也要求最终响应带正确的 CORS 头，且 Allow-Origin 要与原始源匹配（不能是重定向后的源）。实践建议是让 CORS 请求直接命中最终地址，把鉴权跳转放在前端控制或改成 401 + 显式刷新。
+4. 缓存的 304 响应还需要带 CORS 头吗？需要。即使命中缓存返回 304，浏览器仍会校验 CORS 头是否允许当前源读取（缺头会判定失败），所以服务端在 304 分支也要输出 Access-Control-Allow-Origin、Vary: Origin 等。工程上常见的做法是在 Nginx 或框架层统一注入 CORS 头，而不是只写在业务响应里。
+5. 为什么说 CORS 不能防 CSRF？CORS 限制的是“读取跨源响应”，而 CSRF 只需要“发出请求”。表单提交、img 请求、&lt;script&gt; 加载都是跨源可发的（且表单的 POST 甚至不需要预检），服务端照样会执行并带上 Cookie。所以防 CSRF 要靠 SameSite Cookie、CSRF Token、Origin/Referer 校验这些服务端侧手段，CORS 只是阻断“攻击者读取结果”。
+6. crossOrigin=&quot;anonymous&quot; 到底做了什么？它让图片请求以 CORS 模式发出（带 Origin 头、要求服务端返回 Access-Control-Allow-Origin）。成功则图片可被 canvas 读取（getImageData 不会抛 SecurityError），失败则图片加载失败（而不是“污染 canvas”）。使用 use-credentials 时才会带上 Cookie。这正是“图表库截图&#x2F;图片裁剪&#x2F;水印导出”必须先处理跨域的原因。
+7. COOP、COEP、CORP 分别解决什么问题？三者共同服务于跨源隔离（crossOriginIsolated）：Cross-Origin-Opener-Policy 切断跨源窗口的 window.opener 引用（防 Spectre 类侧信道与弹窗劫持）；Cross-Origin-Embedder-Policy: require-corp 要求所有子资源显式声明可嵌入（否则不加载）；Cross-Origin-Resource-Policy 由资源方声明“谁能嵌入我”。三者配齐后浏览器才会放开 SharedArrayBuffer 与高精度计时器。代价是第三方资源必须逐个适配，破坏性较强。
+8. Private Network Access（PNA）是什么限制？浏览器开始限制“公网页面访问内网&#x2F;本地服务”（如 http://192.168.x.x、[http://localhost](http://localhost)）：跨源访问私有网络时，预检会附加 Access-Control-Request-Private-Network: true，服务端必须返回 Access-Control-Allow-Private-Network: true 才放行。它防的是“公网页面借用户浏览器扫描&#x2F;攻击内网设备”，对本地开发与内网 SaaS 场景影响最大，表现为“以前能调的本地服务突然被拦”。
 ]]></content>
       <tags>
         <tag>前端面试</tag>
